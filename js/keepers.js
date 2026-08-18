@@ -24,9 +24,6 @@ function formatValueScore(v) {
   return sign + v;
 }
 
-// Option A ramp: neon acid green (positive) / hot red (negative), gray at 0.
-// Only background is interpolated - text color is picked for contrast against
-// whatever background lands, so it never blends into a mid-tone green/red.
 const GREEN_STOPS = [
   { v: 0, bg: "#2a2f36" },
   { v: 10, bg: "#0e2a18" },
@@ -192,7 +189,7 @@ function renderKeeperGrid() {
     teams.forEach(function (team) {
       const card = document.createElement("div");
       card.className = "keeper-card";
-      const yearsList = team.keepers.map(function (k) { return k.season + ": " + k.player; }).join(" · ");
+      const yearsList = team.keepers.map(function (k) { return k.season + " " + k.player; }).join("<br>");
       card.innerHTML =
         '<div class="card-top">' + avatarHtml(team.owner, "small") +
           '<div><div class="eyebrow">TOTAL ACROSS ' + team.keepers.length + ' YEAR' + (team.keepers.length === 1 ? "" : "S") + '</div>' +
