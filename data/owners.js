@@ -34,12 +34,16 @@ const OWNER_AVATARS = {
   "Joe Sadler": { type: "id", value: "82aec8e811b839b8ec25d7b458afd57b" }
 };
 
-// League IDs per season - the chain of previous_league_id we walked back through.
+// League IDs per season - Sleeper seasons only (2020-2022 come from ESPN_HISTORY instead).
 const LEAGUE_IDS = {
+  2023: "998754274152747008",
   2024: "1132805983862054912",
   2025: "1257432232532914176",
   2026: "1385308512279621632"
 };
+
+// Seasons before the league moved to Sleeper - rendered from static ESPN_HISTORY data.
+const ESPN_SEASONS = [2020, 2021, 2022];
 
 function ownerNameFromUsername(username) {
   if (!username) return "Unknown";
