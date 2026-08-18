@@ -225,7 +225,7 @@ function buildCumulativeRows(allStats) {
       if (!byOwner[t.owner]) {
         byOwner[t.owner] = {
           owner: t.owner, seasons: 0, wins: 0, losses: 0, ties: 0,
-          pointsFor: 0, pointsAgainst: 0, championships: 0, lastPlaces: 0
+          pointsFor: 0, pointsAgainst: 0, championships: 0, runnerUps: 0, thirdPlaces: 0, lastPlaces: 0
         };
       }
       const agg = byOwner[t.owner];
@@ -233,6 +233,8 @@ function buildCumulativeRows(allStats) {
       agg.wins += t.wins; agg.losses += t.losses; agg.ties += t.ties;
       agg.pointsFor += t.pointsFor; agg.pointsAgainst += t.pointsAgainst;
       if (t.finalRank === 1) agg.championships += 1;
+      if (t.finalRank === 2) agg.runnerUps += 1;
+      if (t.finalRank === 3) agg.thirdPlaces += 1;
       if (t.finalRank && t.totalTeams && t.finalRank === t.totalTeams) agg.lastPlaces += 1;
     });
   });
@@ -289,7 +291,8 @@ function renderIndividualGrid(rows) {
     card.innerHTML =
       '<div class="card-top">' + avatarHtml(r.owner) +
         '<div><div class="eyebrow">' + r.season + ' \u00b7 ' + r.wins + '-' + r.losses + (r.ties ? '-' + r.ties : '') + '</div>' +
-        '<div class="team-name">' + r.teamName + ' ' + placementBadge(r.finalRank, r.totalTeams) + '</div></div>' +
+        '<div class="team-name">' + r.owner + '</div>' +
+        '<div class="sub-team-name">' + r.teamName + ' ' + placementBadge(r.finalRank, r.totalTeams) + '</div></div>' +
       '</div>' +
       '<div class="stat-row">' +
         '<div class="stat-chip"><div class="label">Points for</div><div class="value">' + r.pointsFor.toFixed(1) + '</div></div>' +
@@ -307,15 +310,20 @@ function renderCumulativeGrid(rows) {
   const grid = document.getElementById("team-grid");
   grid.innerHTML = "";
   sortRows(rows).forEach(function (r) {
-    const trophyLine = (r.championships > 0 ? '\uD83E\uDD47 x' + r.championships + '  ' : '') +
-      (r.lastPlaces > 0 ? '\uD83D\uDCA9 x' + r.lastPlaces : '');
+    const trophyParts = [];
+    if (r.championships > 0) trophyParts.push('\uD83E\uDD47 x' + r.championships);
+    if (r.runnerUps > 0) trophyParts.push('\uD83E\uDD48 x' + r.runnerUps);
+    if (r.thirdPlaces > 0) trophyParts.push('\uD83E\uDD49 x' + r.thirdPlaces);
+    if (r.lastPlaces > 0) trophyParts.push('\uD83D\uDCA9 x' + r.lastPlaces);
+    const trophyLine = trophyParts.join('  ');
     const card = document.createElement("div");
     card.className = "keeper-card";
     card.style.cursor = "default";
     card.innerHTML =
       '<div class="card-top">' + avatarHtml(r.owner) +
         '<div><div class="eyebrow">' + r.seasons + ' SEASON' + (r.seasons === 1 ? '' : 'S') + '</div>' +
-        '<div class="team-name">' + r.owner + (trophyLine ? ' ' + trophyLine : '') + '</div></div>' +
+        '<div class="team-name">' + r.owner + '</div>' +
+        (trophyLine ? '<div class="sub-team-name">' + trophyLine + '</div>' : '') + '</div>' +
       '</div>' +
       '<div class="stat-row">' +
         '<div class="stat-chip"><div class="label">Total PF</div><div class="value">' + r.pointsFor.toFixed(0) + '</div></div>' +
