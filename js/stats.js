@@ -47,6 +47,31 @@ async function fetchJson(url) {
 }
 
 async function computeSeasonStats(season) {
+  // ESPN seasons are frozen history - build the same shape of stats object
+  // directly from the static data, no fetching needed.
+  if (ESPN_SEASONS.includes(season)) {
+    const rawTeams = ESPN_HISTORY[season] || [];
+    const teams = rawTeams.map(function (t) {
+      const games = t.wins + t.losses + t.ties;
+      return {
+        owner: t.owner,
+        wins: t.wins, losses: t.losses, ties: t.ties,
+        pointsFor: t.pointsFor,
+        pointsAgainst: t.pointsAgainst,
+        avgPerWeek: games > 0 ? t.pointsFor / games : 0
+      };
+    }).sort(function (a, b) { return b.pointsFor - a.pointsFor; });
+
+    return {
+      season: season,
+      leagueStatus: "complete",
+      teams: teams,
+      bestPerformance: null, // ESPN mTeam view only gives season totals, not week-by-week
+      closestMatchup: null,
+      weeksPlayed: teams.length > 0 ? 1 : 0 // just needs to be > 0 so the grid renders
+    };
+  }
+
   const leagueId = LEAGUE_IDS[season];
   const [leagueInfo, rosters, users] = await Promise.all([
     fetchJson("https://api.sleeper.app/v1/league/" + leagueId),
@@ -238,7 +263,7 @@ async function showSeason(season) {
 
 document.addEventListener("DOMContentLoaded", function () {
   const seasonBar = document.getElementById("season-bar");
-  const seasons = Object.keys(LEAGUE_IDS).map(Number).sort();
+  const seasons = ESPN_SEASONS.concat(Object.keys(LEAGUE_IDS).map(Number)).sort(function (a, b) { return a - b; });
   seasons.forEach(function (season) {
     const btn = document.createElement("button");
     btn.className = "filter-btn";
