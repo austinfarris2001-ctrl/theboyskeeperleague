@@ -1,5 +1,23 @@
 let activeSeasonFilter = "all";
+let viewMode = "individual"; // "individual" or "total" - total only applies under All seasons
 let rankView = "kept";
+
+function getTeamTotals() {
+  const totals = {};
+  KEEPER_DATA.forEach(function (k) {
+    if (!totals[k.owner]) {
+      totals[k.owner] = { owner: k.owner, totalValue: 0, keepers: [] };
+    }
+    totals[k.owner].totalValue += k.valueScore;
+    totals[k.owner].keepers.push(k);
+  });
+  return Object.values(totals)
+    .map(function (t) {
+      t.keepers.sort(function (a, b) { return a.season - b.season; });
+      return t;
+    })
+    .sort(function (a, b) { return b.totalValue - a.totalValue; });
+}
 
 function formatValueScore(v) {
   const sign = v > 0 ? "+" : "";
@@ -113,10 +131,36 @@ function getFiltered() {
 
 function renderPodium() {
   const podium = document.getElementById("podium");
-  const top3 = getFiltered().slice(0, 3);
+  const podiumTitle = document.getElementById("podium-title");
   const trophies = ["\uD83C\uDFC6", "\uD83C\uDFC6", "\uD83C\uDFC6"];
   const order = [1, 0, 2]; // display order: 2nd, 1st, 3rd
 
+  if (viewMode === "total") {
+    podiumTitle.textContent = "Top total value scores";
+    const top3 = getTeamTotals().slice(0, 3);
+    podium.innerHTML = "";
+    order.forEach(function (idx) {
+      const team = top3[idx];
+      if (!team) return;
+      const rank = idx + 1;
+      const spot = document.createElement("div");
+      spot.className = "podium-spot rank-" + rank;
+      spot.innerHTML =
+        '<div class="podium-trophy">' + trophies[idx] + '</div>' +
+        '<div class="podium-medal">' + rank + '</div>' +
+        '<div class="p-owner">' + team.owner + '</div>' +
+        '<div class="p-player">' + team.keepers.length + ' keeper' + (team.keepers.length === 1 ? "" : "s") + '</div>' +
+        '<div class="p-score">' + scoreBoxHtml(team.totalValue, true) + '</div>' +
+        '<div class="podium-base rank-' + rank + '-base"></div>';
+      spot.addEventListener("click", function () { openTeamSpotlight(team); });
+      podium.appendChild(spot);
+    });
+    attachAvatarFallbacks(podium);
+    return;
+  }
+
+  podiumTitle.textContent = "Top value scores";
+  const top3 = getFiltered().slice(0, 3);
   podium.innerHTML = "";
   order.forEach(function (idx) {
     const keeper = top3[idx];
@@ -140,6 +184,31 @@ function renderPodium() {
 function renderKeeperGrid() {
   const grid = document.getElementById("keeper-grid");
   grid.innerHTML = "";
+
+  if (viewMode === "total") {
+    const teams = getTeamTotals();
+    if (teams.length === 0) {
+      grid.innerHTML = '<p class="empty-note">No keepers recorded yet.</p>';
+      return;
+    }
+    teams.forEach(function (team) {
+      const card = document.createElement("div");
+      card.className = "keeper-card";
+      const yearsList = team.keepers.map(function (k) { return k.season; }).join(", ");
+      card.innerHTML =
+        '<div class="card-top">' + avatarHtml(team.owner, "small") +
+          '<div><div class="eyebrow">TOTAL ACROSS ' + team.keepers.length + ' YEAR' + (team.keepers.length === 1 ? "" : "S") + '</div>' +
+          '<div class="team-name">' + team.owner + '</div></div>' +
+        '</div>' +
+        '<div class="player-name">' + yearsList + '</div>' +
+        '<div class="value-score">' + scoreBoxHtml(team.totalValue, true) + '</div>';
+      card.addEventListener("click", function () { openTeamSpotlight(team); });
+      grid.appendChild(card);
+    });
+    attachAvatarFallbacks(grid);
+    return;
+  }
+
   const filtered = getFiltered();
 
   if (filtered.length === 0) {
@@ -202,6 +271,24 @@ function renderSpotlight(keeper) {
   }
 }
 
+function openTeamSpotlight(team) {
+  document.getElementById("spotlight-body").innerHTML =
+    '<div class="spotlight-top">' + avatarHtml(team.owner, "large") +
+      '<div><div class="eyebrow">TOTAL ACROSS ' + team.keepers.length + ' YEAR' + (team.keepers.length === 1 ? "" : "S") + '</div>' +
+      '<div class="team-name">' + team.owner + '</div></div>' +
+    '</div>' +
+    '<div class="player-name">' + scoreBoxHtml(team.totalValue, true) + '</div>' +
+    team.keepers.map(function (k) {
+      return '<div class="stat-row" style="margin-bottom:8px;">' +
+        '<div class="stat-chip" style="text-align:left;flex:2;"><div class="label">' + k.season + '</div><div class="value" style="font-size:15px;">' + k.player + '</div></div>' +
+        '<div class="stat-chip">' + scoreBoxHtml(k.valueScore, false) + '</div>' +
+      '</div>';
+    }).join("");
+
+  attachAvatarFallbacks(document.getElementById("spotlight-body"));
+  document.getElementById("spotlight-overlay").classList.remove("hidden");
+}
+
 function closeSpotlight() {
   document.getElementById("spotlight-overlay").classList.add("hidden");
 }
@@ -212,16 +299,41 @@ function renderAll() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const filterBtns = document.querySelectorAll(".filter-btn");
-  filterBtns.forEach(function (btn) {
+  const seasonBtns = document.querySelectorAll("[data-season]");
+  const modeBtns = document.querySelectorAll("[data-mode]");
+  const viewModeBar = document.getElementById("view-mode-bar");
+
+  function updateModeBarVisibility() {
+    if (activeSeasonFilter === "all") {
+      viewModeBar.style.display = "flex";
+    } else {
+      viewModeBar.style.display = "none";
+      viewMode = "individual";
+      modeBtns.forEach(function (b) { b.classList.toggle("active", b.dataset.mode === "individual"); });
+    }
+  }
+
+  seasonBtns.forEach(function (btn) {
     btn.addEventListener("click", function () {
-      filterBtns.forEach(function (b) { b.classList.remove("active"); });
+      seasonBtns.forEach(function (b) { b.classList.remove("active"); });
       btn.classList.add("active");
       const val = btn.dataset.season;
       activeSeasonFilter = val === "all" ? "all" : Number(val);
+      updateModeBarVisibility();
       renderAll();
     });
   });
+
+  modeBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      modeBtns.forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      viewMode = btn.dataset.mode;
+      renderAll();
+    });
+  });
+
+  updateModeBarVisibility();
   renderAll();
   document.getElementById("close-spotlight").addEventListener("click", closeSpotlight);
   document.getElementById("spotlight-overlay").addEventListener("click", function (e) {
