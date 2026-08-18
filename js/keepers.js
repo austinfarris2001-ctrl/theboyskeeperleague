@@ -110,8 +110,6 @@ function attachAvatarFallbacks(root) {
     const img = document.createElement("img");
     img.className = cls;
     img.alt = "";
-    // attach the fallback handler BEFORE setting src, so a fast/immediate
-    // failure can't fire the error event before anything is listening for it
     img.addEventListener("error", function () {
       const div = document.createElement("div");
       div.className = fallbackCls;
@@ -133,7 +131,7 @@ function renderPodium() {
   const podium = document.getElementById("podium");
   const podiumTitle = document.getElementById("podium-title");
   const trophies = ["\uD83C\uDFC6", "\uD83C\uDFC6", "\uD83C\uDFC6"];
-  const order = [1, 0, 2]; // display order: 2nd, 1st, 3rd
+  const order = [1, 0, 2];
 
   if (viewMode === "total") {
     podiumTitle.textContent = "Top total value scores";
@@ -194,13 +192,13 @@ function renderKeeperGrid() {
     teams.forEach(function (team) {
       const card = document.createElement("div");
       card.className = "keeper-card";
-      const yearsList = team.keepers.map(function (k) { return k.season; }).join(", ");
+      const yearsList = team.keepers.map(function (k) { return k.season + ": " + k.player; }).join(" · ");
       card.innerHTML =
         '<div class="card-top">' + avatarHtml(team.owner, "small") +
           '<div><div class="eyebrow">TOTAL ACROSS ' + team.keepers.length + ' YEAR' + (team.keepers.length === 1 ? "" : "S") + '</div>' +
           '<div class="team-name">' + team.owner + '</div></div>' +
         '</div>' +
-        '<div class="player-name">' + yearsList + '</div>' +
+        '<div class="player-name" style="font-size:15px;font-weight:600;line-height:1.5;">' + yearsList + '</div>' +
         '<div class="value-score">' + scoreBoxHtml(team.totalValue, true) + '</div>';
       card.addEventListener("click", function () { openTeamSpotlight(team); });
       grid.appendChild(card);
