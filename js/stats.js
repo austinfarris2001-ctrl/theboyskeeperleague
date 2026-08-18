@@ -428,6 +428,23 @@ document.addEventListener("DOMContentLoaded", function () {
     seasonBar.appendChild(btn);
   });
 
+  document.getElementById("select-all-btn").addEventListener("click", function () {
+    document.querySelectorAll("#season-bar .filter-btn").forEach(function (btn) {
+      const season = Number(btn.dataset.season);
+      selectedSeasons.add(season);
+      btn.classList.add("active");
+    });
+    renderAll();
+  });
+
+  document.getElementById("deselect-all-btn").addEventListener("click", function () {
+    document.querySelectorAll("#season-bar .filter-btn").forEach(function (btn) {
+      btn.classList.remove("active");
+    });
+    selectedSeasons.clear();
+    renderAll();
+  });
+
   document.querySelectorAll("#view-mode-bar [data-mode]").forEach(function (btn) {
     btn.addEventListener("click", function () {
       document.querySelectorAll("#view-mode-bar [data-mode]").forEach(function (b) { b.classList.remove("active"); });
