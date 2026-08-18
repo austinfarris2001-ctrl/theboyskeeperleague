@@ -42,6 +42,16 @@ const LEAGUE_IDS = {
   2026: "1385308512279621632"
 };
 
+// Sleeper permanently unlinks owner_id from a roster once that person leaves
+// the league - even for past seasons they actually played. Manual overrides
+// for those roster slots, keyed by league_id then roster_id.
+const ROSTER_OWNER_OVERRIDES = {
+  "1257432232532914176": {
+    3: "Michael Hoffa",
+    9: "Alvin Pokel"
+  }
+};
+
 // Seasons before the league moved to Sleeper - rendered from static ESPN_HISTORY data.
 const ESPN_SEASONS = [2020, 2021, 2022];
 
