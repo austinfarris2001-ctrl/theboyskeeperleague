@@ -31,24 +31,3 @@ const KEEPER_DATA = [
   { season: 2026, owner: "Rohan Shani", player: "Zay Flowers", round: 6, pick: 53, adp: 44, valueScore: 9 },
   { season: 2026, owner: "Braden Galvan", player: "Tony Pollard", round: 4, pick: 34, adp: 87, valueScore: -53 }
 ];
-
-// ============================================================
-// OWNER AVATARS - update this when someone changes their Sleeper picture
-// ============================================================
-// type "url": paste the exact metadata.avatar URL from the Sleeper API users list
-// type "id": the top-level "avatar" hash, used via sleepercdn.com/avatars/thumbs/<hash>
-// null: no avatar on file (falls back to initials) - used for owners who left the league
-const OWNER_AVATARS = {
-  "Shivam Patel": { type: "url", value: "https://sleepercdn.com/uploads/9beea504a9a18675801d1f4994cb085c.jpg" },
-  "Tyler Armstrong": { type: "url", value: "https://sleepercdn.com/uploads/60b9ec24af3fb646a01d86f54de0a818.jpg" },
-  "Austin Farris": { type: "id", value: "f0edbf4278f53f9425db175073df6584" },
-  "Brayden Armstrong": { type: "id", value: "d55d1f7075eda01948318de4af616075" },
-  "Alvin Pokel": null,
-  "Braden Galvan": { type: "url", value: "https://sleepercdn.com/uploads/87c59a355eed988844c04e1b959f0600.jpg" },
-  "Braeden Sully": { type: "url", value: "https://sleepercdn.com/uploads/0a4d3daa17a54fffe9c65e7c00bd07df.jpg" },
-  "Tyler Ahrens": { type: "url", value: "https://sleepercdn.com/uploads/e0a83d416084d53358cfecdbf8067f20.jpg" },
-  "Rohan Shani": { type: "url", value: "https://sleepercdn.com/uploads/06757fd439eb2bdce4e6e78938ef220d.jpg" },
-  "Michael Hoffa": null,
-  "Zach Sullivan": { type: "url", value: "https://sleepercdn.com/uploads/a0cf6cf9b698d4d63c9277733eb49bd1.jpg" },
-  "Joe Sadler": { type: "id", value: "82aec8e811b839b8ec25d7b458afd57b" }
-};
