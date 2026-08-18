@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Keeper tracker - The Boys Keeper League</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <h1>Keeper tracker</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="keepers.html" class="active">Keepers</a>
+      <a href="misses.html">Biggest misses</a>
+    </nav>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-season="all">All seasons</button>
+    <button class="filter-btn" data-season="2025">2025</button>
+    <button class="filter-btn" data-season="2026">2026</button>
+  </div>
+
+  <div class="podium-section">
+    <div class="podium-title">Top value scores</div>
+    <div id="podium" class="podium"></div>
+  </div>
+
+  <div id="keeper-grid" class="keeper-grid"></div>
+
+  <div id="spotlight-overlay" class="spotlight-overlay hidden">
+    <div class="spotlight-card">
+      <button id="close-spotlight" class="close-btn">&times;</button>
+      <div id="spotlight-body"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- data/keepers.js must load before js/keepers.js - it defines KEEPER_DATA and OWNER_AVATARS -->
+<script src="data/keepers.js"></script>
+<script src="js/keepers.js"></script>
+</body>
+</html>
