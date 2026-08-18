@@ -12,17 +12,28 @@
     <h1>Team stats</h1>
     <nav>
       <a href="index.html">Home</a>
-      <a href="keepers.html">Keepers</a>
-      <a href="misses.html">Biggest misses</a>
       <a href="stats.html" class="active">Team Stats</a>
+      <a href="keepers.html">Keepers</a>
+      <a href="misses.html">Analytics</a>
     </nav>
   </div>
 
+  <p class="empty-note" style="margin-bottom:10px;">Tap a season to toggle it on/off - select more than one to compare across years.</p>
   <div class="filter-bar" id="season-bar">
     <!-- season buttons injected by js/stats.js since seasons depend on what data actually exists -->
   </div>
 
-  <div id="loading-note" class="empty-note">Loading live data from Sleeper...</div>
+  <div id="view-mode-bar" class="filter-bar" style="display:none;">
+    <button class="filter-btn active" data-mode="individual">Individual</button>
+    <button class="filter-btn" data-mode="cumulative">Cumulative</button>
+  </div>
+
+  <div id="sort-bar" class="filter-bar" style="display:none; align-items:center;">
+    <span style="font-size:13px; color:var(--text-mute);">Sort by:</span>
+    <select id="sort-select" class="sort-select"></select>
+  </div>
+
+  <div id="loading-note" class="empty-note">Select at least one season above.</div>
 
   <div class="podium-section" id="highlights-section" style="display:none;">
     <div class="podium-title">Season highlights</div>
