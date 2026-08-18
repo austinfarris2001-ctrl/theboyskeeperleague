@@ -119,8 +119,10 @@ async function computeSeasonStats(season) {
   ]);
 
   const userIdToOwner = {};
+  const userIdToTeamName = {};
   users.forEach(function (u) {
     userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
+    userIdToTeamName[u.user_id] = u.metadata && u.metadata.team_name;
   });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
@@ -137,7 +139,7 @@ async function computeSeasonStats(season) {
     const fptsAgainst = (s.fpts_against || 0) + (s.fpts_against_decimal || 0) / 100;
     const wins = s.wins || 0, losses = s.losses || 0, ties = s.ties || 0;
     const games = wins + losses + ties;
-    const teamName = (r.metadata && r.metadata.team_name) || (rosterIdToOwner[r.roster_id] || "Unknown");
+    const teamName = userIdToTeamName[r.owner_id] || (rosterIdToOwner[r.roster_id] || "Unknown");
     return {
       owner: rosterIdToOwner[r.roster_id] || "Unknown",
       teamName: teamName,
