@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Team stats - The Boys Keeper League</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <h1>Team stats</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="keepers.html">Keepers</a>
+      <a href="misses.html">Biggest misses</a>
+      <a href="stats.html" class="active">Team Stats</a>
+    </nav>
+  </div>
+
+  <div class="filter-bar" id="season-bar">
+    <!-- season buttons injected by js/stats.js since seasons depend on what data actually exists -->
+  </div>
+
+  <div id="loading-note" class="empty-note">Loading live data from Sleeper...</div>
+
+  <div class="podium-section" id="highlights-section" style="display:none;">
+    <div class="podium-title">Season highlights</div>
+    <div id="highlights" class="keeper-grid"></div>
+  </div>
+
+  <div id="team-grid" class="keeper-grid"></div>
+
+</div>
+
+<script src="data/owners.js"></script>
+<script src="js/stats.js"></script>
+</body>
+</html>
