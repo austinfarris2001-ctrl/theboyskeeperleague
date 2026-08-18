@@ -100,7 +100,8 @@ nav a.active, nav a:hover { color: var(--blue); }
   font-size: 12px; font-weight: 600; color: var(--blue);
 }
 .keeper-card .eyebrow { font-size: 12px; letter-spacing: 0.5px; color: var(--text-mute); }
-.keeper-card .team-name { font-size: 15px; font-weight: 600; color: var(--blue); }
+.keeper-card .team-name { font-size: 17px; font-weight: 700; color: var(--blue); }
+.keeper-card .sub-team-name { font-size: 13px; font-weight: 500; color: var(--text-mute); margin-top: 1px; }
 .keeper-card .player-name { font-size: 21px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
 .placement-badge { font-size: 18px; vertical-align: middle; }
 .stat-row { display: flex; gap: 10px; margin-bottom: 4px; }
@@ -173,7 +174,8 @@ nav a.active, nav a:hover { color: var(--blue); }
   .keeper-grid { grid-template-columns: 1fr; gap: 12px; }
   .keeper-card { padding: 16px; }
   .keeper-card .player-name { font-size: 22px; margin-bottom: 10px; }
-  .keeper-card .team-name { font-size: 16px; }
+  .keeper-card .team-name { font-size: 18px; }
+  .keeper-card .sub-team-name { font-size: 14px; }
   .keeper-card .eyebrow { font-size: 12px; }
   .stat-chip { padding: 12px 10px; }
   .stat-chip .value { font-size: 22px; }
