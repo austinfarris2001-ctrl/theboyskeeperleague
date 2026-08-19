@@ -78,9 +78,9 @@ function scoreStyle(value) {
 
 function scoreBoxHtml(value, big) {
   const s = scoreStyle(value);
-  const size = big ? "font-size:16px;padding:5px 12px;" : "font-size:13px;padding:4px 9px;";
-  return '<span style="display:inline-block;border-radius:8px;font-weight:700;' + size +
-    'background:' + s.bg + ';color:' + s.text + ';">' + formatValueScore(value) + '</span>';
+  const sizeClass = big ? "score-circle-big" : "score-circle-small";
+  return '<span class="score-circle ' + sizeClass + '" style="background:' + s.bg + ';color:' + s.text + ';">' +
+    formatValueScore(value) + '</span>';
 }
 
 function initials(name) {
