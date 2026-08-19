@@ -2,6 +2,48 @@ let activeSeasonFilter = "all";
 let viewMode = "individual"; // "individual" or "total" - total only applies under All seasons
 let rankView = "kept";
 
+// Cache of season stats dumps, keyed by season - so switching the toggle or
+// reopening a spotlight doesn't re-fetch the same ~1-2MB season stats file.
+let seasonStatsCache = {};
+
+async function fetchSeasonStats(season) {
+  if (seasonStatsCache[season]) return seasonStatsCache[season];
+  const res = await fetch("https://api.sleeper.app/v1/stats/nfl/regular/" + season);
+  if (!res.ok) throw new Error("Failed to fetch season stats for " + season);
+  const data = await res.json();
+  seasonStatsCache[season] = data;
+  return data;
+}
+
+// Computes a player's finish rank at their position for a given season - e.g.
+// "WR3" - by building the full pool of every real NFL player at that position
+// and ranking by full-season PPR points, regardless of who (if anyone) had
+// them rostered in our league that year.
+async function getPositionalRank(playerName, season) {
+  const info = typeof PLAYER_DB !== "undefined" ? PLAYER_DB[playerName] : null;
+  if (!info || !info.position) return null;
+
+  let statsDump;
+  try {
+    statsDump = await fetchSeasonStats(season);
+  } catch (e) {
+    return null;
+  }
+
+  const targetPoints = statsDump[info.playerId] && statsDump[info.playerId].pts_ppr;
+  if (targetPoints == null) return null;
+
+  const pool = [];
+  for (const pid in PLAYER_POSITIONS) {
+    if (PLAYER_POSITIONS[pid] !== info.position) continue;
+    const s = statsDump[pid];
+    if (s && typeof s.pts_ppr === "number") pool.push(s.pts_ppr);
+  }
+  pool.sort(function (a, b) { return b - a; });
+  const rank = pool.indexOf(targetPoints) + 1;
+  return rank > 0 ? { rank: rank, position: info.position, points: targetPoints } : null;
+}
+
 function getTeamTotals() {
   const totals = {};
   KEEPER_DATA.forEach(function (k) {
@@ -295,7 +337,9 @@ function openSpotlight(keeper) {
   document.getElementById("spotlight-overlay").classList.remove("hidden");
 }
 
-function renderSpotlight(keeper) {
+async function renderSpotlight(keeper) {
+  const targetSeason = rankView === "kept" ? keeper.season : keeper.season - 1;
+
   document.getElementById("spotlight-body").innerHTML =
     '<div class="spotlight-top">' + avatarHtml(keeper.owner, "large") +
       '<div><div class="eyebrow">' + keeper.season + ' KEEPER</div>' +
@@ -312,7 +356,7 @@ function renderSpotlight(keeper) {
       '<button class="toggle-pill ' + (rankView === "kept" ? "active" : "") + '" data-view="kept">Kept-year stats</button>' +
       '<button class="toggle-pill ' + (rankView === "prior" ? "active" : "") + '" data-view="prior">Year before stats</button>' +
     '</div>' +
-    '<div class="rank-line">Positional rank pending real season stats</div>';
+    '<div class="rank-line" id="rank-line">Loading ' + targetSeason + ' stats...</div>';
 
   attachAvatarFallbacks(document.getElementById("spotlight-body"));
   attachPlayerVisualFallbacks(document.getElementById("spotlight-body"));
@@ -323,6 +367,24 @@ function renderSpotlight(keeper) {
       rankView = this.dataset.view;
       renderSpotlight(keeper);
     });
+  }
+
+  const rankLine = document.getElementById("rank-line");
+  try {
+    const result = await getPositionalRank(keeper.player, targetSeason);
+    // guard against the spotlight having moved on to a different keeper/toggle
+    // while this fetch was in flight
+    if (!document.getElementById("rank-line")) return;
+    if (result) {
+      rankLine.textContent = targetSeason + ' season: finished ' + result.position + result.rank +
+        ' (' + result.points.toFixed(1) + ' PPR pts)';
+    } else {
+      rankLine.textContent = 'No ' + targetSeason + ' season stats available for this player.';
+    }
+  } catch (e) {
+    if (document.getElementById("rank-line")) {
+      rankLine.textContent = "Couldn't load season stats right now.";
+    }
   }
 }
 
