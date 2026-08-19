@@ -104,6 +104,37 @@ nav a.active, nav a:hover { color: var(--blue); }
 .keeper-card .sub-team-name { font-size: 13px; font-weight: 500; color: var(--text-mute); margin-top: 1px; }
 .keeper-card .player-name { font-size: 21px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
 .placement-badge { font-size: 18px; vertical-align: middle; }
+
+/* Player headshots + team logo badge (small overlapping circle) */
+.player-name-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.player-visual-wrap { position: relative; flex-shrink: 0; }
+.player-visual-wrap-small { width: 44px; height: 44px; }
+.player-visual-wrap-large { width: 68px; height: 68px; }
+.player-visual-wrap-tiny { width: 26px; height: 26px; }
+.player-headshot {
+  width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+  border: 1.5px solid var(--border); background: var(--panel-2); display: block;
+}
+.player-headshot-fallback-small, .player-headshot-fallback-tiny {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--panel-2);
+  border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--blue); flex-shrink: 0;
+}
+.player-headshot-fallback-tiny { width: 26px; height: 26px; font-size: 10px; }
+.player-headshot-fallback-large {
+  width: 68px; height: 68px; border-radius: 50%; background: var(--panel-2);
+  border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: var(--blue); flex-shrink: 0;
+}
+.team-logo-badge {
+  position: absolute; bottom: -3px; right: -3px; border-radius: 50%;
+  background: var(--panel); border: 1.5px solid var(--bg); padding: 2px; box-sizing: border-box;
+}
+.team-logo-badge-small { width: 20px; height: 20px; }
+.team-logo-badge-large { width: 28px; height: 28px; }
+.team-logo-badge-tiny { width: 13px; height: 13px; padding: 1px; }
+
+.p-player-visual { display: flex; justify-content: center; margin: 6px 0; }
 .stat-row { display: flex; gap: 10px; margin-bottom: 4px; }
 .stat-chip { flex: 1; background: var(--panel-2); border-radius: 8px; padding: 10px 12px; text-align: center; }
 .stat-chip .label { font-size: 11px; color: var(--text-mute); margin-bottom: 3px; }
