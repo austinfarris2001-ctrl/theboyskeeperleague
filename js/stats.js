@@ -339,44 +339,6 @@ function renderCumulativeGrid(rows) {
   attachAvatarFallbacks(grid);
 }
 
-function renderHighlights(allStats) {
-  const section = document.getElementById("highlights-section");
-  const wrap = document.getElementById("highlights");
-  wrap.innerHTML = "";
-
-  if (allStats.length !== 1 || (!allStats[0].bestPerformance && !allStats[0].closestMatchup)) {
-    section.style.display = "none";
-    return;
-  }
-  section.style.display = "block";
-  const stats = allStats[0];
-
-  if (stats.bestPerformance) {
-    const card = document.createElement("div");
-    card.className = "keeper-card";
-    card.style.cursor = "default";
-    card.innerHTML =
-      '<div class="card-top">' + avatarHtml(stats.bestPerformance.owner) +
-        '<div><div class="eyebrow">BEST PERFORMANCE - WEEK ' + stats.bestPerformance.week + '</div>' +
-        '<div class="team-name">' + stats.bestPerformance.owner + '</div></div>' +
-      '</div>' +
-      '<div class="stat-row"><div class="stat-chip"><div class="label">Points</div><div class="value">' + stats.bestPerformance.points.toFixed(1) + '</div></div></div>';
-    wrap.appendChild(card);
-  }
-  if (stats.closestMatchup) {
-    const cm = stats.closestMatchup;
-    const card = document.createElement("div");
-    card.className = "keeper-card";
-    card.style.cursor = "default";
-    card.innerHTML =
-      '<div class="eyebrow">CLOSEST MATCHUP - WEEK ' + cm.week + '</div>' +
-      '<div class="player-name" style="font-size:16px;">' + cm.teamA + ' ' + cm.scoreA.toFixed(1) + ' vs ' + cm.teamB + ' ' + cm.scoreB.toFixed(1) + '</div>' +
-      '<div class="stat-row"><div class="stat-chip"><div class="label">Margin</div><div class="value">' + cm.margin.toFixed(1) + '</div></div></div>';
-    wrap.appendChild(card);
-  }
-  attachAvatarFallbacks(wrap);
-}
-
 async function renderAll() {
   const loadingNote = document.getElementById("loading-note");
   const grid = document.getElementById("team-grid");
@@ -385,7 +347,6 @@ async function renderAll() {
 
   if (selectedSeasons.size === 0) {
     grid.innerHTML = '<p class="empty-note">Select at least one season above.</p>';
-    document.getElementById("highlights-section").style.display = "none";
     modeBar.style.display = "none";
     sortBar.style.display = "none";
     return;
@@ -402,7 +363,6 @@ async function renderAll() {
     const allStats = await Promise.all(seasons.map(getSeasonStats));
     loadingNote.style.display = "none";
 
-    renderHighlights(allStats);
     renderSortOptions();
 
     if (viewMode === "cumulative") {
