@@ -16,7 +16,25 @@
       <a href="misses.html">Analytics</a>
     </nav>
   </div>
-  <p class="empty-note">Homepage dashboard (standings, head-to-head, awards) coming next - start with the Keepers tab above.</p>
+
+  <div class="podium-section">
+    <div class="podium-title">Where everyone lives</div>
+    <div id="map-placeholder" class="empty-note" style="padding:40px 0; text-align:center;">
+      US map with everyone's avatar pinned to their city - coming as soon as location data is in.
+    </div>
+  </div>
+
+  <div class="podium-section">
+    <div class="podium-title" id="standings-title">Current standings</div>
+    <div id="standings-loading" class="empty-note">Loading live standings from Sleeper...</div>
+    <div id="standings-grid" class="keeper-grid"></div>
+  </div>
+
 </div>
+
+<script src="data/owners.js"></script>
+<script src="data/locations.js"></script>
+<script src="js/home.js"></script>
+<script src="js/map.js"></script>
 </body>
 </html>
