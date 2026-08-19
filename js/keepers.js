@@ -24,6 +24,9 @@ function formatValueScore(v) {
   return sign + v;
 }
 
+// Option A ramp: neon acid green (positive) / hot red (negative), gray at 0.
+// Only background is interpolated - text color is picked for contrast against
+// whatever background lands, so it never blends into a mid-tone green/red.
 const GREEN_STOPS = [
   { v: 0, bg: "#2a2f36" },
   { v: 10, bg: "#0e2a18" },
@@ -107,6 +110,8 @@ function attachAvatarFallbacks(root) {
     const img = document.createElement("img");
     img.className = cls;
     img.alt = "";
+    // attach the fallback handler BEFORE setting src, so a fast/immediate
+    // failure can't fire the error event before anything is listening for it
     img.addEventListener("error", function () {
       const div = document.createElement("div");
       div.className = fallbackCls;
@@ -115,6 +120,55 @@ function attachAvatarFallbacks(root) {
     });
     img.src = info.type === "url" ? info.value : "https://sleepercdn.com/avatars/thumbs/" + info.value;
     slot.replaceWith(img);
+  });
+}
+
+function playerVisualHtml(playerName, size) {
+  return '<span class="player-visual-slot" data-player="' + playerName + '" data-size="' + size + '"></span>';
+}
+
+function attachPlayerVisualFallbacks(root) {
+  root.querySelectorAll(".player-visual-slot").forEach(function (slot) {
+    const name = slot.getAttribute("data-player");
+    const size = slot.getAttribute("data-size");
+    const info = typeof PLAYER_DB !== "undefined" ? PLAYER_DB[name] : null;
+    const headshotCls = "player-headshot player-headshot-" + size;
+    const fallbackCls = "player-headshot-fallback player-headshot-fallback-" + size;
+
+    if (!info) {
+      const div = document.createElement("div");
+      div.className = fallbackCls;
+      div.textContent = initials(name);
+      slot.replaceWith(div);
+      return;
+    }
+
+    const wrap = document.createElement("div");
+    wrap.className = "player-visual-wrap player-visual-wrap-" + size;
+
+    const img = document.createElement("img");
+    img.className = headshotCls;
+    img.alt = "";
+    img.addEventListener("error", function () {
+      const div = document.createElement("div");
+      div.className = fallbackCls;
+      div.textContent = initials(name);
+      img.replaceWith(div);
+    });
+    img.src = playerHeadshotUrl(info.playerId);
+    wrap.appendChild(img);
+
+    const logoUrl = teamLogoUrl(info.team);
+    if (logoUrl) {
+      const logo = document.createElement("img");
+      logo.className = "team-logo-badge team-logo-badge-" + size;
+      logo.alt = "";
+      logo.addEventListener("error", function () { logo.style.display = "none"; });
+      logo.src = logoUrl;
+      wrap.appendChild(logo);
+    }
+
+    slot.replaceWith(wrap);
   });
 }
 
@@ -128,7 +182,7 @@ function renderPodium() {
   const podium = document.getElementById("podium");
   const podiumTitle = document.getElementById("podium-title");
   const trophies = ["\uD83C\uDFC6", "\uD83C\uDFC6", "\uD83C\uDFC6"];
-  const order = [1, 0, 2];
+  const order = [1, 0, 2]; // display order: 2nd, 1st, 3rd
 
   if (viewMode === "total") {
     podiumTitle.textContent = "Top total value scores";
@@ -167,6 +221,7 @@ function renderPodium() {
       '<div class="podium-trophy">' + trophies[idx] + '</div>' +
       '<div class="podium-medal">' + rank + '</div>' +
       '<div class="p-owner">' + keeper.owner + '</div>' +
+      '<div class="p-player-visual">' + playerVisualHtml(keeper.player, "small") + '</div>' +
       '<div class="p-player">' + keeper.player + '</div>' +
       '<div class="p-score">' + scoreBoxHtml(keeper.valueScore, true) + '</div>' +
       '<div class="podium-base rank-' + rank + '-base"></div>';
@@ -174,6 +229,7 @@ function renderPodium() {
     podium.appendChild(spot);
   });
   attachAvatarFallbacks(podium);
+  attachPlayerVisualFallbacks(podium);
 }
 
 function renderKeeperGrid() {
@@ -219,7 +275,8 @@ function renderKeeperGrid() {
         '<div><div class="eyebrow">' + keeper.season + ' KEEPER</div>' +
         '<div class="team-name">' + keeper.owner + '</div></div>' +
       '</div>' +
-      '<div class="player-name">' + keeper.player + '</div>' +
+      '<div class="player-name-row">' + playerVisualHtml(keeper.player, "small") +
+        '<div class="player-name">' + keeper.player + '</div></div>' +
       '<div class="stat-row">' +
         '<div class="stat-chip"><div class="label">Pick</div><div class="value">' + keeper.pick + '</div></div>' +
         '<div class="stat-chip"><div class="label">ADP</div><div class="value">' + keeper.adp + '</div></div>' +
@@ -229,6 +286,7 @@ function renderKeeperGrid() {
     grid.appendChild(card);
   });
   attachAvatarFallbacks(grid);
+  attachPlayerVisualFallbacks(grid);
 }
 
 function openSpotlight(keeper) {
@@ -243,7 +301,8 @@ function renderSpotlight(keeper) {
       '<div><div class="eyebrow">' + keeper.season + ' KEEPER</div>' +
       '<div class="team-name">' + keeper.owner + '</div></div>' +
     '</div>' +
-    '<div class="player-name">' + keeper.player + '</div>' +
+    '<div class="player-name-row">' + playerVisualHtml(keeper.player, "large") +
+      '<div class="player-name">' + keeper.player + '</div></div>' +
     '<div class="spotlight-stats">' +
       '<div class="stat-box"><div class="label">Pick</div><div class="val">' + keeper.pick + '</div></div>' +
       '<div class="stat-box"><div class="label">ADP</div><div class="val">' + keeper.adp + '</div></div>' +
@@ -256,6 +315,7 @@ function renderSpotlight(keeper) {
     '<div class="rank-line">Positional rank pending real season stats</div>';
 
   attachAvatarFallbacks(document.getElementById("spotlight-body"));
+  attachPlayerVisualFallbacks(document.getElementById("spotlight-body"));
 
   const pills = document.querySelectorAll(".toggle-pill");
   for (let i = 0; i < pills.length; i++) {
@@ -274,13 +334,17 @@ function openTeamSpotlight(team) {
     '</div>' +
     '<div class="player-name">' + scoreBoxHtml(team.totalValue, true) + '</div>' +
     team.keepers.map(function (k) {
-      return '<div class="stat-row" style="margin-bottom:8px;">' +
-        '<div class="stat-chip" style="text-align:left;flex:2;"><div class="label">' + k.season + '</div><div class="value" style="font-size:15px;">' + k.player + '</div></div>' +
+      return '<div class="stat-row" style="margin-bottom:8px; align-items:center;">' +
+        '<div class="stat-chip" style="text-align:left;flex:2; display:flex; align-items:center; gap:8px;">' +
+          playerVisualHtml(k.player, "tiny") +
+          '<div><div class="label">' + k.season + '</div><div class="value" style="font-size:15px;">' + k.player + '</div></div>' +
+        '</div>' +
         '<div class="stat-chip">' + scoreBoxHtml(k.valueScore, false) + '</div>' +
       '</div>';
     }).join("");
 
   attachAvatarFallbacks(document.getElementById("spotlight-body"));
+  attachPlayerVisualFallbacks(document.getElementById("spotlight-body"));
   document.getElementById("spotlight-overlay").classList.remove("hidden");
 }
 
