@@ -10,7 +10,7 @@ const PLAYER_DB = {
   "Brian Thomas": { playerId: "11631", team: "JAX", position: "WR" },
   "Jayden Daniels": { playerId: "11566", team: "WAS", position: "QB" },
   "Brock Bowers": { playerId: "11604", team: "LV", position: "TE" },
-  "Jordan Addison": { playerId: "9756", team: "MIN", position: "WR" },
+  "Jaxon Smith-Njigba": { playerId: "9488", team: "SEA", position: "WR" },
   "Courtland Sutton": { playerId: "5045", team: "DEN", position: "WR" },
   "Terry McLaurin": { playerId: "5927", team: "WAS", position: "WR" },
   "Tee Higgins": { playerId: "6801", team: "CIN", position: "WR" },
