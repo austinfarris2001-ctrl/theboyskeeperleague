@@ -195,6 +195,266 @@ async function computeSeasonStats(season) {
   return { season: season, teams: teams, bestPerformance: bestPerformance, closestMatchup: closestMatchup };
 }
 
+// ============================================================
+// DRILL-DOWN - clicking a Season Stats card opens a spotlight with 4 tabs:
+// Schedule, Player Stats (points scored only while starting for this team),
+// Awards, and Decisions (optimal lineup vs actual, points left on bench).
+// Sleeper seasons only - ESPN years don't have weekly starter-level data.
+// ============================================================
+
+let allWeeksCache = {}; // season -> array of {week, entries: [...]}
+let leagueMetaCache = {}; // season -> {rosterPositions, rosterIdToOwner, totalTeams}
+
+async function fetchAllWeeksData(season) {
+  if (allWeeksCache[season]) return allWeeksCache[season];
+  const leagueId = LEAGUE_IDS[season];
+  const weekNums = [];
+  for (let w = 1; w <= 18; w++) weekNums.push(w);
+  const results = await Promise.all(weekNums.map(function (w) {
+    return fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/matchups/" + w)
+      .then(function (data) { return { week: w, entries: data || [] }; })
+      .catch(function () { return { week: w, entries: [] }; });
+  }));
+  const played = results.filter(function (r) { return r.entries.length > 0; });
+  allWeeksCache[season] = played;
+  return played;
+}
+
+async function getLeagueMeta(season) {
+  if (leagueMetaCache[season]) return leagueMetaCache[season];
+  const leagueId = LEAGUE_IDS[season];
+  const [leagueInfo, rosters, users] = await Promise.all([
+    fetchJson("https://api.sleeper.app/v1/league/" + leagueId),
+    fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/rosters"),
+    fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/users")
+  ]);
+  const userIdToOwner = {};
+  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); });
+  const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
+  const rosterIdToOwner = {};
+  rosters.forEach(function (r) {
+    rosterIdToOwner[r.roster_id] = userIdToOwner[r.owner_id] || overridesForLeague[r.roster_id] || "Unknown";
+  });
+  const meta = {
+    rosterPositions: leagueInfo.roster_positions || [],
+    rosterIdToOwner: rosterIdToOwner,
+    totalTeams: rosters.length
+  };
+  leagueMetaCache[season] = meta;
+  return meta;
+}
+
+function playerName(pid) {
+  return (typeof PLAYER_NAMES !== "undefined" && PLAYER_NAMES[pid]) || pid;
+}
+function playerPos(pid) {
+  return (typeof PLAYER_POSITIONS !== "undefined" && PLAYER_POSITIONS[pid]) || null;
+}
+
+// Builds this team's week-by-week schedule (opponent, scores, W/L, margin)
+// plus raw starter data per week, reused by the other tabs.
+function buildTeamWeeks(allWeeks, rosterId, rosterIdToOwner) {
+  const teamWeeks = [];
+  allWeeks.forEach(function (wk) {
+    const mine = wk.entries.find(function (e) { return e.roster_id === rosterId; });
+    if (!mine) return;
+    const opp = wk.entries.find(function (e) {
+      return e.matchup_id === mine.matchup_id && e.roster_id !== rosterId;
+    });
+    const myPoints = mine.points || 0;
+    const oppPoints = opp ? (opp.points || 0) : 0;
+    let result = "T";
+    if (myPoints > oppPoints) result = "W";
+    else if (myPoints < oppPoints) result = "L";
+    teamWeeks.push({
+      week: wk.week,
+      myPoints: myPoints,
+      oppPoints: oppPoints,
+      oppOwner: opp ? (rosterIdToOwner[opp.roster_id] || "Unknown") : "Bye",
+      result: result,
+      margin: Math.abs(myPoints - oppPoints),
+      starters: mine.starters || [],
+      playersPoints: mine.players_points || {},
+      allPlayers: mine.players || []
+    });
+  });
+  return teamWeeks;
+}
+
+function computePlayerStarterTotals(teamWeeks) {
+  const totals = {}; // player_id -> {starts, totalPoints}
+  teamWeeks.forEach(function (w) {
+    w.starters.forEach(function (pid) {
+      if (pid === "0" || !pid) return; // Sleeper uses "0" for an empty slot
+      if (!totals[pid]) totals[pid] = { starts: 0, totalPoints: 0 };
+      totals[pid].starts += 1;
+      totals[pid].totalPoints += (w.playersPoints[pid] || 0);
+    });
+  });
+  return totals;
+}
+
+// League-wide average points-per-start by position, computed from the SAME
+// weekly data we already fetched (every team's entries, not just ours) -
+// used as the baseline for "biggest letdown."
+function computeLeaguePositionAverages(allWeeks) {
+  const sums = {}; // position -> {totalPoints, starts}
+  allWeeks.forEach(function (wk) {
+    wk.entries.forEach(function (entry) {
+      const starters = entry.starters || [];
+      const pp = entry.players_points || {};
+      starters.forEach(function (pid) {
+        if (pid === "0" || !pid) return;
+        const pos = playerPos(pid);
+        if (!pos) return;
+        if (!sums[pos]) sums[pos] = { totalPoints: 0, starts: 0 };
+        sums[pos].totalPoints += (pp[pid] || 0);
+        sums[pos].starts += 1;
+      });
+    });
+  });
+  const avgs = {};
+  Object.keys(sums).forEach(function (pos) {
+    avgs[pos] = sums[pos].starts > 0 ? sums[pos].totalPoints / sums[pos].starts : 0;
+  });
+  return avgs;
+}
+
+function computeAwards(teamWeeks, playerTotals, leaguePosAvgs) {
+  if (teamWeeks.length === 0) return null;
+
+  let bestWeek = teamWeeks[0], worstWeek = teamWeeks[0];
+  let closestWin = null, closestLoss = null, biggestBlowoutWin = null, worstBlowoutLoss = null;
+
+  teamWeeks.forEach(function (w) {
+    if (w.myPoints > bestWeek.myPoints) bestWeek = w;
+    if (w.myPoints < worstWeek.myPoints) worstWeek = w;
+    if (w.result === "W") {
+      if (!closestWin || w.margin < closestWin.margin) closestWin = w;
+      if (!biggestBlowoutWin || w.margin > biggestBlowoutWin.margin) biggestBlowoutWin = w;
+    } else if (w.result === "L") {
+      if (!closestLoss || w.margin < closestLoss.margin) closestLoss = w;
+      if (!worstBlowoutLoss || w.margin > worstBlowoutLoss.margin) worstBlowoutLoss = w;
+    }
+  });
+
+  // Streaks
+  let longestWinStreak = 0, longestLossStreak = 0, curW = 0, curL = 0;
+  teamWeeks.forEach(function (w) {
+    if (w.result === "W") { curW++; curL = 0; } else if (w.result === "L") { curL++; curW = 0; } else { curW = 0; curL = 0; }
+    longestWinStreak = Math.max(longestWinStreak, curW);
+    longestLossStreak = Math.max(longestLossStreak, curL);
+  });
+
+  // Consistency: standard deviation of weekly points (lower = more consistent)
+  const scores = teamWeeks.map(function (w) { return w.myPoints; });
+  const mean = scores.reduce(function (a, b) { return a + b; }, 0) / scores.length;
+  const variance = scores.reduce(function (sum, s) { return sum + Math.pow(s - mean, 2); }, 0) / scores.length;
+  const stdDev = Math.sqrt(variance);
+
+  // Best performing player: highest total points while starting for this team
+  let bestPlayer = null;
+  Object.keys(playerTotals).forEach(function (pid) {
+    const t = playerTotals[pid];
+    if (!bestPlayer || t.totalPoints > bestPlayer.totalPoints) {
+      bestPlayer = { pid: pid, name: playerName(pid), totalPoints: t.totalPoints, starts: t.starts };
+    }
+  });
+
+  // Biggest letdown: min 3 starts, most below the league's per-position average per start
+  let letdownPlayer = null;
+  Object.keys(playerTotals).forEach(function (pid) {
+    const t = playerTotals[pid];
+    if (t.starts < 3) return;
+    const pos = playerPos(pid);
+    const leagueAvg = leaguePosAvgs[pos];
+    if (leagueAvg == null) return;
+    const avgPerStart = t.totalPoints / t.starts;
+    const diff = avgPerStart - leagueAvg;
+    if (!letdownPlayer || diff < letdownPlayer.diff) {
+      letdownPlayer = { pid: pid, name: playerName(pid), pos: pos, avgPerStart: avgPerStart, leagueAvg: leagueAvg, diff: diff, starts: t.starts };
+    }
+  });
+
+  return {
+    bestWeek: bestWeek, worstWeek: worstWeek,
+    closestWin: closestWin, closestLoss: closestLoss,
+    biggestBlowoutWin: biggestBlowoutWin, worstBlowoutLoss: worstBlowoutLoss,
+    longestWinStreak: longestWinStreak, longestLossStreak: longestLossStreak,
+    stdDev: stdDev,
+    bestPlayer: bestPlayer, letdownPlayer: letdownPlayer
+  };
+}
+
+// Approximates the optimal starting lineup for one week: fills mandatory
+// position slots with the best available player at that position, then
+// fills FLEX slots with the best remaining RB/WR/TE, backfilling if the
+// greedy top-N selection didn't satisfy position minimums. This is a strong
+// approximation, not a guaranteed mathematical optimum in every edge case.
+function computeOptimalLineup(week, rosterPositions) {
+  const required = { QB: 0, RB: 0, WR: 0, TE: 0, K: 0, DEF: 0 };
+  let flexSlots = 0;
+  rosterPositions.forEach(function (slot) {
+    if (slot === "FLEX") flexSlots++;
+    else if (required.hasOwnProperty(slot)) required[slot]++;
+  });
+
+  const available = week.allPlayers.map(function (pid) {
+    return { pid: pid, pos: playerPos(pid), points: week.playersPoints[pid] || 0 };
+  }).filter(function (p) { return p.pos; });
+
+  let total = 0;
+  const used = new Set();
+
+  ["QB", "K", "DEF"].forEach(function (pos) {
+    const pool = available.filter(function (p) { return p.pos === pos && !used.has(p.pid); })
+      .sort(function (a, b) { return b.points - a.points; });
+    for (let i = 0; i < required[pos] && i < pool.length; i++) {
+      total += pool[i].points;
+      used.add(pool[i].pid);
+    }
+  });
+
+  // RB/WR/TE + FLEX: greedy top-N with backfill to satisfy minimums
+  const flexEligible = available.filter(function (p) {
+    return (p.pos === "RB" || p.pos === "WR" || p.pos === "TE") && !used.has(p.pid);
+  }).sort(function (a, b) { return b.points - a.points; });
+
+  const totalFlexSlots = required.RB + required.WR + required.TE + flexSlots;
+  let selected = flexEligible.slice(0, totalFlexSlots);
+
+  ["RB", "WR", "TE"].forEach(function (pos) {
+    let count = selected.filter(function (p) { return p.pos === pos; }).length;
+    while (count < required[pos]) {
+      // find the best unselected player at this position
+      const candidate = flexEligible.find(function (p) { return p.pos === pos && selected.indexOf(p) === -1; });
+      if (!candidate) break;
+      // drop the lowest-point selected player NOT of this position to make room
+      let dropIdx = -1, dropPoints = Infinity;
+      selected.forEach(function (p, i) {
+        if (p.pos !== pos && p.points < dropPoints) { dropPoints = p.points; dropIdx = i; }
+      });
+      if (dropIdx === -1) break;
+      selected.splice(dropIdx, 1, candidate);
+      count++;
+    }
+  });
+
+  selected.forEach(function (p) { total += p.points; });
+
+  return total;
+}
+
+function computeDecisions(teamWeeks, rosterPositions) {
+  return teamWeeks.map(function (w) {
+    const actual = w.starters.reduce(function (sum, pid) {
+      return sum + (pid !== "0" ? (w.playersPoints[pid] || 0) : 0);
+    }, 0);
+    const optimal = computeOptimalLineup(w, rosterPositions);
+    return { week: w.week, actual: actual, optimal: optimal, leftOnBench: Math.max(0, optimal - actual) };
+  });
+}
+
 async function getSeasonStats(season) {
   if (!seasonCache[season]) {
     seasonCache[season] = await computeSeasonStats(season);
@@ -213,7 +473,9 @@ function buildIndividualRows(allStats) {
         wins: t.wins, losses: t.losses, ties: t.ties,
         pointsFor: t.pointsFor, pointsAgainst: t.pointsAgainst,
         avgPerWeek: t.avgPerWeek,
-        finalRank: t.finalRank, totalTeams: t.totalTeams
+        finalRank: t.finalRank, totalTeams: t.totalTeams,
+        rosterId: t.rosterId, // undefined for ESPN seasons - drill-down is Sleeper-only
+        isEspn: ESPN_SEASONS.indexOf(stats.season) !== -1
       });
     });
   });
@@ -289,7 +551,7 @@ function renderIndividualGrid(rows) {
   sortRows(rows).forEach(function (r) {
     const card = document.createElement("div");
     card.className = "keeper-card";
-    card.style.cursor = "default";
+    card.style.cursor = r.isEspn ? "default" : "pointer";
     card.innerHTML =
       '<div class="card-top">' + avatarHtml(r.owner) +
         '<div><div class="eyebrow">' + r.season + ' \u00b7 ' + r.wins + '-' + r.losses + (r.ties ? '-' + r.ties : '') + '</div>' +
@@ -302,7 +564,11 @@ function renderIndividualGrid(rows) {
       '</div>' +
       '<div class="stat-row" style="margin-top:8px;">' +
         '<div class="stat-chip"><div class="label">Avg / week</div><div class="value">' + r.avgPerWeek.toFixed(1) + '</div></div>' +
-      '</div>';
+      '</div>' +
+      (r.isEspn ? '' : '<div class="empty-note" style="text-align:center;margin-top:8px;">Tap for full breakdown</div>');
+    if (!r.isEspn) {
+      card.addEventListener("click", function () { openDrillDown(r); });
+    }
     grid.appendChild(card);
   });
   attachAvatarFallbacks(grid);
@@ -337,6 +603,164 @@ function renderCumulativeGrid(rows) {
     grid.appendChild(card);
   });
   attachAvatarFallbacks(grid);
+}
+
+// ============================================================
+// DRILL-DOWN MODAL - the actual open/render/tab-switch logic
+// ============================================================
+let drillDownData = null; // cached computed data for the currently-open drill-down
+let activeDrillTab = "schedule";
+
+async function openDrillDown(row) {
+  const overlay = document.getElementById("drill-overlay");
+  const body = document.getElementById("drill-body");
+  overlay.classList.remove("hidden");
+  activeDrillTab = "schedule";
+  body.innerHTML = '<p class="empty-note">Loading full breakdown from Sleeper...</p>';
+
+  try {
+    const [allWeeks, meta] = await Promise.all([
+      fetchAllWeeksData(row.season),
+      getLeagueMeta(row.season)
+    ]);
+    const teamWeeks = buildTeamWeeks(allWeeks, row.rosterId, meta.rosterIdToOwner);
+    const playerTotals = computePlayerStarterTotals(teamWeeks);
+    const leaguePosAvgs = computeLeaguePositionAverages(allWeeks);
+    const awards = computeAwards(teamWeeks, playerTotals, leaguePosAvgs);
+    const decisions = computeDecisions(teamWeeks, meta.rosterPositions);
+
+    drillDownData = { row: row, teamWeeks: teamWeeks, playerTotals: playerTotals, awards: awards, decisions: decisions };
+    renderDrillDown();
+  } catch (e) {
+    body.innerHTML = '<p class="empty-note">Couldn\'t load the full breakdown right now. Try again.</p>';
+    console.error(e);
+  }
+}
+
+function closeDrillDown() {
+  document.getElementById("drill-overlay").classList.add("hidden");
+  drillDownData = null;
+}
+
+function fmtNum(n) { return (n == null ? 0 : n).toFixed(1); }
+
+function renderDrillDown() {
+  if (!drillDownData) return;
+  const d = drillDownData;
+  const body = document.getElementById("drill-body");
+
+  const tabsHtml =
+    '<div class="drill-header">' +
+      '<div class="team-name">' + d.row.owner + '</div>' +
+      '<div class="sub-team-name">' + d.row.teamName + ' \u00b7 ' + d.row.season + '</div>' +
+    '</div>' +
+    '<div class="toggle-row">' +
+      ["schedule", "players", "awards", "decisions"].map(function (tab) {
+        const labels = { schedule: "Schedule", players: "Player Stats", awards: "Awards", decisions: "Decisions" };
+        return '<button class="toggle-pill ' + (activeDrillTab === tab ? "active" : "") + '" data-drill-tab="' + tab + '">' + labels[tab] + '</button>';
+      }).join("") +
+    '</div>' +
+    '<div id="drill-tab-content"></div>';
+
+  body.innerHTML = tabsHtml;
+
+  document.querySelectorAll("[data-drill-tab]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      activeDrillTab = btn.dataset.drillTab;
+      renderDrillDown();
+    });
+  });
+
+  const content = document.getElementById("drill-tab-content");
+  if (activeDrillTab === "schedule") content.innerHTML = renderScheduleTab(d.teamWeeks);
+  else if (activeDrillTab === "players") content.innerHTML = renderPlayersTab(d.playerTotals);
+  else if (activeDrillTab === "awards") content.innerHTML = renderAwardsTab(d.awards);
+  else if (activeDrillTab === "decisions") content.innerHTML = renderDecisionsTab(d.decisions);
+}
+
+function renderScheduleTab(teamWeeks) {
+  if (teamWeeks.length === 0) return '<p class="empty-note">No games played yet.</p>';
+  return teamWeeks.map(function (w) {
+    const resultColor = w.result === "W" ? "var(--green)" : w.result === "L" ? "var(--red)" : "var(--text-mute)";
+    return '<div class="stat-row" style="margin-bottom:8px;align-items:center;">' +
+      '<div class="stat-chip" style="text-align:left;flex:2;">' +
+        '<div class="label">Week ' + w.week + '</div>' +
+        '<div class="value" style="font-size:15px;">vs ' + w.oppOwner + '</div>' +
+      '</div>' +
+      '<div class="stat-chip"><div class="label">Score</div><div class="value" style="font-size:15px;">' + fmtNum(w.myPoints) + ' - ' + fmtNum(w.oppPoints) + '</div></div>' +
+      '<div class="stat-chip"><div class="label" style="color:' + resultColor + ';">' + w.result + '</div><div class="value" style="font-size:15px;">' + fmtNum(w.margin) + '</div></div>' +
+    '</div>';
+  }).join("");
+}
+
+function renderPlayersTab(playerTotals) {
+  const rows = Object.keys(playerTotals).map(function (pid) {
+    return { pid: pid, name: playerName(pid), pos: playerPos(pid) || "", starts: playerTotals[pid].starts, totalPoints: playerTotals[pid].totalPoints };
+  }).sort(function (a, b) { return b.totalPoints - a.totalPoints; });
+
+  if (rows.length === 0) return '<p class="empty-note">No starter data available.</p>';
+
+  return rows.map(function (r) {
+    return '<div class="stat-row" style="margin-bottom:8px;align-items:center;">' +
+      '<div class="stat-chip" style="text-align:left;flex:2;">' +
+        '<div class="label">' + r.pos + '</div>' +
+        '<div class="value" style="font-size:15px;">' + r.name + '</div>' +
+      '</div>' +
+      '<div class="stat-chip"><div class="label">Starts</div><div class="value" style="font-size:15px;">' + r.starts + '</div></div>' +
+      '<div class="stat-chip"><div class="label">Points</div><div class="value" style="font-size:15px;">' + fmtNum(r.totalPoints) + '</div></div>' +
+    '</div>';
+  }).join("");
+}
+
+function renderAwardsTab(awards) {
+  if (!awards) return '<p class="empty-note">No games played yet.</p>';
+
+  function matchupLine(w, label) {
+    if (!w) return "";
+    return '<div class="stat-row" style="margin-bottom:8px;">' +
+      '<div class="stat-chip" style="text-align:left;flex:2;"><div class="label">' + label + '</div><div class="value" style="font-size:14px;">Week ' + w.week + ' vs ' + w.oppOwner + '</div></div>' +
+      '<div class="stat-chip"><div class="label">Score</div><div class="value" style="font-size:14px;">' + fmtNum(w.myPoints) + ' - ' + fmtNum(w.oppPoints) + '</div></div>' +
+    '</div>';
+  }
+  function simpleLine(label, value) {
+    return '<div class="stat-row" style="margin-bottom:8px;">' +
+      '<div class="stat-chip" style="text-align:left;flex:2;"><div class="label">' + label + '</div></div>' +
+      '<div class="stat-chip"><div class="value" style="font-size:14px;">' + value + '</div></div>' +
+    '</div>';
+  }
+
+  let html = "";
+  html += matchupLine(awards.bestWeek, "Best week");
+  html += matchupLine(awards.worstWeek, "Worst week");
+  html += matchupLine(awards.closestWin, "Closest win");
+  html += matchupLine(awards.closestLoss, "Closest loss");
+  html += matchupLine(awards.biggestBlowoutWin, "Biggest blowout win");
+  html += matchupLine(awards.worstBlowoutLoss, "Worst blowout loss");
+  html += simpleLine("Longest win streak", awards.longestWinStreak + " games");
+  html += simpleLine("Longest losing streak", awards.longestLossStreak + " games");
+  html += simpleLine("Consistency (std dev)", fmtNum(awards.stdDev) + " pts - lower is steadier");
+  if (awards.bestPlayer) {
+    html += simpleLine("Best performing player", awards.bestPlayer.name + " (" + fmtNum(awards.bestPlayer.totalPoints) + " pts, " + awards.bestPlayer.starts + " starts)");
+  }
+  if (awards.letdownPlayer) {
+    html += simpleLine("Biggest letdown", awards.letdownPlayer.name + " - " + fmtNum(awards.letdownPlayer.avgPerStart) + " pts/start vs " + fmtNum(awards.letdownPlayer.leagueAvg) + " " + awards.letdownPlayer.pos + " avg");
+  }
+  return html;
+}
+
+function renderDecisionsTab(decisions) {
+  if (decisions.length === 0) return '<p class="empty-note">No games played yet.</p>';
+  const totalLeft = decisions.reduce(function (sum, d) { return sum + d.leftOnBench; }, 0);
+  let html = '<div class="empty-note" style="margin-bottom:10px;">Total points left on the bench this season: ' + fmtNum(totalLeft) + '</div>';
+  html += decisions.map(function (d) {
+    return '<div class="stat-row" style="margin-bottom:8px;align-items:center;">' +
+      '<div class="stat-chip" style="text-align:left;flex:1;"><div class="label">Week ' + d.week + '</div></div>' +
+      '<div class="stat-chip"><div class="label">Actual</div><div class="value" style="font-size:15px;">' + fmtNum(d.actual) + '</div></div>' +
+      '<div class="stat-chip"><div class="label">Optimal</div><div class="value" style="font-size:15px;">' + fmtNum(d.optimal) + '</div></div>' +
+      '<div class="stat-chip"><div class="label">Left on bench</div><div class="value" style="font-size:15px;color:' + (d.leftOnBench > 5 ? "var(--red)" : "var(--text)") + ';">' + fmtNum(d.leftOnBench) + '</div></div>' +
+    '</div>';
+  }).join("");
+  return html;
 }
 
 async function renderAll() {
@@ -427,6 +851,11 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("sort-select").addEventListener("change", function (e) {
     sortKey = e.target.value;
     renderAll();
+  });
+
+  document.getElementById("close-drill").addEventListener("click", closeDrillDown);
+  document.getElementById("drill-overlay").addEventListener("click", function (e) {
+    if (e.target.id === "drill-overlay") closeDrillDown();
   });
 
   const defaultBtn = seasonBar.querySelector('[data-season="2025"]');
