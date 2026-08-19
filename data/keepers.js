@@ -13,7 +13,7 @@ const KEEPER_DATA = [
   { season: 2025, owner: "Shivam Patel", player: "Brian Thomas", round: 10, pick: 115, adp: 14, valueScore: 101 },
   { season: 2025, owner: "Tyler Armstrong", player: "Jayden Daniels", round: 11, pick: 122, adp: 31, valueScore: 91 },
   { season: 2025, owner: "Austin Farris", player: "Brock Bowers", round: 9, pick: 97, adp: 16, valueScore: 81 },
-  { season: 2025, owner: "Brayden Armstrong", player: "Jordan Addison", round: 9, pick: 106, adp: 27, valueScore: 79 },
+  { season: 2025, owner: "Brayden Armstrong", player: "Jaxon Smith-Njigba", round: 9, pick: 106, adp: 27, valueScore: 79 },
   { season: 2025, owner: "Alvin Pokel", player: "Courtland Sutton", round: 10, pick: 117, adp: 50, valueScore: 67 },
   { season: 2025, owner: "Braden Galvan", player: "Terry McLaurin", round: 6, pick: 66, adp: 39, valueScore: 27 },
   { season: 2025, owner: "Braeden Sully", player: "Tee Higgins", round: 4, pick: 44, adp: 29, valueScore: 15 },
