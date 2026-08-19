@@ -1,6 +1,9 @@
 let activeSeasonFilter = "all";
 let viewMode = "individual"; // "individual" or "total" - total only applies under All seasons
+let scoreMode = "adp"; // "adp" (pick vs ADP) or "performance" (Points Over Replacement)
 let rankView = "kept";
+let performanceScoreCache = {}; // "season-player" -> VORP score (populated by getPerformanceScore)
+let teamPlacementsForRender = {}; // season -> {owner: {finalRank, totalTeams}} - populated before each render
 
 // Cache of season stats dumps, keyed by season - so switching the toggle or
 // reopening a spotlight doesn't re-fetch the same ~1-2MB season stats file.
@@ -13,6 +16,187 @@ async function fetchSeasonStats(season) {
   const data = await res.json();
   seasonStatsCache[season] = data;
   return data;
+}
+
+// ============================================================
+// TEAM PLACEMENTS - for the gold/silver/bronze/poop trophy badges.
+// Same bracket-parsing approach as Team Stats: real playoff results,
+// not regular-season record.
+// ============================================================
+let placementsCache = {}; // season -> { ownerName: { finalRank, totalTeams } }
+
+function parseBracketPlacements(winnersBracket, losersBracket, totalTeams) {
+  const placements = {};
+  (winnersBracket || []).forEach(function (m) {
+    if (m.p === 1 && m.w != null && m.l != null) {
+      placements[m.w] = 1;
+      placements[m.l] = 2;
+    } else if (m.p === 3 && m.w != null && m.l != null) {
+      placements[m.w] = 3;
+      placements[m.l] = 4;
+    }
+  });
+  if (losersBracket && losersBracket.length > 0) {
+    const maxP = Math.max.apply(null, losersBracket.map(function (m) { return m.p || 0; }));
+    losersBracket.forEach(function (m) {
+      if (m.p === maxP && m.w != null && m.l != null) {
+        placements[m.l] = totalTeams;
+        placements[m.w] = totalTeams - 1;
+      }
+    });
+  }
+  return placements;
+}
+
+async function fetchJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch " + url);
+  return res.json();
+}
+
+async function getTeamPlacements(season) {
+  if (placementsCache[season]) return placementsCache[season];
+  const leagueId = typeof LEAGUE_IDS !== "undefined" ? LEAGUE_IDS[season] : null;
+  if (!leagueId) return {};
+
+  try {
+    const [rosters, users, winnersBracket, losersBracket] = await Promise.all([
+      fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/rosters"),
+      fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/users"),
+      fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/winners_bracket").catch(function () { return []; }),
+      fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/losers_bracket").catch(function () { return []; })
+    ]);
+
+    const userIdToOwner = {};
+    users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); });
+    const overridesForLeague = (typeof ROSTER_OWNER_OVERRIDES !== "undefined" && ROSTER_OWNER_OVERRIDES[leagueId]) || {};
+    const rosterIdToOwner = {};
+    rosters.forEach(function (r) {
+      rosterIdToOwner[r.roster_id] = userIdToOwner[r.owner_id] || overridesForLeague[r.roster_id] || "Unknown";
+    });
+
+    const totalTeams = rosters.length;
+    const placements = parseBracketPlacements(winnersBracket, losersBracket, totalTeams);
+
+    const result = {};
+    rosters.forEach(function (r) {
+      const owner = rosterIdToOwner[r.roster_id];
+      result[owner] = { finalRank: placements[r.roster_id] || null, totalTeams: totalTeams };
+    });
+    placementsCache[season] = result;
+    return result;
+  } catch (e) {
+    return {};
+  }
+}
+
+function placementBadgeHtml(finalRank, totalTeams) {
+  if (!finalRank || !totalTeams) return "";
+  if (finalRank === 1) return '<span class="placement-badge" title="Champion">\uD83E\uDD47</span>';
+  if (finalRank === 2) return '<span class="placement-badge" title="Runner-up">\uD83E\uDD48</span>';
+  if (finalRank === 3) return '<span class="placement-badge" title="Third place">\uD83E\uDD49</span>';
+  if (finalRank === totalTeams) return '<span class="placement-badge" title="Last place">\uD83D\uDCA9</span>';
+  return "";
+}
+
+// ============================================================
+// PERFORMANCE MODE - Points Over Replacement (VORP).
+// Instead of ranking a player against everyone at their position, we compare
+// them to "replacement level" - the last player who'd be a starter in a
+// league like ours. That baseline is tied to how many starting slots exist
+// per position (not the size of the position pool), which is what avoids
+// unfairly favoring positions with more total players.
+//
+// Assumption: 2 FLEX slots are split evenly across RB/WR/TE (2/3 of a slot
+// each) since Sleeper doesn't track which position actually filled a given
+// FLEX spot. This is a simplification - adjust STARTER_SLOTS/FLEX_SLOTS
+// below if you want a different split.
+// ============================================================
+const STARTER_SLOTS = { QB: 1, RB: 2, WR: 2, TE: 1 };
+const FLEX_SLOTS = 2;
+const FLEX_ELIGIBLE = ["RB", "WR", "TE"];
+
+const SEASON_TEAM_COUNTS = { 2025: 12, 2026: 10 };
+
+function replacementRank(position, season) {
+  const teams = SEASON_TEAM_COUNTS[season] || 12;
+  const flexShare = FLEX_SLOTS / FLEX_ELIGIBLE.length;
+  const slots = STARTER_SLOTS[position] + (FLEX_ELIGIBLE.indexOf(position) >= 0 ? flexShare : 0);
+  return Math.round(teams * slots);
+}
+
+let performanceBaselineCache = {}; // "season-position" -> replacement points value
+
+async function getReplacementPoints(position, season) {
+  const key = season + "-" + position;
+  if (performanceBaselineCache[key] != null) return performanceBaselineCache[key];
+
+  let statsDump;
+  try {
+    statsDump = await fetchSeasonStats(season);
+  } catch (e) {
+    return null;
+  }
+
+  const pool = [];
+  for (const pid in PLAYER_POSITIONS) {
+    if (PLAYER_POSITIONS[pid] !== position) continue;
+    const s = statsDump[pid];
+    if (s && typeof s.pts_ppr === "number") pool.push(s.pts_ppr);
+  }
+  pool.sort(function (a, b) { return b - a; });
+
+  const rank = replacementRank(position, season);
+  const baseline = pool[rank - 1]; // 0-indexed
+  performanceBaselineCache[key] = baseline != null ? baseline : null;
+  return performanceBaselineCache[key];
+}
+
+// Returns the VORP score for a keeper's player in their kept season, or null
+// if stats aren't available yet (e.g. season still in progress). Also writes
+// into performanceScoreCache so render functions can read it synchronously.
+async function getPerformanceScore(keeper) {
+  const cacheKey = keeper.season + "-" + keeper.player;
+  if (performanceScoreCache[cacheKey] !== undefined) return performanceScoreCache[cacheKey];
+
+  const info = typeof PLAYER_DB !== "undefined" ? PLAYER_DB[keeper.player] : null;
+  if (!info || !info.position) {
+    performanceScoreCache[cacheKey] = null;
+    return null;
+  }
+
+  let statsDump;
+  try {
+    statsDump = await fetchSeasonStats(keeper.season);
+  } catch (e) {
+    performanceScoreCache[cacheKey] = null;
+    return null;
+  }
+  const playerPoints = statsDump[info.playerId] && statsDump[info.playerId].pts_ppr;
+  if (playerPoints == null) {
+    performanceScoreCache[cacheKey] = null;
+    return null;
+  }
+
+  const replacementPoints = await getReplacementPoints(info.position, keeper.season);
+  if (replacementPoints == null) {
+    performanceScoreCache[cacheKey] = null;
+    return null;
+  }
+
+  const score = Math.round((playerPoints - replacementPoints) * 10) / 10;
+  performanceScoreCache[cacheKey] = score;
+  return score;
+}
+
+// Reads whichever score is currently active (ADP value score or cached
+// Performance/VORP score) for display and sorting - synchronous, so it must
+// be called after the relevant async fetches have already completed.
+function getDisplayScore(keeper) {
+  if (scoreMode === "adp") return keeper.valueScore;
+  const cacheKey = keeper.season + "-" + keeper.player;
+  const cached = performanceScoreCache[cacheKey];
+  return typeof cached === "number" ? cached : null;
 }
 
 // Computes a player's finish rank at their position for a given season - e.g.
@@ -50,7 +234,8 @@ function getTeamTotals() {
     if (!totals[k.owner]) {
       totals[k.owner] = { owner: k.owner, totalValue: 0, keepers: [] };
     }
-    totals[k.owner].totalValue += k.valueScore;
+    const score = getDisplayScore(k);
+    totals[k.owner].totalValue += (score == null ? 0 : score);
     totals[k.owner].keepers.push(k);
   });
   return Object.values(totals)
@@ -217,7 +402,13 @@ function attachPlayerVisualFallbacks(root) {
 function getFiltered() {
   return KEEPER_DATA.filter(function (k) {
     return activeSeasonFilter === "all" || k.season === activeSeasonFilter;
-  }).sort(function (a, b) { return b.valueScore - a.valueScore; });
+  }).sort(function (a, b) {
+    const sa = getDisplayScore(a), sb = getDisplayScore(b);
+    if (sa == null && sb == null) return 0;
+    if (sa == null) return 1;
+    if (sb == null) return -1;
+    return sb - sa;
+  });
 }
 
 function renderPodium() {
@@ -250,22 +441,24 @@ function renderPodium() {
     return;
   }
 
-  podiumTitle.textContent = "Top value scores";
+  podiumTitle.textContent = scoreMode === "performance" ? "Top performance scores" : "Top value scores";
   const top3 = getFiltered().slice(0, 3);
   podium.innerHTML = "";
   order.forEach(function (idx) {
     const keeper = top3[idx];
     if (!keeper) return;
     const rank = idx + 1;
+    const score = getDisplayScore(keeper);
+    const placement = (teamPlacementsForRender[keeper.season] || {})[keeper.owner] || {};
     const spot = document.createElement("div");
     spot.className = "podium-spot rank-" + rank;
     spot.innerHTML =
       '<div class="podium-trophy">' + trophies[idx] + '</div>' +
       '<div class="podium-medal">' + rank + '</div>' +
-      '<div class="p-owner">' + keeper.owner + '</div>' +
+      '<div class="p-owner">' + keeper.owner + ' ' + placementBadgeHtml(placement.finalRank, placement.totalTeams) + '</div>' +
       '<div class="p-player-visual">' + playerVisualHtml(keeper.player, "small") + '</div>' +
       '<div class="p-player">' + keeper.player + '</div>' +
-      '<div class="p-score">' + scoreBoxHtml(keeper.valueScore, true) + '</div>' +
+      '<div class="p-score">' + (score == null ? '<span class="empty-note">-</span>' : scoreBoxHtml(score, true)) + '</div>' +
       '<div class="podium-base rank-' + rank + '-base"></div>';
     spot.addEventListener("click", function () { openSpotlight(keeper); });
     podium.appendChild(spot);
@@ -312,10 +505,12 @@ function renderKeeperGrid() {
   filtered.forEach(function (keeper) {
     const card = document.createElement("div");
     card.className = "keeper-card";
+    const score = getDisplayScore(keeper);
+    const placement = (teamPlacementsForRender[keeper.season] || {})[keeper.owner] || {};
     card.innerHTML =
       '<div class="card-top">' + avatarHtml(keeper.owner, "small") +
         '<div><div class="eyebrow">' + keeper.season + ' KEEPER</div>' +
-        '<div class="team-name">' + keeper.owner + '</div></div>' +
+        '<div class="team-name">' + keeper.owner + ' ' + placementBadgeHtml(placement.finalRank, placement.totalTeams) + '</div></div>' +
       '</div>' +
       '<div class="player-name-row">' + playerVisualHtml(keeper.player, "small") +
         '<div class="player-name">' + keeper.player + '</div></div>' +
@@ -323,7 +518,7 @@ function renderKeeperGrid() {
         '<div class="stat-chip"><div class="label">Pick</div><div class="value">' + keeper.pick + '</div></div>' +
         '<div class="stat-chip"><div class="label">ADP</div><div class="value">' + keeper.adp + '</div></div>' +
       '</div>' +
-      '<div class="value-score">' + scoreBoxHtml(keeper.valueScore, true) + '</div>';
+      '<div class="value-score">' + (score == null ? '<span class="empty-note">Stats not available yet</span>' : scoreBoxHtml(score, true)) + '</div>';
     card.addEventListener("click", function () { openSpotlight(keeper); });
     grid.appendChild(card);
   });
@@ -339,18 +534,23 @@ function openSpotlight(keeper) {
 
 async function renderSpotlight(keeper) {
   const targetSeason = rankView === "kept" ? keeper.season : keeper.season - 1;
+  const placement = (teamPlacementsForRender[keeper.season] || {})[keeper.owner] || {};
+  const initialScore = scoreMode === "adp" ? keeper.valueScore : getDisplayScore(keeper);
+  const valueBoxHtml = initialScore == null
+    ? '<span id="value-box-loading" style="font-size:12px;color:var(--text-mute);">loading...</span>'
+    : scoreBoxHtml(initialScore, false);
 
   document.getElementById("spotlight-body").innerHTML =
     '<div class="spotlight-top">' + avatarHtml(keeper.owner, "large") +
       '<div><div class="eyebrow">' + keeper.season + ' KEEPER</div>' +
-      '<div class="team-name">' + keeper.owner + '</div></div>' +
+      '<div class="team-name">' + keeper.owner + ' ' + placementBadgeHtml(placement.finalRank, placement.totalTeams) + '</div></div>' +
     '</div>' +
     '<div class="player-name-row">' + playerVisualHtml(keeper.player, "large") +
       '<div class="player-name">' + keeper.player + '</div></div>' +
     '<div class="spotlight-stats">' +
       '<div class="stat-box"><div class="label">Pick</div><div class="val">' + keeper.pick + '</div></div>' +
       '<div class="stat-box"><div class="label">ADP</div><div class="val">' + keeper.adp + '</div></div>' +
-      '<div class="stat-box"><div class="label">Value</div><div class="val">' + scoreBoxHtml(keeper.valueScore, false) + '</div></div>' +
+      '<div class="stat-box"><div class="label">' + (scoreMode === "performance" ? "VORP" : "Value") + '</div><div class="val" id="value-box-val">' + valueBoxHtml + '</div></div>' +
     '</div>' +
     '<div class="toggle-row">' +
       '<button class="toggle-pill ' + (rankView === "kept" ? "active" : "") + '" data-view="kept">Kept-year stats</button>' +
@@ -366,6 +566,14 @@ async function renderSpotlight(keeper) {
     pills[i].addEventListener("click", function () {
       rankView = this.dataset.view;
       renderSpotlight(keeper);
+    });
+  }
+
+  if (scoreMode === "performance" && initialScore == null) {
+    getPerformanceScore(keeper).then(function (score) {
+      const valBox = document.getElementById("value-box-val");
+      if (!valBox) return;
+      valBox.innerHTML = score == null ? "N/A" : scoreBoxHtml(score, false);
     });
   }
 
@@ -414,7 +622,30 @@ function closeSpotlight() {
   document.getElementById("spotlight-overlay").classList.add("hidden");
 }
 
-function renderAll() {
+async function renderAll() {
+  const grid = document.getElementById("keeper-grid");
+  grid.innerHTML = '<p class="empty-note">Loading...</p>';
+
+  // Trophies always show regardless of ADP/Performance mode - fetch placements
+  // for every season currently in view.
+  const seasonsInView = activeSeasonFilter === "all"
+    ? Array.from(new Set(KEEPER_DATA.map(function (k) { return k.season; })))
+    : [activeSeasonFilter];
+  const placementResults = await Promise.all(seasonsInView.map(function (s) {
+    return getTeamPlacements(s).then(function (p) { return [s, p]; });
+  }));
+  teamPlacementsForRender = {};
+  placementResults.forEach(function (pair) { teamPlacementsForRender[pair[0]] = pair[1]; });
+
+  // In Performance mode, pre-fetch every visible keeper's VORP score so
+  // sorting/podium/cards can all read from cache synchronously.
+  if (scoreMode === "performance" && viewMode !== "total") {
+    const relevant = activeSeasonFilter === "all" ? KEEPER_DATA : KEEPER_DATA.filter(function (k) { return k.season === activeSeasonFilter; });
+    await Promise.all(relevant.map(getPerformanceScore));
+  } else if (scoreMode === "performance" && viewMode === "total") {
+    await Promise.all(KEEPER_DATA.map(getPerformanceScore));
+  }
+
   renderPodium();
   renderKeeperGrid();
 }
@@ -450,6 +681,15 @@ document.addEventListener("DOMContentLoaded", function () {
       modeBtns.forEach(function (b) { b.classList.remove("active"); });
       btn.classList.add("active");
       viewMode = btn.dataset.mode;
+      renderAll();
+    });
+  });
+
+  document.querySelectorAll("[data-score-mode]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll("[data-score-mode]").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      scoreMode = btn.dataset.scoreMode;
       renderAll();
     });
   });
