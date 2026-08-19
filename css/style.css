@@ -163,10 +163,12 @@ nav a.active, nav a:hover { color: var(--blue); }
 .spotlight-card {
   background: var(--panel); border: 3px solid var(--blue); border-radius: 16px;
   padding: 24px; max-width: 420px; width: 100%; box-shadow: 0 0 30px rgba(47,195,255,0.2);
+  max-height: 85vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
 .spotlight-card .close-btn {
-  float: right; background: none; border: none; color: var(--text-mute);
+  float: right; background: var(--panel); border: none; color: var(--text-mute);
   font-size: 20px; cursor: pointer; line-height: 1;
+  position: sticky; top: 0; z-index: 2; padding: 4px 6px; border-radius: 6px;
 }
 .spotlight-top { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
 .spotlight-avatar {
@@ -240,7 +242,10 @@ nav a.active, nav a:hover { color: var(--blue); }
   .podium-medal { margin-bottom: 0; }
 
   .spotlight-overlay { padding: 0; align-items: flex-end; }
-  .spotlight-card { max-width: none; width: 100%; border-radius: 16px 16px 0 0; padding: 22px 18px; }
+  .spotlight-card {
+    max-width: none; width: 100%; border-radius: 16px 16px 0 0; padding: 22px 18px;
+    max-height: 88vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
   .spotlight-card .player-name { font-size: 24px; }
   .spotlight-stats .stat-box .val { font-size: 20px; }
 }
