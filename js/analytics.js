@@ -359,7 +359,7 @@ async function renderLuckFactor() {
 const H2H_SHORT_NAME_OVERRIDES = {
   "Tyler Ahrens": "Ahrens", "Tyler Armstrong": "Armstrong",
   "Austin Farris": "Farris", "Austin Castro": "Castro",
-  "Michael Hoffa": "Hoffa"
+  "Michael Hoffa": "Hoffa", "Sydney & Olivia": "MooreCok"
 };
 function h2hShortName(owner) {
   return H2H_SHORT_NAME_OVERRIDES[owner] || owner.split(" ")[0];
