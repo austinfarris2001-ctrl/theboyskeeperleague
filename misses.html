@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <title>Analytics - The Boys Keeper League</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+.h2h-table { overflow-x: auto; }
+.h2h-grid { display: grid; gap: 3px; min-width: fit-content; }
+.h2h-cell {
+  min-width: 64px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; font-size: 12px; font-weight: 700; border: 1.5px solid var(--border);
+}
+.h2h-header { background: var(--panel-2); font-size: 10px; font-weight: 800; color: var(--blue); padding: 4px; text-align: center; }
+.analytics-row {
+  display: flex; align-items: center; gap: 12px; background: var(--panel);
+  border: 2px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
+}
+.analytics-rank { font-size: 15px; font-weight: 800; color: var(--text-mute); width: 24px; flex-shrink: 0; }
+.analytics-main { flex: 1; min-width: 0; }
+.analytics-title-line { font-size: 14px; font-weight: 700; color: var(--text); }
+.analytics-sub-line { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
+.analytics-value { font-size: 16px; font-weight: 800; flex-shrink: 0; }
+</style>
 </head>
 <body>
 <div class="page">
@@ -17,7 +35,31 @@
       <a href="misses.html" class="active">Analytics</a>
     </nav>
   </div>
-  <p class="empty-note">Coming soon: biggest misses (players who fell way further than they should've), plus draft grades and other league-wide analysis.</p>
+
+  <div class="filter-bar" id="analytics-tab-bar">
+    <button class="filter-btn active" data-tab="misses">Biggest Misses</button>
+    <button class="filter-btn" data-tab="draftgrades">Draft Grades</button>
+    <button class="filter-btn" data-tab="luck">Luck Factor</button>
+    <button class="filter-btn" data-tab="h2h">Head-to-Head</button>
+    <button class="filter-btn" data-tab="tendencies">Draft Tendencies</button>
+    <button class="filter-btn" data-tab="keeperhits">Keeper Hit Rate</button>
+    <button class="filter-btn" data-tab="roundvalue">Value by Round</button>
+    <button class="filter-btn" data-tab="consistency">Consistency</button>
+  </div>
+
+  <div id="analytics-loading" class="empty-note">Loading...</div>
+  <div id="analytics-content"></div>
+
 </div>
+
+<script src="data/owners.js"></script>
+<script src="data/espn-draft.js"></script>
+<script src="data/espn-history.js"></script>
+<script src="data/adp-data.js"></script>
+<script src="data/player-positions.js"></script>
+<script src="data/player-names.js"></script>
+<script src="data/players.js"></script>
+<script src="data/keepers.js"></script>
+<script src="js/analytics.js"></script>
 </body>
 </html>
