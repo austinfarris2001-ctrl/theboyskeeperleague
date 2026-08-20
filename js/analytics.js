@@ -210,47 +210,113 @@ async function renderMisses() {
   }).join("");
 }
 
-async function renderDraftGrades() {
-  const bySeasonOwner = await computeDraftGrades();
-  const allTime = {};
-  Object.keys(bySeasonOwner).forEach(function (season) {
-    Object.keys(bySeasonOwner[season]).forEach(function (owner) {
-      allTime[owner] = allTime[owner] || { totalVorp: 0, classes: 0 };
-      allTime[owner].totalVorp += bySeasonOwner[season][owner].totalVorp;
-      allTime[owner].classes += 1;
+let draftGradesData = null;
+let draftGradesYear = "all";
+function renderDraftGradesFilterBar() {
+  const bar = document.getElementById("draftgrades-year-bar");
+  if (!bar) return;
+  const years = Object.keys(draftGradesData || {}).sort(function (a, b) { return b - a; });
+  bar.innerHTML = '<button class="filter-btn small-btn ' + (draftGradesYear === "all" ? "active" : "") + '" data-dg-year="all">All-time</button>' +
+    years.map(function (y) { return '<button class="filter-btn small-btn ' + (String(draftGradesYear) === y ? "active" : "") + '" data-dg-year="' + y + '">' + y + '</button>'; }).join("");
+  bar.querySelectorAll("[data-dg-year]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      draftGradesYear = btn.dataset.dgYear === "all" ? "all" : Number(btn.dataset.dgYear);
+      document.getElementById("analytics-content").innerHTML = renderDraftGradesBody();
+      attachAvatarFallbacks(document.getElementById("analytics-content"));
+      renderDraftGradesFilterBar();
     });
   });
-  const allTimeRanked = Object.keys(allTime).map(function (owner) {
-    return { owner: owner, avgVorp: Math.round((allTime[owner].totalVorp / allTime[owner].classes) * 10) / 10, classes: allTime[owner].classes };
-  }).sort(function (a, b) { return b.avgVorp - a.avgVorp; });
-
-  let html = '<div class="podium-title" style="margin-bottom:10px;">All-time avg draft class VORP</div>';
-  html += allTimeRanked.map(function (o, i) {
-    return row(i + 1, o.owner, o.owner, o.classes + ' draft classes', (o.avgVorp > 0 ? "+" : "") + o.avgVorp, o.avgVorp >= 0 ? "var(--green)" : "var(--red)");
-  }).join("");
-
-  html += '<div class="podium-title" style="margin:20px 0 10px;">By season</div>';
-  Object.keys(bySeasonOwner).sort(function (a, b) { return b - a; }).forEach(function (season) {
-    const ranked = Object.keys(bySeasonOwner[season]).map(function (owner) {
-      return { owner: owner, totalVorp: Math.round(bySeasonOwner[season][owner].totalVorp * 10) / 10 };
-    }).sort(function (a, b) { return b.totalVorp - a.totalVorp; });
-    html += '<div class="analytics-sub-line" style="margin:10px 0 4px;font-weight:700;">' + season + '</div>';
-    html += ranked.map(function (o, i) {
+}
+function renderDraftGradesBody() {
+  const bySeasonOwner = draftGradesData;
+  if (draftGradesYear === "all") {
+    const allTime = {};
+    Object.keys(bySeasonOwner).forEach(function (season) {
+      Object.keys(bySeasonOwner[season]).forEach(function (owner) {
+        allTime[owner] = allTime[owner] || { totalVorp: 0, classes: 0 };
+        allTime[owner].totalVorp += bySeasonOwner[season][owner].totalVorp;
+        allTime[owner].classes += 1;
+      });
+    });
+    const ranked = Object.keys(allTime).map(function (owner) {
+      return { owner: owner, avgVorp: Math.round((allTime[owner].totalVorp / allTime[owner].classes) * 10) / 10, classes: allTime[owner].classes };
+    }).sort(function (a, b) { return b.avgVorp - a.avgVorp; });
+    return '<p class="empty-note" style="margin-bottom:10px;">Sleeper seasons only. All-time average draft class VORP.</p>' +
+      ranked.map(function (o, i) {
+        return row(i + 1, o.owner, o.owner, o.classes + ' draft classes', (o.avgVorp > 0 ? "+" : "") + o.avgVorp, o.avgVorp >= 0 ? "var(--green)" : "var(--red)");
+      }).join("");
+  }
+  const seasonData = bySeasonOwner[draftGradesYear] || {};
+  const ranked = Object.keys(seasonData).map(function (owner) {
+    return { owner: owner, totalVorp: Math.round(seasonData[owner].totalVorp * 10) / 10 };
+  }).sort(function (a, b) { return b.totalVorp - a.totalVorp; });
+  return '<p class="empty-note" style="margin-bottom:10px;">' + draftGradesYear + ' draft class grades.</p>' +
+    ranked.map(function (o, i) {
       return row(i + 1, o.owner, o.owner, null, (o.totalVorp > 0 ? "+" : "") + o.totalVorp, o.totalVorp >= 0 ? "var(--green)" : "var(--red)");
     }).join("");
-  });
-  return html;
+}
+async function renderDraftGrades() {
+  if (!draftGradesData) draftGradesData = await computeDraftGrades();
+  renderDraftGradesFilterBar();
+  return renderDraftGradesBody();
 }
 
+let luckFactorData = null;
+let luckFactorYear = "all";
+function renderLuckFilterBar() {
+  const bar = document.getElementById("luck-year-bar");
+  if (!bar) return;
+  const years = SLEEPER_SEASONS.slice().sort(function (a, b) { return b - a; });
+  bar.innerHTML = '<button class="filter-btn small-btn ' + (luckFactorYear === "all" ? "active" : "") + '" data-luck-year="all">All-time</button>' +
+    years.map(function (y) { return '<button class="filter-btn small-btn ' + (luckFactorYear === y ? "active" : "") + '" data-luck-year="' + y + '">' + y + '</button>'; }).join("");
+  bar.querySelectorAll("[data-luck-year]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      luckFactorYear = btn.dataset.luckYear === "all" ? "all" : Number(btn.dataset.luckYear);
+      document.getElementById("analytics-content").innerHTML = renderLuckFactorBody();
+      attachAvatarFallbacks(document.getElementById("analytics-content"));
+      renderLuckFilterBar();
+    });
+  });
+}
+function renderLuckFactorBody() {
+  let rows = luckFactorData;
+  let note = "Sleeper seasons only (2023-2026).";
+  if (luckFactorYear === "all") {
+    const byOwner = {};
+    rows.forEach(function (r) {
+      byOwner[r.owner] = byOwner[r.owner] || { actualWins: 0, expectedWins: 0 };
+      byOwner[r.owner].actualWins += r.actualWins;
+      byOwner[r.owner].expectedWins += r.expectedWins;
+    });
+    rows = Object.keys(byOwner).map(function (owner) {
+      const o = byOwner[owner];
+      return { owner: owner, season: "All-time", actualWins: o.actualWins, expectedWins: Math.round(o.expectedWins * 10) / 10, luck: Math.round((o.actualWins - o.expectedWins) * 10) / 10 };
+    });
+  } else {
+    rows = rows.filter(function (r) { return r.season === luckFactorYear; });
+  }
+  rows = rows.slice().sort(function (a, b) { return b.luck - a.luck; });
+  return '<p class="empty-note" style="margin-bottom:10px;">' + note + '</p>' +
+    rows.map(function (r) {
+      return row(null, r.owner, r.owner, 'Actual wins: ' + r.actualWins + ' \u00b7 Expected: ' + r.expectedWins,
+        (r.luck > 0 ? "+" : "") + r.luck + ' luck', r.luck >= 0 ? "var(--green)" : "var(--red)");
+    }).join("");
+}
 async function renderLuckFactor() {
-  const results = await computeLuckFactor();
-  results.sort(function (a, b) { return b.luck - a.luck; });
-  let html = '<p class="empty-note" style="margin-bottom:10px;">Sleeper seasons only (2023-2026) - needs week-by-week data we don\'t have for the ESPN years.</p>';
-  html += results.map(function (r) {
-    return row(null, r.owner, r.owner + ' - ' + r.season, 'Actual wins: ' + r.actualWins + ' \u00b7 Expected: ' + r.expectedWins,
-      (r.luck > 0 ? "+" : "") + r.luck + ' luck', r.luck >= 0 ? "var(--green)" : "var(--red)");
-  }).join("");
-  return html;
+  if (!luckFactorData) luckFactorData = await computeLuckFactor();
+  renderLuckFilterBar();
+  return renderLuckFactorBody();
+}
+
+// Disambiguates owners who share a first name (multiple Tylers/Austins) by
+// showing their last name instead; everyone else shows first name for space.
+const H2H_SHORT_NAME_OVERRIDES = {
+  "Tyler Ahrens": "Ahrens", "Tyler Armstrong": "Armstrong",
+  "Austin Farris": "Farris", "Austin Castro": "Castro",
+  "Michael Hoffa": "Hoffa"
+};
+function h2hShortName(owner) {
+  return H2H_SHORT_NAME_OVERRIDES[owner] || owner.split(" ")[0];
 }
 
 async function renderHeadToHead() {
@@ -259,9 +325,9 @@ async function renderHeadToHead() {
   let html = '<p class="empty-note" style="margin-bottom:10px;">Sleeper seasons only (2023-2026). Each cell shows the row owner\'s record vs the column owner.</p>';
   html += '<div class="h2h-table"><div class="h2h-grid" style="grid-template-columns:repeat(' + (owners.length + 1) + ',1fr);">';
   html += '<div class="h2h-header"></div>';
-  owners.forEach(function (o) { html += '<div class="h2h-header">' + o.split(" ")[0] + '</div>'; });
+  owners.forEach(function (o) { html += '<div class="h2h-header">' + h2hShortName(o) + '</div>'; });
   owners.forEach(function (rowOwner) {
-    html += '<div class="h2h-header">' + rowOwner.split(" ")[0] + '</div>';
+    html += '<div class="h2h-header">' + h2hShortName(rowOwner) + '</div>';
     owners.forEach(function (colOwner) {
       if (rowOwner === colOwner) { html += '<div class="h2h-cell" style="opacity:0.3;">-</div>'; return; }
       const key = [rowOwner, colOwner].sort().join("|");
@@ -276,14 +342,24 @@ async function renderHeadToHead() {
   return html;
 }
 
+// Skill positions first, then kickers/defense at the back (not alphabetical,
+// which would put DEF and K first)
+const POSITION_ORDER = ["QB", "RB", "WR", "TE", "K", "DEF"];
+function sortByPositionOrder(positions) {
+  return positions.slice().sort(function (a, b) {
+    const ai = POSITION_ORDER.indexOf(a), bi = POSITION_ORDER.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+}
+
 async function renderTendencies() {
   const data = await computeTendencies();
   return Object.keys(data).sort().map(function (owner) {
     const o = data[owner];
-    const posLine = Object.keys(o.avgFirstRound).sort().map(function (pos) {
+    const posLine = sortByPositionOrder(Object.keys(o.avgFirstRound)).map(function (pos) {
       return pos + ': R' + o.avgFirstRound[pos];
     }).join(" \u00b7 ");
-    const mixLine = Object.keys(o.positionCounts).sort().map(function (pos) {
+    const mixLine = sortByPositionOrder(Object.keys(o.positionCounts)).map(function (pos) {
       return pos + ' ' + o.positionCounts[pos];
     }).join(", ");
     return row(null, owner, owner, "First taken - " + posLine, null) +
@@ -337,6 +413,27 @@ async function showTab(tab) {
   activeTab = tab;
   const loading = document.getElementById("analytics-loading");
   const content = document.getElementById("analytics-content");
+
+  document.getElementById("draftgrades-year-bar").style.display = tab === "draftgrades" ? "flex" : "none";
+  document.getElementById("luck-year-bar").style.display = tab === "luck" ? "flex" : "none";
+
+  // draftgrades/luck manage their own re-render on filter change, so always
+  // re-derive their view from already-fetched data instead of a stale cache
+  if (tab === "draftgrades" || tab === "luck") {
+    loading.style.display = "block";
+    loading.textContent = "Crunching numbers across every season... this can take a bit the first time.";
+    content.innerHTML = "";
+    try {
+      const html = await TAB_RENDERERS[tab]();
+      content.innerHTML = html;
+      attachAvatarFallbacks(content);
+      loading.style.display = "none";
+    } catch (e) {
+      loading.textContent = "Couldn't compute this right now.";
+      console.error(e);
+    }
+    return;
+  }
 
   if (tabCache[tab]) {
     content.innerHTML = tabCache[tab];
@@ -392,6 +489,11 @@ async function getPickVorpFlat(pick, seasonPicks, statsDump) {
 }
 
 // ---- Tab 1: Biggest Misses ----
+function isKeeperPick(season, pickNo) {
+  if (typeof KEEPER_DATA === "undefined") return false;
+  return KEEPER_DATA.some(function (k) { return k.season === season && k.pick === pickNo; });
+}
+
 async function computeBiggestMisses() {
   const allMisses = [];
   for (const season of ALL_SEASONS) {
@@ -412,6 +514,7 @@ async function computeBiggestMisses() {
           .slice().sort(function (a, b) { return b.seasonPoints - a.seasonPoints; });
         byPos[pos].forEach(function (p, idx) {
           if (p.seasonPoints == null) return;
+          if (isKeeperPick(season, p.pickNo)) return; // still counts toward draft order above, just not listed as a "find"
           const finishRank = withPoints.indexOf(p) + 1;
           const missScore = (idx + 1) - finishRank;
           if (missScore > 0) allMisses.push(Object.assign({}, p, { draftRank: idx + 1, finishRank: finishRank, missScore: missScore }));
@@ -420,6 +523,7 @@ async function computeBiggestMisses() {
         for (let idx = 0; idx < byPos[pos].length; idx++) {
           const p = byPos[pos][idx];
           if (!p.playerId) continue;
+          if (isKeeperPick(season, p.pickNo)) continue;
           const pts = statsDump[p.playerId] && statsDump[p.playerId].pts_ppr;
           if (pts == null) continue;
           const finishRank = await getPositionalFinishRank(pos, pts, season, statsDump);
@@ -447,16 +551,13 @@ async function computeBiggestMisses() {
   return top;
 }
 
-// ---- Tab 2: Draft Grades ----
+// ---- Tab 2: Draft Grades (Sleeper years only for now) ----
 async function computeDraftGrades() {
   const bySeasonOwner = {};
-  for (const season of ALL_SEASONS) {
+  for (const season of SLEEPER_SEASONS) {
     const picks = await getAllPicksForSeason(season);
-    const isEspn = ESPN_SEASONS.indexOf(season) !== -1;
     let statsDump = null;
-    if (!isEspn) {
-      try { statsDump = await fetchSeasonStats(season); } catch (e) { continue; }
-    }
+    try { statsDump = await fetchSeasonStats(season); } catch (e) { continue; }
     for (const p of picks) {
       const vorp = await getPickVorpFlat(p, picks, statsDump);
       if (vorp == null) continue;
