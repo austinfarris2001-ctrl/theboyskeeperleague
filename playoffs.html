@@ -5,15 +5,35 @@
 <title>Playoff Stats - The Boys Keeper League</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-.bracket-round { margin-bottom: 16px; }
-.bracket-round-title { font-size: 12px; font-weight: 800; color: var(--blue); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.bracket-wrap { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; }
+.bracket-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 190px; flex-shrink: 0; }
+.bracket-round-title {
+  font-size: 11px; font-weight: 800; color: var(--blue); margin-bottom: 8px; text-align: center;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.bracket-round.championship .bracket-round-title { color: #ffd54a; text-shadow: 0 0 10px rgba(255,213,74,0.5); }
 .bracket-match {
   background: var(--panel); border: 2px solid var(--border); border-radius: 10px;
-  padding: 10px 14px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;
+  padding: 6px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 3px;
 }
-.bracket-team { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
-.bracket-team.winner { font-weight: 800; color: var(--green); }
-.bracket-team.loser { color: var(--text-mute); }
+.bracket-match.championship { border-color: #ffd54a; box-shadow: 0 0 14px rgba(255,213,74,0.3); }
+.bracket-team {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 6px;
+  border-radius: 6px; white-space: nowrap;
+}
+.bracket-team .bt-avatar, .bracket-team .bt-avatar-fallback {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; object-fit: cover;
+}
+.bracket-team .bt-avatar-fallback {
+  background: var(--panel-2); display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: var(--blue);
+}
+.bracket-team .bt-name { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.bracket-team .bt-score { font-weight: 700; }
+.bracket-team.winner { background: rgba(57,255,138,0.14); font-weight: 800; color: var(--green); }
+.bracket-team.loser { color: var(--text-mute); opacity: 0.75; }
+.bracket-match.championship .bracket-team.winner { background: rgba(255,213,74,0.16); color: #ffd54a; }
+.bracket-multiweek-note { font-size: 9px; color: var(--text-mute); text-align: center; margin-top: -4px; margin-bottom: 6px; }
 </style>
 </head>
 <body>
