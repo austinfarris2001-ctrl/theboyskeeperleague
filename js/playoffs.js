@@ -302,28 +302,64 @@ function teamCardHtml(t, season) {
   '</div>';
 }
 
+function bracketAvatarHtml(owner) {
+  return '<span class="bracket-avatar-slot" data-owner="' + owner + '"></span>';
+}
+function attachBracketAvatarFallbacks(root) {
+  root.querySelectorAll(".bracket-avatar-slot").forEach(function (slot) {
+    const owner = slot.getAttribute("data-owner");
+    const info = typeof OWNER_AVATARS !== "undefined" ? OWNER_AVATARS[owner] : null;
+    if (!info) {
+      const div = document.createElement("div");
+      div.className = "bt-avatar-fallback";
+      div.textContent = initials(owner);
+      slot.replaceWith(div);
+      return;
+    }
+    const img = document.createElement("img");
+    img.className = "bt-avatar";
+    img.alt = "";
+    img.addEventListener("error", function () {
+      const div = document.createElement("div");
+      div.className = "bt-avatar-fallback";
+      div.textContent = initials(owner);
+      img.replaceWith(div);
+    });
+    img.src = info.type === "url" ? info.value : "https://sleepercdn.com/avatars/thumbs/" + info.value;
+    slot.replaceWith(img);
+  });
+}
+
 function renderBracket(bracketRounds) {
   const rounds = Object.keys(bracketRounds).map(Number).sort(function (a, b) { return a - b; });
   if (rounds.length === 0) return '<p class="empty-note">No bracket data available for this season.</p>';
-  return rounds.map(function (r) {
+
+  const html = '<div class="bracket-wrap">' + rounds.map(function (r) {
     const matches = bracketRounds[r];
-    const roundLabel = (matches.some(function (m) { return m.isFinal; }) ? "Championship" : "Round " + r) +
-      (matches[0] && matches[0].multiWeek ? " (combined multi-week score)" : "");
-    return '<div class="bracket-round">' +
+    const isChamp = matches.some(function (m) { return m.isFinal; });
+    const roundLabel = isChamp ? "\uD83C\uDFC6 Championship" : "Round " + r;
+    return '<div class="bracket-round' + (isChamp ? " championship" : "") + '">' +
       '<div class="bracket-round-title">' + roundLabel + '</div>' +
       matches.map(function (m) {
         const t1Win = m.winner === m.team1, t2Win = m.winner === m.team2;
-        return '<div class="bracket-match">' +
+        return '<div class="bracket-match' + (isChamp ? " championship" : "") + '">' +
+          (m.multiWeek ? '<div class="bracket-multiweek-note">combined score</div>' : '') +
           '<div class="bracket-team ' + (t1Win ? "winner" : m.winner ? "loser" : "") + '">' +
-            '<span>' + m.team1 + '</span><span>' + (m.score1 != null ? m.score1.toFixed(1) : "-") + '</span>' +
+            bracketAvatarHtml(m.team1) +
+            '<span class="bt-name">' + (t1Win ? "\uD83D\uDC51 " : "") + m.team1 + '</span>' +
+            '<span class="bt-score">' + (m.score1 != null ? m.score1.toFixed(1) : "-") + '</span>' +
           '</div>' +
           '<div class="bracket-team ' + (t2Win ? "winner" : m.winner ? "loser" : "") + '">' +
-            '<span>' + m.team2 + '</span><span>' + (m.score2 != null ? m.score2.toFixed(1) : "-") + '</span>' +
+            bracketAvatarHtml(m.team2) +
+            '<span class="bt-name">' + (t2Win ? "\uD83D\uDC51 " : "") + m.team2 + '</span>' +
+            '<span class="bt-score">' + (m.score2 != null ? m.score2.toFixed(1) : "-") + '</span>' +
           '</div>' +
         '</div>';
       }).join("") +
     '</div>';
-  }).join("");
+  }).join("") + '</div>';
+
+  return html;
 }
 
 
@@ -459,6 +495,7 @@ async function renderSeasons() {
 
     content.innerHTML = html;
     attachAvatarFallbacks(content);
+    attachBracketAvatarFallbacks(content);
   } catch (e) {
     loading.style.display = "block";
     loading.textContent = "Couldn't load playoff data right now.";
