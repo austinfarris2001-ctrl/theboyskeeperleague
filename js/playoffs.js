@@ -232,7 +232,7 @@ async function getSleeperPlayoffData(season) {
 async function getEspnPlayoffData(season) {
   const cacheKey = "espn-" + season;
   if (playoffDataCache[cacheKey]) return playoffDataCache[cacheKey];
-  const raw = (typeof ESPN_PLAYOFFS !== "undefined" && ESPN_PLAYOFFS[season]) || { matchups: [], ownerBracket: {} };
+  const raw = (typeof ESPN_PLAYOFFS !== "undefined" && ESPN_PLAYOFFS[season]) || { weeklyMatchups: [], roundMatchups: [], ownerBracket: {} };
   const historyTeams = (typeof ESPN_HISTORY !== "undefined" && ESPN_HISTORY[season]) || [];
   const finalRankByOwner = {};
   historyTeams.forEach(function (t) { finalRankByOwner[t.owner] = t.finalRank; });
@@ -246,13 +246,26 @@ async function getEspnPlayoffData(season) {
       finalRank: finalRankByOwner[owner] || null, totalTeams: totalTeams
     };
   });
-  raw.matchups.forEach(function (m) {
+
+  // Points/games: one entry per ACTUAL week - this is what fixes the
+  // "200+ points per game" bug (a multi-week round's combined total was
+  // previously being counted as a single week).
+  (raw.weeklyMatchups || []).forEach(function (m) {
     [[m.homeOwner, m.homeScore, m.awayScore], [m.awayOwner, m.awayScore, m.homeScore]].forEach(function (t) {
       const stat = teamStats[t[0]];
       if (!stat) return;
       stat.pointsFor += t[1]; stat.pointsAgainst += t[2]; stat.games += 1;
-      if (t[1] > t[2]) stat.wins += 1; else if (t[1] < t[2]) stat.losses += 1; else stat.ties += 1;
     });
+  });
+
+  // Win/loss: one entry per bracket ROUND (may span multiple weeks) - uses
+  // the real combined-total result, exactly matching the Sleeper approach.
+  (raw.roundMatchups || []).forEach(function (m) {
+    const home = teamStats[m.homeOwner], away = teamStats[m.awayOwner];
+    if (!home || !away) return;
+    if (m.winner === "HOME") { home.wins += 1; away.losses += 1; }
+    else if (m.winner === "AWAY") { away.wins += 1; home.losses += 1; }
+    else { home.ties += 1; away.ties += 1; }
   });
 
   const result = { season: season, isEspn: true, teams: Object.values(teamStats), bracketRounds: null };
