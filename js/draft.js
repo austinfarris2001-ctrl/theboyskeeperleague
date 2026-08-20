@@ -91,7 +91,7 @@ async function fetchSeasonStats(season) {
 
 // Same VORP approach as the keeper page - replacement level tied to
 // starter-slot count per position, not raw points or position rank.
-const SEASON_TEAM_COUNTS = { 2023: 10, 2024: 12, 2025: 12, 2026: 10 };
+const SEASON_TEAM_COUNTS = { 2020: 10, 2021: 10, 2022: 12, 2023: 10, 2024: 12, 2025: 12, 2026: 10 };
 const STARTER_SLOTS = { QB: 1, RB: 2, WR: 2, TE: 1 };
 const FLEX_SLOTS = 2;
 const FLEX_ELIGIBLE = ["RB", "WR", "TE"];
@@ -216,6 +216,7 @@ async function resolveEspnBoard(board) {
       const [firstName, ...rest] = raw.name.split(" ");
       board.cellMap[key] = {
         round: raw.round, draft_slot: null, pick_no: raw.overallPick, owner: raw.owner, player_id: null,
+        seasonPoints: raw.seasonPoints != null ? raw.seasonPoints : null,
         metadata: {
           first_name: firstName, last_name: rest.join(" "),
           position: raw.position || null,
@@ -340,6 +341,37 @@ async function computePerformanceData(season, board) {
   return { vorpByPick: vorpByPick };
 }
 
+// ESPN years use their own embedded season point totals (already scored
+// under that league's real settings for that season) instead of Sleeper's
+// stats endpoint - same replacement-level math, self-contained data source.
+function computeEspnPerformanceData(board) {
+  const byPosition = {}; // position -> [points, ...]
+  for (const key in board.cellMap) {
+    const pick = board.cellMap[key];
+    const pos = pick.metadata && pick.metadata.position;
+    if (!pos || pick.seasonPoints == null) continue;
+    if (!byPosition[pos]) byPosition[pos] = [];
+    byPosition[pos].push(pick.seasonPoints);
+  }
+  Object.keys(byPosition).forEach(function (pos) {
+    byPosition[pos].sort(function (a, b) { return b - a; });
+  });
+
+  const vorpByPick = {};
+  for (const key in board.cellMap) {
+    const pick = board.cellMap[key];
+    const pos = pick.metadata && pick.metadata.position;
+    if (!pos || pick.seasonPoints == null) continue;
+    const rank = replacementRank(pos, board.season);
+    if (!rank) continue;
+    const pool = byPosition[pos] || [];
+    const replacement = pool[rank - 1];
+    if (replacement == null) continue;
+    vorpByPick[key] = Math.round((pick.seasonPoints - replacement) * 10) / 10;
+  }
+  return { vorpByPick: vorpByPick };
+}
+
 async function computeValueData(season, board) {
   let adpMap;
   try {
@@ -407,12 +439,11 @@ async function renderDraftBoard() {
     let extraData = null;
     if (colorMode === "performance") {
       if (isEspn) {
-        loading.style.display = "none";
-        boardEl.innerHTML = '<p class="empty-note">Performance/VORP mode isn\'t available for ESPN seasons yet - it needs a name-based crosswalk to Sleeper\'s player stats. Position and Value modes both work for this year.</p>';
-        return;
+        extraData = computeEspnPerformanceData(board);
+      } else {
+        loading.textContent = "Loading season stats for VORP coloring...";
+        extraData = await computePerformanceData(activeSeason, board);
       }
-      loading.textContent = "Loading season stats for VORP coloring...";
-      extraData = await computePerformanceData(activeSeason, board);
     } else if (colorMode === "value") {
       loading.textContent = "Loading ADP data...";
       extraData = await computeValueData(activeSeason, board);
