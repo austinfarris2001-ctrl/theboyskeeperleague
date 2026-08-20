@@ -209,7 +209,7 @@ async function fetchAllWeeksData(season) {
   if (allWeeksCache[season]) return allWeeksCache[season];
   const leagueId = LEAGUE_IDS[season];
   const weekNums = [];
-  for (let w = 1; w <= 18; w++) weekNums.push(w);
+  for (let w = 1; w <= 17; w++) weekNums.push(w); // league's season ends at week 17
   const results = await Promise.all(weekNums.map(function (w) {
     return fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/matchups/" + w)
       .then(function (data) { return { week: w, entries: data || [] }; })
@@ -748,6 +748,33 @@ function renderAwardsTab(awards) {
   return html;
 }
 
+// Color intensity ramp for "points left on bench" - the worse the decision
+// (bigger number), the brighter/hotter the red. Same style of ramp as the
+// keeper page's value-score circles, just red-only since there's no "good"
+// direction here (0 left on bench is neutral/good, not green).
+const BENCH_RED_STOPS = [
+  { v: 0, color: "#8fb8d6" },   // near 0 - neutral, not alarming
+  { v: 5, color: "#c9807a" },   // small miss
+  { v: 15, color: "#e2554a" },  // moderate miss
+  { v: 30, color: "#ff4d3d" },  // big miss
+  { v: 50, color: "#ff2020" }   // brutal miss
+];
+function benchColor(value) {
+  const v = Math.min(Math.abs(value), 50);
+  let lo = BENCH_RED_STOPS[0], hi = BENCH_RED_STOPS[BENCH_RED_STOPS.length - 1];
+  for (let i = 0; i < BENCH_RED_STOPS.length - 1; i++) {
+    if (v >= BENCH_RED_STOPS[i].v && v <= BENCH_RED_STOPS[i + 1].v) {
+      lo = BENCH_RED_STOPS[i]; hi = BENCH_RED_STOPS[i + 1]; break;
+    }
+  }
+  const range = hi.v - lo.v;
+  const t = range === 0 ? 0 : (v - lo.v) / range;
+  const a = lo.color.match(/\w\w/g).map(function (h) { return parseInt(h, 16); });
+  const b = hi.color.match(/\w\w/g).map(function (h) { return parseInt(h, 16); });
+  const mixed = a.map(function (c, i) { return Math.round(c + (b[i] - c) * t); });
+  return "#" + mixed.map(function (c) { return c.toString(16).padStart(2, "0"); }).join("");
+}
+
 function renderDecisionsTab(decisions) {
   if (decisions.length === 0) return '<p class="empty-note">No games played yet.</p>';
   const totalLeft = decisions.reduce(function (sum, d) { return sum + d.leftOnBench; }, 0);
@@ -757,7 +784,7 @@ function renderDecisionsTab(decisions) {
       '<div class="stat-chip" style="text-align:left;flex:1;"><div class="label">Week ' + d.week + '</div></div>' +
       '<div class="stat-chip"><div class="label">Actual</div><div class="value" style="font-size:15px;">' + fmtNum(d.actual) + '</div></div>' +
       '<div class="stat-chip"><div class="label">Optimal</div><div class="value" style="font-size:15px;">' + fmtNum(d.optimal) + '</div></div>' +
-      '<div class="stat-chip"><div class="label">Left on bench</div><div class="value" style="font-size:15px;color:' + (d.leftOnBench > 5 ? "var(--red)" : "var(--text)") + ';">' + fmtNum(d.leftOnBench) + '</div></div>' +
+      '<div class="stat-chip"><div class="label">Left on bench</div><div class="value" style="font-size:16px;font-weight:800;color:' + benchColor(d.leftOnBench) + ';">' + fmtNum(d.leftOnBench) + '</div></div>' +
     '</div>';
   }).join("");
   return html;
