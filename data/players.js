@@ -27,7 +27,8 @@ const PLAYER_DB = {
   "Rashee Rice": { playerId: "10229", team: "KC", position: "WR" },
   "Zay Flowers": { playerId: "9997", team: "BAL", position: "WR" },
   "Tony Pollard": { playerId: "5967", team: "TEN", position: "RB" },
-  "Colston Loveland": { playerId: "12517", team: "CHI", position: "TE" }
+  "Colston Loveland": { playerId: "12517", team: "CHI", position: "TE" },
+  "TreVeyon Henderson": { playerId: "12529", team: "NE", position: "RB" }
 };
 
 // ESPN's team-logo URLs use lowercase abbreviations that mostly match Sleeper's,
