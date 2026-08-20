@@ -82,11 +82,17 @@ async function getSleeperPlayoffData(season) {
   ]);
 
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); });
+  const userIdToTeamName = {};
+  users.forEach(function (u) {
+    userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
+    userIdToTeamName[u.user_id] = (u.metadata && u.metadata.team_name) || null;
+  });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
+  const rosterIdToTeamName = {};
   rosters.forEach(function (r) {
     rosterIdToOwner[r.roster_id] = userIdToOwner[r.owner_id] || overridesForLeague[r.roster_id] || "Unknown";
+    rosterIdToTeamName[r.roster_id] = userIdToTeamName[r.owner_id] || null;
   });
 
   const totalTeams = rosters.length;
@@ -137,7 +143,7 @@ async function getSleeperPlayoffData(season) {
     else if (losersRosterIds.has(r.roster_id)) bracket = "toilet";
     if (!bracket) return; // team didn't participate in either bracket (rare/edge case)
     teamStats[r.roster_id] = {
-      owner: owner, bracket: bracket, wins: 0, losses: 0, ties: 0,
+      owner: owner, teamName: rosterIdToTeamName[r.roster_id], bracket: bracket, wins: 0, losses: 0, ties: 0,
       pointsFor: 0, pointsAgainst: 0, games: 0,
       finalRank: placements[r.roster_id] || null, totalTeams: totalTeams
     };
@@ -235,13 +241,14 @@ async function getEspnPlayoffData(season) {
   const raw = (typeof ESPN_PLAYOFFS !== "undefined" && ESPN_PLAYOFFS[season]) || { weeklyMatchups: [], roundMatchups: [], ownerBracket: {} };
   const historyTeams = (typeof ESPN_HISTORY !== "undefined" && ESPN_HISTORY[season]) || [];
   const finalRankByOwner = {};
-  historyTeams.forEach(function (t) { finalRankByOwner[t.owner] = t.finalRank; });
+  const teamNameByOwner = {};
+  historyTeams.forEach(function (t) { finalRankByOwner[t.owner] = t.finalRank; teamNameByOwner[t.owner] = t.espnTeamName || t.teamName; });
   const totalTeams = historyTeams.length;
 
   const teamStats = {};
   Object.keys(raw.ownerBracket).forEach(function (owner) {
     teamStats[owner] = {
-      owner: owner, bracket: raw.ownerBracket[owner], wins: 0, losses: 0, ties: 0,
+      owner: owner, teamName: teamNameByOwner[owner] || null, bracket: raw.ownerBracket[owner], wins: 0, losses: 0, ties: 0,
       pointsFor: 0, pointsAgainst: 0, games: 0,
       finalRank: finalRankByOwner[owner] || null, totalTeams: totalTeams
     };
@@ -282,7 +289,8 @@ function teamCardHtml(t, season) {
   return '<div class="keeper-card" style="cursor:default;">' +
     '<div class="card-top">' + avatarHtml(t.owner) +
       '<div><div class="eyebrow">' + season + ' \u00b7 ' + record + '</div>' +
-      '<div class="team-name">' + t.owner + ' ' + placementBadge(t.finalRank, t.totalTeams) + '</div></div>' +
+      '<div class="team-name">' + t.owner + ' ' + placementBadge(t.finalRank, t.totalTeams) + '</div>' +
+      (t.teamName ? '<div class="sub-team-name">' + t.teamName + '</div>' : '') + '</div>' +
     '</div>' +
     '<div class="stat-row">' +
       '<div class="stat-chip"><div class="label">Points for</div><div class="value">' + t.pointsFor.toFixed(1) + '</div></div>' +
