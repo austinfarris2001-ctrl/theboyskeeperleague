@@ -35,7 +35,14 @@
   <div class="filter-bar">
     <button id="playoff-select-all-btn" class="filter-btn small-btn">Select all</button>
     <button id="playoff-deselect-all-btn" class="filter-btn small-btn">Deselect all</button>
-    <button id="playoff-career-btn" class="filter-btn small-btn">Career summary</button>
+  </div>
+  <div class="filter-bar" id="playoff-mode-bar">
+    <button class="filter-btn active" data-mode="individual">Individual</button>
+    <button class="filter-btn" data-mode="cumulative">Cumulative</button>
+  </div>
+  <div class="filter-bar" style="align-items:center;">
+    <span style="font-size:13px; color:var(--text-mute);">Sort by:</span>
+    <select id="playoff-sort-select" class="sort-select"></select>
   </div>
 
   <div id="playoff-loading" class="empty-note">Select at least one season above.</div>
