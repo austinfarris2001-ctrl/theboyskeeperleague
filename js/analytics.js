@@ -324,11 +324,29 @@ function renderLuckFactorBody() {
     rows = rows.filter(function (r) { return r.season === luckFactorYear; });
   }
   rows = rows.slice().sort(function (a, b) { return b.luck - a.luck; });
-  return '<p class="empty-note" style="margin-bottom:10px;">' + note + '</p>' +
-    rows.map(function (r) {
-      return row(null, r.owner, r.owner, 'Actual wins: ' + r.actualWins + ' \u00b7 Expected: ' + r.expectedWins,
+
+  let html = '<div class="podium-title" style="margin-bottom:4px;">\uD83D\uDEA8 Fraud Meter \uD83D\uDEA8</div>' +
+    '<p class="empty-note" style="margin-bottom:10px;">#1 = biggest fraud - won way more than their scoring actually deserved.</p>';
+
+  if (rows.length > 0) {
+    const topFraud = rows[0];
+    html += '<div class="analytics-row" style="border-color:#ffd54a;box-shadow:0 0 14px rgba(255,213,74,0.35);">' +
+      avatarHtml(topFraud.owner) +
+      '<div class="analytics-main">' +
+        '<div class="analytics-title-line">\uD83C\uDFC6 Certified Fraud of the ' + (luckFactorYear === "all" ? "Ages" : luckFactorYear) + ': ' + topFraud.owner + '</div>' +
+        '<div class="analytics-sub-line">Won ' + topFraud.actualWins + ' games with only ' + topFraud.expectedWins + ' expected - riding pure luck</div>' +
+      '</div>' +
+      '<div class="analytics-value" style="color:var(--gold, #ffd54a);">+' + topFraud.luck + '</div>' +
+    '</div>';
+  }
+
+  html += '<div class="podium-title" style="margin:20px 0 10px;">Full ranking</div>';
+  html += '<p class="empty-note" style="margin-bottom:10px;">' + note + '</p>' +
+    rows.map(function (r, i) {
+      return row(i + 1, r.owner, r.owner, 'Actual wins: ' + r.actualWins + ' \u00b7 Expected: ' + r.expectedWins,
         (r.luck > 0 ? "+" : "") + r.luck + ' luck', r.luck >= 0 ? "var(--green)" : "var(--red)");
     }).join("");
+  return html;
 }
 async function renderLuckFactor() {
   if (!luckFactorData) luckFactorData = await computeLuckFactor();
