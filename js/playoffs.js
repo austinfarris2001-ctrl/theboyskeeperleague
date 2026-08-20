@@ -9,7 +9,6 @@
 // ============================================================
 
 let selectedPlayoffSeasons = new Set();
-let showingCareer = false;
 const playoffDataCache = {};
 
 async function fetchJson(url) {
@@ -113,6 +112,23 @@ async function getSleeperPlayoffData(season) {
       .catch(function () { return { week: w, entries: [] }; });
   }));
 
+  // Figure out which weeks belong to the same bracket round, since some
+  // rounds (usually the championship) span 2+ weeks combined into one
+  // win/loss - but points still count per-week for averaging purposes.
+  // Heuristic: 1 week per round, with any extra weeks folded into the LAST
+  // round (the common real-world setup: semis are 1 week, championship is 2).
+  const numRounds = Math.max.apply(null, (winnersBracket || []).map(function (m) { return m.r || 1; }).concat([1]));
+  const extraWeeks = Math.max(0, playoffWeeks.length - numRounds);
+  const roundOfWeek = {};
+  let weekIdx = 0;
+  for (let round = 1; round <= numRounds; round++) {
+    const weeksInThisRound = (round === numRounds) ? (1 + extraWeeks) : 1;
+    for (let i = 0; i < weeksInThisRound && weekIdx < playoffWeeks.length; i++) {
+      roundOfWeek[playoffWeeks[weekIdx]] = round;
+      weekIdx++;
+    }
+  }
+
   const teamStats = {};
   rosters.forEach(function (r) {
     const owner = rosterIdToOwner[r.roster_id];
@@ -127,41 +143,79 @@ async function getSleeperPlayoffData(season) {
     };
   });
 
+  // Per-week: always counts separately for points/averages, regardless of
+  // whether the week is part of a multi-week round.
   weekResults.forEach(function (wr) {
+    wr.entries.forEach(function (e) {
+      const t = teamStats[e.roster_id];
+      if (!t) return;
+      t.pointsFor += (e.points || 0);
+      t.games += 1;
+    });
     const byMatchup = {};
     wr.entries.forEach(function (e) { if (e.matchup_id != null) (byMatchup[e.matchup_id] = byMatchup[e.matchup_id] || []).push(e); });
     Object.values(byMatchup).forEach(function (pair) {
       if (pair.length !== 2) return;
       pair.forEach(function (e, i) {
-        const other = pair[1 - i];
         const t = teamStats[e.roster_id];
-        if (!t) return;
-        t.pointsFor += (e.points || 0);
-        t.pointsAgainst += (other.points || 0);
-        t.games += 1;
-        if ((e.points || 0) > (other.points || 0)) t.wins += 1;
-        else if ((e.points || 0) < (other.points || 0)) t.losses += 1;
-        else t.ties += 1;
+        if (t) t.pointsAgainst += (pair[1 - i].points || 0);
       });
     });
   });
 
-  // Bracket visualization data: round -> matches with resolved team names + scores
+  // Per-round: establish each round's roster pairing from its first week,
+  // then sum every week in that round per roster before deciding the
+  // win/loss once for the whole round (not once per week).
+  const roundPairings = {}; // round -> [[rosterA, rosterB], ...]
+  const seenRoundForPairing = {};
+  weekResults.forEach(function (wr) {
+    const round = roundOfWeek[wr.week];
+    if (seenRoundForPairing[round]) return; // pairing already established from an earlier week in this round
+    const byMatchup = {};
+    wr.entries.forEach(function (e) { if (e.matchup_id != null) (byMatchup[e.matchup_id] = byMatchup[e.matchup_id] || []).push(e); });
+    const pairs = Object.values(byMatchup).filter(function (p) { return p.length === 2; })
+      .map(function (p) { return [p[0].roster_id, p[1].roster_id]; });
+    if (pairs.length > 0) { roundPairings[round] = pairs; seenRoundForPairing[round] = true; }
+  });
+
   const scoreByRosterWeek = {};
   weekResults.forEach(function (wr) {
     wr.entries.forEach(function (e) { scoreByRosterWeek[e.roster_id + "-" + wr.week] = e.points || 0; });
   });
+  const weeksByRound = {};
+  playoffWeeks.forEach(function (w) { const r = roundOfWeek[w]; (weeksByRound[r] = weeksByRound[r] || []).push(w); });
+
+  Object.keys(roundPairings).forEach(function (round) {
+    roundPairings[round].forEach(function (pair) {
+      const weeksInRound = weeksByRound[round] || [];
+      let totalA = 0, totalB = 0;
+      weeksInRound.forEach(function (w) {
+        totalA += scoreByRosterWeek[pair[0] + "-" + w] || 0;
+        totalB += scoreByRosterWeek[pair[1] + "-" + w] || 0;
+      });
+      const tA = teamStats[pair[0]], tB = teamStats[pair[1]];
+      if (!tA || !tB) return;
+      if (totalA > totalB) { tA.wins += 1; tB.losses += 1; }
+      else if (totalB > totalA) { tB.wins += 1; tA.losses += 1; }
+      else { tA.ties += 1; tB.ties += 1; }
+    });
+  });
   const bracketRounds = {};
   (winnersBracket || []).forEach(function (m) {
-    const week = playoffStart + (m.r - 1);
+    const weeksInRound = weeksByRound[m.r] || [playoffStart + (m.r - 1)];
+    function roundTotal(rosterId) {
+      if (rosterId == null) return null;
+      return weeksInRound.reduce(function (sum, w) { return sum + (scoreByRosterWeek[rosterId + "-" + w] || 0); }, 0);
+    }
     bracketRounds[m.r] = bracketRounds[m.r] || [];
     bracketRounds[m.r].push({
       team1: m.t1 != null ? rosterIdToOwner[m.t1] : "TBD",
       team2: m.t2 != null ? rosterIdToOwner[m.t2] : "TBD",
-      score1: m.t1 != null ? scoreByRosterWeek[m.t1 + "-" + week] : null,
-      score2: m.t2 != null ? scoreByRosterWeek[m.t2 + "-" + week] : null,
+      score1: roundTotal(m.t1),
+      score2: roundTotal(m.t2),
       winner: m.w != null ? rosterIdToOwner[m.w] : null,
-      isFinal: m.p === 1
+      isFinal: m.p === 1,
+      multiWeek: weeksInRound.length > 1
     });
   });
 
@@ -232,7 +286,8 @@ function renderBracket(bracketRounds) {
   if (rounds.length === 0) return '<p class="empty-note">No bracket data available for this season.</p>';
   return rounds.map(function (r) {
     const matches = bracketRounds[r];
-    const roundLabel = matches.some(function (m) { return m.isFinal; }) ? "Championship" : "Round " + r;
+    const roundLabel = (matches.some(function (m) { return m.isFinal; }) ? "Championship" : "Round " + r) +
+      (matches[0] && matches[0].multiWeek ? " (combined multi-week score)" : "");
     return '<div class="bracket-round">' +
       '<div class="bracket-round-title">' + roundLabel + '</div>' +
       matches.map(function (m) {
@@ -250,17 +305,54 @@ function renderBracket(bracketRounds) {
   }).join("");
 }
 
+
+let playoffViewMode = "individual";
+let playoffSortKey = "pointsFor";
+
+const SORT_OPTIONS = [
+  { key: "pointsFor", label: "Points for" },
+  { key: "pointsAgainst", label: "Points against" },
+  { key: "wins", label: "Wins" },
+  { key: "avgPerWeek", label: "Avg / week" },
+  { key: "finalRank", label: "Final standing" }
+];
+
+function renderSortOptions() {
+  const select = document.getElementById("playoff-sort-select");
+  select.innerHTML = SORT_OPTIONS.map(function (o) {
+    return '<option value="' + o.key + '"' + (o.key === playoffSortKey ? " selected" : "") + '>' + o.label + '</option>';
+  }).join("");
+}
+
+function sortTeams(teams) {
+  const key = playoffSortKey;
+  const ascending = key === "pointsAgainst" || key === "finalRank";
+  return teams.slice().sort(function (a, b) {
+    const av = key === "avgPerWeek" ? (a.games > 0 ? a.pointsFor / a.games : 0) : (a[key] || 0);
+    const bv = key === "avgPerWeek" ? (b.games > 0 ? b.pointsFor / b.games : 0) : (b[key] || 0);
+    return ascending ? av - bv : bv - av;
+  });
+}
+
 async function renderSeasons() {
   const content = document.getElementById("playoff-content");
   const loading = document.getElementById("playoff-loading");
+  const modeBar = document.getElementById("playoff-mode-bar");
+  const sortBar = document.getElementById("playoff-sort-select").closest(".filter-bar");
   const seasons = Array.from(selectedPlayoffSeasons).sort();
 
   if (seasons.length === 0) {
     loading.textContent = "Select at least one season above.";
     loading.style.display = "block";
     content.innerHTML = "";
+    modeBar.style.display = "none";
+    sortBar.style.display = "none";
     return;
   }
+
+  modeBar.style.display = "flex";
+  sortBar.style.display = "flex";
+  renderSortOptions();
 
   loading.style.display = "block";
   loading.textContent = "Loading playoff data...";
@@ -280,75 +372,75 @@ async function renderSeasons() {
       html += '<p class="empty-note" style="margin-bottom:16px;">ESPN doesn\'t give us exact bracket paths for this season - showing playoff-week stats instead.</p>';
     }
 
-    allData.forEach(function (data) {
-      const playoffTeams = data.teams.filter(function (t) { return t.bracket === "playoffs"; });
-      const toiletTeams = data.teams.filter(function (t) { return t.bracket === "toilet"; });
-      html += '<div class="podium-title" style="margin:20px 0 10px;">' + data.season + ' - Playoffs</div>';
-      html += '<div class="keeper-grid">' + playoffTeams.map(function (t) { return teamCardHtml(t, data.season); }).join("") + '</div>';
-      html += '<div class="podium-title" style="margin:20px 0 10px;">' + data.season + ' - Toilet Bowl \uD83D\uDCA9</div>';
-      html += '<div class="keeper-grid">' + toiletTeams.map(function (t) { return teamCardHtml(t, data.season); }).join("") + '</div>';
-    });
+    if (playoffViewMode === "individual") {
+      // flat list of every team-season, split by bracket, sortable together
+      const allTeams = [];
+      allData.forEach(function (data) {
+        data.teams.forEach(function (t) { allTeams.push(Object.assign({ season: data.season }, t)); });
+      });
+      const playoffTeams = sortTeams(allTeams.filter(function (t) { return t.bracket === "playoffs"; }));
+      const toiletTeams = sortTeams(allTeams.filter(function (t) { return t.bracket === "toilet"; }));
+
+      html += '<div class="podium-title" style="margin:20px 0 10px;">Playoffs</div>';
+      html += '<div class="keeper-grid">' + playoffTeams.map(function (t) { return teamCardHtml(t, t.season); }).join("") + '</div>';
+      html += '<div class="podium-title" style="margin:20px 0 10px;">Toilet Bowl \uD83D\uDCA9</div>';
+      html += '<div class="keeper-grid">' + toiletTeams.map(function (t) { return teamCardHtml(t, t.season); }).join("") + '</div>';
+    } else {
+      // cumulative: aggregate per owner across selected seasons, split by bracket
+      const byOwnerPlayoffs = {}, byOwnerToilet = {};
+      allData.forEach(function (data) {
+        data.teams.forEach(function (t) {
+          const bucket = t.bracket === "playoffs" ? byOwnerPlayoffs : byOwnerToilet;
+          bucket[t.owner] = bucket[t.owner] || {
+            owner: t.owner, wins: 0, losses: 0, ties: 0, pointsFor: 0, pointsAgainst: 0, games: 0,
+            appearances: 0, championships: 0, runnerUps: 0, thirds: 0, lastPlaces: 0
+          };
+          const agg = bucket[t.owner];
+          agg.wins += t.wins; agg.losses += t.losses; agg.ties += t.ties;
+          agg.pointsFor += t.pointsFor; agg.pointsAgainst += t.pointsAgainst; agg.games += t.games;
+          agg.appearances += 1;
+          if (t.finalRank === 1) agg.championships += 1;
+          if (t.finalRank === 2) agg.runnerUps += 1;
+          if (t.finalRank === 3) agg.thirds += 1;
+          if (t.finalRank && t.totalTeams && t.finalRank === t.totalTeams) agg.lastPlaces += 1;
+        });
+      });
+
+      function cumulativeCardHtml(agg) {
+        const record = agg.wins + '-' + agg.losses + (agg.ties ? '-' + agg.ties : '');
+        const trophyParts = [];
+        if (agg.championships > 0) trophyParts.push('\uD83E\uDD47x' + agg.championships);
+        if (agg.runnerUps > 0) trophyParts.push('\uD83E\uDD48x' + agg.runnerUps);
+        if (agg.thirds > 0) trophyParts.push('\uD83E\uDD49x' + agg.thirds);
+        if (agg.lastPlaces > 0) trophyParts.push('\uD83D\uDCA9x' + agg.lastPlaces);
+        return '<div class="keeper-card" style="cursor:default;">' +
+          '<div class="card-top">' + avatarHtml(agg.owner) +
+            '<div><div class="eyebrow">' + agg.appearances + ' appearance' + (agg.appearances === 1 ? '' : 's') + ' \u00b7 ' + record + '</div>' +
+            '<div class="team-name">' + agg.owner + (trophyParts.length ? ' ' + trophyParts.join(' ') : '') + '</div></div>' +
+          '</div>' +
+          '<div class="stat-row">' +
+            '<div class="stat-chip"><div class="label">Points for</div><div class="value">' + agg.pointsFor.toFixed(1) + '</div></div>' +
+            '<div class="stat-chip"><div class="label">Points against</div><div class="value">' + agg.pointsAgainst.toFixed(1) + '</div></div>' +
+          '</div>' +
+          '<div class="stat-row" style="margin-top:8px;">' +
+            '<div class="stat-chip"><div class="label">Avg / week</div><div class="value">' + (agg.games > 0 ? (agg.pointsFor / agg.games).toFixed(1) : "0.0") + '</div></div>' +
+          '</div>' +
+        '</div>';
+      }
+
+      const playoffList = sortTeams(Object.values(byOwnerPlayoffs));
+      const toiletList = sortTeams(Object.values(byOwnerToilet));
+      html += '<div class="podium-title" style="margin:20px 0 10px;">Playoffs (cumulative across selected seasons)</div>';
+      html += '<div class="keeper-grid">' + playoffList.map(cumulativeCardHtml).join("") + '</div>';
+      html += '<div class="podium-title" style="margin:20px 0 10px;">Toilet Bowl \uD83D\uDCA9 (cumulative)</div>';
+      html += '<div class="keeper-grid">' + toiletList.map(cumulativeCardHtml).join("") + '</div>';
+    }
 
     content.innerHTML = html;
     attachAvatarFallbacks(content);
   } catch (e) {
     loading.style.display = "block";
     loading.textContent = "Couldn't load playoff data right now.";
-    console.error(e);
-  }
-}
-
-let careerDataCache = null;
-async function renderCareerSummary() {
-  const content = document.getElementById("playoff-content");
-  const loading = document.getElementById("playoff-loading");
-  loading.style.display = "block";
-  loading.textContent = "Crunching career playoff history across every season...";
-  content.innerHTML = "";
-
-  try {
-    if (!careerDataCache) {
-      const allSeasons = ESPN_SEASONS.concat(Object.keys(LEAGUE_IDS).map(Number));
-      const allData = await Promise.all(allSeasons.map(function (s) {
-        return getPlayoffData(s).catch(function () { return null; });
-      }));
-      const byOwner = {};
-      allData.forEach(function (data) {
-        if (!data) return;
-        data.teams.forEach(function (t) {
-          byOwner[t.owner] = byOwner[t.owner] || { seasonsPlayed: 0, seasonsMadePlayoffs: 0, championships: 0 };
-          byOwner[t.owner].seasonsPlayed += 1;
-          if (t.bracket === "playoffs") byOwner[t.owner].seasonsMadePlayoffs += 1;
-          if (t.finalRank === 1) byOwner[t.owner].championships += 1;
-        });
-      });
-      careerDataCache = byOwner;
-    }
-
-    loading.style.display = "none";
-    const ranked = Object.keys(careerDataCache).map(function (owner) {
-      const o = careerDataCache[owner];
-      return { owner: owner, seasonsPlayed: o.seasonsPlayed, seasonsMadePlayoffs: o.seasonsMadePlayoffs, championships: o.championships,
-        rate: o.seasonsPlayed > 0 ? Math.round((o.seasonsMadePlayoffs / o.seasonsPlayed) * 100) : 0 };
-    }).sort(function (a, b) { return b.rate - a.rate; });
-
-    content.innerHTML = '<div class="podium-title" style="margin-bottom:10px;">Career playoff record</div>' +
-      ranked.map(function (o) {
-        return '<div class="keeper-card" style="cursor:default;">' +
-          '<div class="card-top">' + avatarHtml(o.owner) +
-            '<div><div class="eyebrow">' + o.seasonsPlayed + ' seasons played</div>' +
-            '<div class="team-name">' + o.owner + (o.championships > 0 ? ' \uD83E\uDD47x' + o.championships : '') + '</div></div>' +
-          '</div>' +
-          '<div class="stat-row">' +
-            '<div class="stat-chip"><div class="label">Made playoffs</div><div class="value">' + o.seasonsMadePlayoffs + '</div></div>' +
-            '<div class="stat-chip"><div class="label">Rate</div><div class="value">' + o.rate + '%</div></div>' +
-          '</div>' +
-        '</div>';
-      }).join("");
-    attachAvatarFallbacks(content);
-  } catch (e) {
-    loading.style.display = "block";
-    loading.textContent = "Couldn't load career data right now.";
     console.error(e);
   }
 }
@@ -362,8 +454,6 @@ document.addEventListener("DOMContentLoaded", function () {
     btn.dataset.season = season;
     btn.textContent = season;
     btn.addEventListener("click", function () {
-      showingCareer = false;
-      document.getElementById("playoff-career-btn").classList.remove("active");
       if (selectedPlayoffSeasons.has(season)) {
         selectedPlayoffSeasons.delete(season);
         btn.classList.remove("active");
@@ -377,8 +467,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.getElementById("playoff-select-all-btn").addEventListener("click", function () {
-    showingCareer = false;
-    document.getElementById("playoff-career-btn").classList.remove("active");
     document.querySelectorAll("#playoff-season-bar .filter-btn").forEach(function (btn) {
       selectedPlayoffSeasons.add(Number(btn.dataset.season));
       btn.classList.add("active");
@@ -390,11 +478,19 @@ document.addEventListener("DOMContentLoaded", function () {
     selectedPlayoffSeasons.clear();
     renderSeasons();
   });
-  document.getElementById("playoff-career-btn").addEventListener("click", function (e) {
-    showingCareer = true;
-    document.querySelectorAll("#playoff-season-bar .filter-btn").forEach(function (btn) { btn.classList.remove("active"); });
-    e.target.classList.add("active");
-    renderCareerSummary();
+
+  document.querySelectorAll("#playoff-mode-bar [data-mode]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll("#playoff-mode-bar [data-mode]").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      playoffViewMode = btn.dataset.mode;
+      renderSeasons();
+    });
+  });
+
+  document.getElementById("playoff-sort-select").addEventListener("change", function (e) {
+    playoffSortKey = e.target.value;
+    renderSeasons();
   });
 
   const defaultBtn = seasonBar.querySelector('[data-season="2025"]');
