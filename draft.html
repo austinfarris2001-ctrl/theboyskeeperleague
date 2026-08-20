@@ -6,27 +6,30 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
 .draft-board { overflow-x: auto; }
-.draft-grid { display: grid; gap: 4px; min-width: fit-content; }
+.draft-grid { display: grid; gap: 5px; min-width: fit-content; }
 .draft-header-cell {
-  background: var(--panel-2); border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 8px 6px; text-align: center; font-size: 11px; font-weight: 700; color: var(--blue);
-  display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 110px;
+  background: var(--panel-2); border: 2px solid var(--blue); border-radius: 8px;
+  padding: 8px 6px; text-align: center; font-size: 11px; font-weight: 800; color: var(--blue);
+  display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 120px;
+  text-shadow: 0 0 8px rgba(56,208,255,0.5);
 }
 .draft-round-label {
-  background: var(--panel-2); border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 8px 6px; text-align: center; font-size: 12px; font-weight: 700; color: var(--text-mute);
-  display: flex; align-items: center; justify-content: center; min-width: 40px;
+  background: var(--panel-2); border: 2px solid var(--border); border-radius: 8px;
+  padding: 8px 6px; text-align: center; font-size: 13px; font-weight: 800; color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center; min-width: 42px;
 }
 .draft-cell {
-  border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 6px; min-width: 110px;
-  min-height: 60px; display: flex; flex-direction: column; justify-content: center; gap: 4px;
+  border: 2px solid transparent; border-radius: 8px; padding: 8px 7px; min-width: 120px;
+  min-height: 64px; display: flex; flex-direction: column; justify-content: center; gap: 3px;
+  transition: transform 0.1s ease;
 }
-.draft-cell .pick-num { font-size: 10px; color: rgba(255,255,255,0.65); }
-.draft-cell .pick-player { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.2; }
-.draft-cell .pick-logo { width: 18px; height: 18px; border-radius: 50%; background: #fff; padding: 1px; }
+.draft-cell .pick-num { font-size: 10px; color: rgba(255,255,255,0.75); font-weight: 600; }
+.draft-cell .pick-player { font-size: 13px; font-weight: 800; line-height: 1.2; }
+.draft-cell .pick-stat { font-size: 15px; font-weight: 900; margin-top: 2px; }
+.draft-cell .pick-logo { width: 20px; height: 20px; border-radius: 50%; background: #fff; padding: 1px; }
 .draft-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-.draft-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); }
-.draft-legend-swatch { width: 14px; height: 14px; border-radius: 4px; }
+.draft-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); font-weight: 600; }
+.draft-legend-swatch { width: 16px; height: 16px; border-radius: 4px; }
 </style>
 </head>
 <body>
