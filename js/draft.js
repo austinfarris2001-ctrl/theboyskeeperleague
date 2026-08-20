@@ -61,17 +61,10 @@ function normalizeName(name) {
 }
 
 async function fetchAdp(season) {
-  if (adpCache[season]) return adpCache[season];
-  const teams = SEASON_TEAM_COUNTS[season] || 12;
-  const res = await fetch("https://fantasyfootballcalculator.com/api/v1/adp/ppr?teams=" + teams + "&year=" + season);
-  if (!res.ok) throw new Error("ADP fetch failed");
-  const data = await res.json();
-  const map = {};
-  (data.players || []).forEach(function (p) {
-    map[normalizeName(p.name)] = p.adp;
-  });
-  adpCache[season] = map;
-  return map;
+  // Static data (see data/adp-data.js) instead of a live fetch -
+  // FantasyFootballCalculator's API blocks cross-site browser requests (CORS),
+  // confirmed via direct testing.
+  return (typeof ADP_DATA !== "undefined" && ADP_DATA[season]) || {};
 }
 
 async function fetchJson(url) {
@@ -461,7 +454,9 @@ async function renderDraftBoard() {
     }
     if (extraData && colorMode === "value" && extraData.matched === 0 && extraData.total > 0) {
       loading.style.display = "block";
-      loading.textContent = "ADP data loaded but matched 0 of " + extraData.total + " picks by name - something's off with the name matching, not a fetch failure.";
+      loading.textContent = ADP_DATA[activeSeason]
+        ? "ADP data loaded but matched 0 of " + extraData.total + " picks by name - something's off with the name matching, not a fetch failure."
+        : activeSeason + " ADP data isn't available yet for this season.";
       return;
     }
 
