@@ -377,20 +377,25 @@ async function computeValueData(season, board) {
   try {
     adpMap = await fetchAdp(season);
   } catch (e) {
-    return null;
+    console.error("ADP fetch failed:", e);
+    return { diffByPick: {}, error: e.message || "fetch failed" };
   }
   const diffByPick = {};
+  let matched = 0, total = 0;
   for (const key in board.cellMap) {
     const pick = board.cellMap[key];
     const info = pickDisplayInfo(pick);
     if (!info) continue;
+    total++;
     const adp = adpMap[normalizeName(info.name)];
     if (adp == null) continue;
+    matched++;
     // positive = pick fell later than ADP suggested (good value), same
     // convention as the keeper page's "pick minus ADP" formula
     diffByPick[key] = Math.round((pick.pick_no - adp) * 10) / 10;
   }
-  return { diffByPick: diffByPick };
+  console.log("ADP match rate for " + season + ": " + matched + "/" + total);
+  return { diffByPick: diffByPick, matched: matched, total: total };
 }
 
 function renderLegend() {
@@ -447,6 +452,17 @@ async function renderDraftBoard() {
     } else if (colorMode === "value") {
       loading.textContent = "Loading ADP data...";
       extraData = await computeValueData(activeSeason, board);
+    }
+
+    if (extraData && extraData.error) {
+      loading.style.display = "block";
+      loading.textContent = "ADP data couldn't be loaded (" + extraData.error + "). This is likely the FantasyFootballCalculator API blocking cross-site requests - let Austin know so this can be worked around.";
+      return;
+    }
+    if (extraData && colorMode === "value" && extraData.matched === 0 && extraData.total > 0) {
+      loading.style.display = "block";
+      loading.textContent = "ADP data loaded but matched 0 of " + extraData.total + " picks by name - something's off with the name matching, not a fetch failure.";
+      return;
     }
 
     loading.style.display = "none";
