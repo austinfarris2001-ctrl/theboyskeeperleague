@@ -115,6 +115,126 @@ async function getReplacementPoints(position, season, statsDump) {
   return pool[rank - 1] != null ? pool[rank - 1] : null;
 }
 
+// ============================================================
+// ESPN SEASONS (2020-2022) - picks come from the static data/espn-draft.js
+// file (frozen history). Player names/positions/HISTORICAL team are resolved
+// LIVE via ESPN's public athlete lookups (no login needed), cached in-memory.
+// Two lookups per player: a season-specific one for the team they were
+// actually on THAT year, falling back to the general "current team" lookup
+// (name/position only need to be correct once, so that part never changes).
+// ============================================================
+let espnAthleteCache = {}; // espnPlayerId -> {name, position} (name/position don't change by season)
+let espnSeasonTeamCache = {}; // "espnPlayerId-season" -> team abbreviation or null
+
+// ESPN's numeric team ID -> abbreviation. Stable/well-known mapping; ids 13,
+// 14, 24 reflect post-2016/2017/2020 relocations (LV/LAR/LAC), which is
+// correct for our 2020-2022 seasons.
+const ESPN_TEAM_ID_MAP = {
+  1: "ATL", 2: "BUF", 3: "CHI", 4: "CIN", 5: "CLE", 6: "DAL", 7: "DEN", 8: "DET",
+  9: "GB", 10: "TEN", 11: "IND", 12: "KC", 13: "LV", 14: "LAR", 15: "MIA", 16: "MIN",
+  17: "NE", 18: "NO", 19: "NYG", 20: "NYJ", 21: "PHI", 22: "ARI", 23: "PIT", 24: "LAC",
+  25: "SF", 26: "SEA", 27: "TB", 28: "WAS", 29: "CAR", 30: "JAX", 33: "BAL", 34: "HOU"
+};
+
+async function fetchEspnAthlete(espnPlayerId) {
+  if (espnAthleteCache[espnPlayerId]) return espnAthleteCache[espnPlayerId];
+  try {
+    const res = await fetch("https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/" + espnPlayerId);
+    if (!res.ok) throw new Error("not ok");
+    const data = await res.json();
+    const a = data.athlete || {};
+    const info = {
+      name: a.displayName || a.fullName || ("Player #" + espnPlayerId),
+      position: (a.position && (a.position.abbreviation || a.position.name)) || null,
+      currentTeam: (a.team && a.team.abbreviation) || null
+    };
+    espnAthleteCache[espnPlayerId] = info;
+    return info;
+  } catch (e) {
+    const fallback = { name: "Player #" + espnPlayerId, position: null, currentTeam: null };
+    espnAthleteCache[espnPlayerId] = fallback;
+    return fallback;
+  }
+}
+
+async function fetchEspnHistoricalTeam(espnPlayerId, season) {
+  const cacheKey = espnPlayerId + "-" + season;
+  if (espnSeasonTeamCache[cacheKey] !== undefined) return espnSeasonTeamCache[cacheKey];
+  try {
+    const res = await fetch("https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/" + season + "/athletes/" + espnPlayerId);
+    if (!res.ok) throw new Error("not ok");
+    const data = await res.json();
+    // team may show up as a direct numeric id, or nested under a team object
+    const teamId = data.proTeamId || data.teamId || (data.team && data.team.id) || null;
+    const team = teamId ? ESPN_TEAM_ID_MAP[teamId] || null : null;
+    espnSeasonTeamCache[cacheKey] = team;
+    return team;
+  } catch (e) {
+    espnSeasonTeamCache[cacheKey] = null;
+    return null;
+  }
+}
+
+async function fetchEspnAthleteForSeason(espnPlayerId, season) {
+  const [base, historicalTeam] = await Promise.all([
+    fetchEspnAthlete(espnPlayerId),
+    fetchEspnHistoricalTeam(espnPlayerId, season)
+  ]);
+  return {
+    name: base.name,
+    position: base.position,
+    team: historicalTeam || base.currentTeam // fall back to current team if the season-specific lookup failed
+  };
+}
+
+async function fetchEspnDraftBoard(season) {
+  if (draftCache["espn-" + season]) return draftCache["espn-" + season];
+  const picks = ESPN_DRAFT_PICKS[season] || [];
+
+  let maxRound = 0, maxSlot = 0;
+  const slotOwner = {};
+  const cellMap = {};
+  // ESPN doesn't give us a stable "draft slot" the way Sleeper does - use
+  // each team's round-1 pick position (pickInRound) as their column.
+  picks.forEach(function (p) {
+    if (p.round === 1) slotOwner[p.pickInRound] = p.owner;
+  });
+  const teamIdToSlot = {};
+  picks.forEach(function (p) {
+    if (p.round === 1) teamIdToSlot[p.teamId] = p.pickInRound;
+  });
+  picks.forEach(function (p) {
+    const slot = teamIdToSlot[p.teamId];
+    if (p.round > maxRound) maxRound = p.round;
+    if (slot > maxSlot) maxSlot = slot;
+    cellMap[p.round + "-" + slot] = p;
+  });
+
+  const board = { season: season, maxRound: maxRound, maxSlot: maxSlot, slotOwner: slotOwner, cellMap: cellMap, isEspn: true };
+  draftCache["espn-" + season] = board;
+  return board;
+}
+
+async function resolveEspnBoard(board) {
+  if (board.resolved) return board;
+  const keys = Object.keys(board.cellMap);
+  await Promise.all(keys.map(async function (key) {
+    const raw = board.cellMap[key];
+    const athlete = await fetchEspnAthleteForSeason(raw.espnPlayerId, board.season);
+    const [firstName, ...rest] = athlete.name.split(" ");
+    board.cellMap[key] = {
+      round: raw.round,
+      draft_slot: null, // not used for ESPN - key already encodes round-slot
+      pick_no: raw.overallPick,
+      owner: raw.owner,
+      player_id: null, // no Sleeper ID - Performance/VORP mode isn't available for ESPN years
+      metadata: { first_name: firstName, last_name: rest.join(" "), position: athlete.position, team: athlete.team }
+    };
+  }));
+  board.resolved = true;
+  return board;
+}
+
 async function fetchDraftBoard(season) {
   if (draftCache[season]) return draftCache[season];
   const leagueId = LEAGUE_IDS[season];
@@ -170,7 +290,7 @@ function pickDisplayInfo(pick) {
   return { name: name, position: position, team: team };
 }
 
-function cellColorHtml(pick, mode, extraData) {
+function cellColorHtml(pick, mode, extraData, cellKey) {
   const info = pickDisplayInfo(pick);
   if (!info) return { bg: "var(--panel-2)", text: "var(--text-mute)", stat: null };
 
@@ -179,13 +299,13 @@ function cellColorHtml(pick, mode, extraData) {
     return { bg: c, text: textForBg(c), stat: null };
   }
   if (mode === "performance" && extraData) {
-    const vorp = extraData.vorpByPick[pick.round + "-" + pick.draft_slot];
+    const vorp = extraData.vorpByPick[cellKey];
     if (vorp == null) return { bg: "var(--panel-2)", text: "var(--text-mute)", stat: null };
     const colors = magnitudeColor(vorp);
     return { bg: colors.bg, text: colors.text, stat: (vorp > 0 ? "+" : "") + vorp.toFixed(1) };
   }
   if (mode === "value" && extraData) {
-    const diff = extraData.diffByPick[pick.round + "-" + pick.draft_slot];
+    const diff = extraData.diffByPick[cellKey];
     if (diff == null) return { bg: "var(--panel-2)", text: "var(--text-mute)", stat: null };
     const colors = magnitudeColor(diff);
     return { bg: colors.bg, text: colors.text, stat: (diff > 0 ? "+" : "") + diff.toFixed(0) };
@@ -268,22 +388,27 @@ async function renderDraftBoard() {
     return;
   }
 
-  if (ESPN_SEASONS.indexOf(activeSeason) !== -1) {
-    loading.style.display = "none";
-    boardEl.innerHTML = '<p class="empty-note">' + activeSeason + ' draft board is pending - need to verify ESPN player names for this season first (coming soon).</p>';
-    return;
-  }
+  const isEspn = ESPN_SEASONS.indexOf(activeSeason) !== -1;
 
   loading.style.display = "block";
-  loading.textContent = "Loading " + activeSeason + " draft from Sleeper...";
+  loading.textContent = isEspn
+    ? "Resolving " + activeSeason + " player names from ESPN..."
+    : "Loading " + activeSeason + " draft from Sleeper...";
   boardEl.innerHTML = "";
 
   try {
-    const board = await fetchDraftBoard(activeSeason);
+    const board = isEspn
+      ? await resolveEspnBoard(await fetchEspnDraftBoard(activeSeason))
+      : await fetchDraftBoard(activeSeason);
     renderLegend();
 
     let extraData = null;
     if (colorMode === "performance") {
+      if (isEspn) {
+        loading.style.display = "none";
+        boardEl.innerHTML = '<p class="empty-note">Performance/VORP mode isn\'t available for ESPN seasons yet - it needs a name-based crosswalk to Sleeper\'s player stats. Position and Value modes both work for this year.</p>';
+        return;
+      }
       loading.textContent = "Loading season stats for VORP coloring...";
       extraData = await computePerformanceData(activeSeason, board);
     } else if (colorMode === "value") {
@@ -313,13 +438,14 @@ async function renderDraftBoard() {
       grid.appendChild(roundLabel);
 
       for (let slot = 1; slot <= board.maxSlot; slot++) {
-        const pick = board.cellMap[round + "-" + slot];
+        const cellKey = round + "-" + slot;
+        const pick = board.cellMap[cellKey];
         const info = pickDisplayInfo(pick);
         const cell = document.createElement("div");
         cell.className = "draft-cell";
 
         if (info) {
-          const colors = cellColorHtml(pick, colorMode, extraData);
+          const colors = cellColorHtml(pick, colorMode, extraData, cellKey);
           cell.style.background = colors.bg;
           cell.style.color = colors.text;
           cell.style.borderColor = colors.bg === "var(--panel-2)" ? "var(--border)" : colors.bg;
