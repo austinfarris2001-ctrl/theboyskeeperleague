@@ -30,5 +30,6 @@ const KEEPER_DATA = [
   { season: 2026, owner: "Brayden Armstrong", player: "Rashee Rice", round: 5, pick: 45, adp: 27, valueScore: 18 },
   { season: 2026, owner: "Rohan Shani", player: "Zay Flowers", round: 6, pick: 53, adp: 44, valueScore: 9 },
   { season: 2026, owner: "Braden Galvan", player: "Tony Pollard", round: 4, pick: 34, adp: 87, valueScore: -53 },
-  { season: 2026, owner: "Shivam Patel", player: "Colston Loveland", round: 9, pick: 90, adp: 42, valueScore: 48 }
+  { season: 2026, owner: "Shivam Patel", player: "Colston Loveland", round: 9, pick: 90, adp: 42, valueScore: 48 },
+  { season: 2026, owner: "Zach Sullivan", player: "TreVeyon Henderson", round: 6, pick: 58, adp: 52, valueScore: 6 }
 ];
