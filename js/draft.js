@@ -505,10 +505,12 @@ async function renderDraftBoard() {
           cell.style.color = colors.text;
           cell.style.borderColor = colors.bg === "var(--panel-2)" ? "var(--border)" : colors.bg;
           const logo = info.team ? teamLogoUrl(info.team) : null;
+          const headshot = pick.player_id ? "https://sleepercdn.com/content/nfl/players/" + pick.player_id + ".jpg" : null;
           const keeperBadge = isKeeperPick(activeSeason, pick.pick_no)
             ? '<span class="keeper-marker" title="Kept the following year">\uD83D\uDD11</span>' : '';
           cell.innerHTML =
             keeperBadge +
+            (headshot ? '<img class="pick-headshot" src="' + headshot + '" alt="" onerror="this.remove()">' : '') +
             '<div class="pick-num" style="color:' + (colors.bg === "var(--panel-2)" ? "var(--text-mute)" : colors.text) + ';opacity:0.85;">Pick ' + pick.pick_no + '</div>' +
             '<div class="pick-player">' + info.name + '</div>' +
             (colors.stat != null ? '<div class="pick-stat">' + colors.stat + '</div>' : '') +
