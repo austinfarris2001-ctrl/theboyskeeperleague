@@ -391,21 +391,32 @@ async function computeValueData(season, board) {
   return { diffByPick: diffByPick, matched: matched, total: total };
 }
 
+// A keeper pick is still a real pick in that season's draft (Sleeper keeper
+// mechanics assign it a round/pick like any other selection), so marking it
+// is just a season+pick_no lookup against the keeper data we already have.
+function isKeeperPick(season, pickNo) {
+  if (typeof KEEPER_DATA === "undefined") return false;
+  return KEEPER_DATA.some(function (k) { return k.season === season && k.pick === pickNo; });
+}
+
 function renderLegend() {
   const legend = document.getElementById("draft-legend");
+  const keeperNote = '<div class="draft-legend-item" style="opacity:0.6;"><span style="font-size:11px;">\uD83D\uDD11</span> = kept the following year</div>';
   if (colorMode === "position") {
     legend.innerHTML = Object.keys(POSITION_COLORS).map(function (pos) {
       return '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:' + POSITION_COLORS[pos] + ';"></span>' + pos + '</div>';
-    }).join("");
+    }).join("") + keeperNote;
   } else if (colorMode === "performance") {
     legend.innerHTML =
       '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#39ff8a;"></span>Big VORP win (brighter = bigger)</div>' +
-      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#ff2020;"></span>Big VORP miss (brighter = worse)</div>';
+      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#ff2020;"></span>Big VORP miss (brighter = worse)</div>' +
+      keeperNote;
   } else if (colorMode === "value") {
     legend.innerHTML =
       '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#39ff8a;"></span>Great value vs ADP</div>' +
       '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#ff2020;"></span>Big reach vs ADP</div>' +
-      '<div class="empty-note" style="margin-left:8px;">Source: FantasyFootballCalculator - unmatched names show gray</div>';
+      '<div class="empty-note" style="margin-left:8px;">Source: FantasyFootballCalculator - unmatched names show gray</div>' +
+      keeperNote;
   }
 }
 
@@ -494,7 +505,10 @@ async function renderDraftBoard() {
           cell.style.color = colors.text;
           cell.style.borderColor = colors.bg === "var(--panel-2)" ? "var(--border)" : colors.bg;
           const logo = info.team ? teamLogoUrl(info.team) : null;
+          const keeperBadge = isKeeperPick(activeSeason, pick.pick_no)
+            ? '<span class="keeper-marker" title="Kept the following year">\uD83D\uDD11</span>' : '';
           cell.innerHTML =
+            keeperBadge +
             '<div class="pick-num" style="color:' + (colors.bg === "var(--panel-2)" ? "var(--text-mute)" : colors.text) + ';opacity:0.85;">Pick ' + pick.pick_no + '</div>' +
             '<div class="pick-player">' + info.name + '</div>' +
             (colors.stat != null ? '<div class="pick-stat">' + colors.stat + '</div>' : '') +
