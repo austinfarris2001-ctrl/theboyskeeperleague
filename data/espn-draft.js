@@ -1,10 +1,12 @@
 // ============================================================
 // ESPN DRAFT DATA - static picks for 2020-2022 (frozen history).
-// Player names/positions are resolved LIVE via ESPN's public
-// athlete lookup API (site.web.api.espn.com), since ESPN player IDs
-// aren't in any file we have saved. Note: that endpoint returns each
-// player's CURRENT team, not their team during that historical season -
-// so team logos on these boards may not match what they wore that year.
+// Most players' name/position/team come directly from that season's
+// real roster snapshots (already embedded in this file - genuinely
+// historically accurate, not a live guess). A minority of picks
+// (players who got dropped and weren't on any roster by season's end)
+// have no 'name' field here - js/draft.js resolves those live via
+// ESPN's athlete API as a fallback, which may show their CURRENT team
+// instead of their historical one for that specific handful of picks.
 // ============================================================
 const ESPN_DRAFT_PICKS = {
   "2022": [
@@ -14,7 +16,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 1,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 4242335
+      "espnPlayerId": 4242335,
+      "name": "Jonathan Taylor",
+      "position": "RB",
+      "proTeamId": 11
     },
     {
       "round": 1,
@@ -22,7 +27,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 2,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 2977187
+      "espnPlayerId": 2977187,
+      "name": "Cooper Kupp",
+      "position": "WR",
+      "proTeamId": 14
     },
     {
       "round": 1,
@@ -30,7 +38,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 3,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3117251
+      "espnPlayerId": 3117251,
+      "name": "Christian McCaffrey",
+      "position": "RB",
+      "proTeamId": 25
     },
     {
       "round": 1,
@@ -38,7 +49,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 4,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 4262921
+      "espnPlayerId": 4262921,
+      "name": "Justin Jefferson",
+      "position": "WR",
+      "proTeamId": 16
     },
     {
       "round": 1,
@@ -46,7 +60,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 5,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 3068267
+      "espnPlayerId": 3068267,
+      "name": "Austin Ekeler",
+      "position": "RB",
+      "proTeamId": 24
     },
     {
       "round": 1,
@@ -54,7 +71,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 6,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3043078
+      "espnPlayerId": 3043078,
+      "name": "Derrick Henry",
+      "position": "RB",
+      "proTeamId": 10
     },
     {
       "round": 1,
@@ -62,7 +82,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 7,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4241457
+      "espnPlayerId": 4241457,
+      "name": "Najee Harris",
+      "position": "RB",
+      "proTeamId": 23
     },
     {
       "round": 1,
@@ -70,7 +93,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 8,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 16800
+      "espnPlayerId": 16800,
+      "name": "Davante Adams",
+      "position": "WR",
+      "proTeamId": 13
     },
     {
       "round": 1,
@@ -78,7 +104,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 9,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 3116593
+      "espnPlayerId": 3116593,
+      "name": "Dalvin Cook",
+      "position": "RB",
+      "proTeamId": 16
     },
     {
       "round": 1,
@@ -86,7 +115,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 10,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 4362628
+      "espnPlayerId": 4362628,
+      "name": "Ja'Marr Chase",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 1,
@@ -94,7 +126,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 11,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4259545
+      "espnPlayerId": 4259545,
+      "name": "D'Andre Swift",
+      "position": "RB",
+      "proTeamId": 8
     },
     {
       "round": 1,
@@ -102,7 +137,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 12,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3054850
+      "espnPlayerId": 3054850,
+      "name": "Alvin Kamara",
+      "position": "RB",
+      "proTeamId": 18
     },
     {
       "round": 2,
@@ -110,7 +148,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 13,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3042519
+      "espnPlayerId": 3042519,
+      "name": "Aaron Jones",
+      "position": "RB",
+      "proTeamId": 9
     },
     {
       "round": 2,
@@ -118,7 +159,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 14,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 3116385
+      "espnPlayerId": 3116385,
+      "name": "Joe Mixon",
+      "position": "RB",
+      "proTeamId": 4
     },
     {
       "round": 2,
@@ -126,7 +170,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 15,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3115364
+      "espnPlayerId": 3115364,
+      "name": "Leonard Fournette",
+      "position": "RB",
+      "proTeamId": 0
     },
     {
       "round": 2,
@@ -134,7 +181,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 16,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 2976212
+      "espnPlayerId": 2976212,
+      "name": "Stefon Diggs",
+      "position": "WR",
+      "proTeamId": 2
     },
     {
       "round": 2,
@@ -142,7 +192,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 17,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3126486
+      "espnPlayerId": 3126486,
+      "name": "Deebo Samuel",
+      "position": "WR",
+      "proTeamId": 25
     },
     {
       "round": 2,
@@ -150,7 +203,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 18,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 15847
+      "espnPlayerId": 15847,
+      "name": "Travis Kelce",
+      "position": "TE",
+      "proTeamId": 12
     },
     {
       "round": 2,
@@ -158,7 +214,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 19,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3116406
+      "espnPlayerId": 3116406,
+      "name": "Tyreek Hill",
+      "position": "WR",
+      "proTeamId": 15
     },
     {
       "round": 2,
@@ -166,7 +225,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 20,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 4241389
+      "espnPlayerId": 4241389,
+      "name": "CeeDee Lamb",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 2,
@@ -174,7 +236,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 21,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 3128720
+      "espnPlayerId": 3128720,
+      "name": "Nick Chubb",
+      "position": "RB",
+      "proTeamId": 5
     },
     {
       "round": 2,
@@ -190,7 +255,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 23,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 3929630
+      "espnPlayerId": 3929630,
+      "name": "Saquon Barkley",
+      "position": "RB",
+      "proTeamId": 19
     },
     {
       "round": 2,
@@ -198,7 +266,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 24,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 3116365
+      "espnPlayerId": 3116365,
+      "name": "Mark Andrews",
+      "position": "TE",
+      "proTeamId": 33
     },
     {
       "round": 3,
@@ -206,7 +277,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 25,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 3045147
+      "espnPlayerId": 3045147,
+      "name": "James Conner",
+      "position": "RB",
+      "proTeamId": 22
     },
     {
       "round": 3,
@@ -214,7 +288,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 26,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 3918298
+      "espnPlayerId": 3918298,
+      "name": "Josh Allen",
+      "position": "QB",
+      "proTeamId": 2
     },
     {
       "round": 3,
@@ -222,7 +299,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 27,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 16737
+      "espnPlayerId": 16737,
+      "name": "Mike Evans",
+      "position": "WR",
+      "proTeamId": 27
     },
     {
       "round": 3,
@@ -230,7 +310,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 28,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 4035687
+      "espnPlayerId": 4035687,
+      "name": "Michael Pittman Jr.",
+      "position": "WR",
+      "proTeamId": 11
     },
     {
       "round": 3,
@@ -238,7 +321,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 29,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 4239993
+      "espnPlayerId": 4239993,
+      "name": "Tee Higgins",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 3,
@@ -246,7 +332,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 30,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 15818
+      "espnPlayerId": 15818,
+      "name": "Keenan Allen",
+      "position": "WR",
+      "proTeamId": 24
     },
     {
       "round": 3,
@@ -254,7 +343,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 31,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 3915416
+      "espnPlayerId": 3915416,
+      "name": "DJ Moore",
+      "position": "WR",
+      "proTeamId": 3
     },
     {
       "round": 3,
@@ -270,7 +362,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 33,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4047646
+      "espnPlayerId": 4047646,
+      "name": "A.J. Brown",
+      "position": "WR",
+      "proTeamId": 21
     },
     {
       "round": 3,
@@ -278,7 +373,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 34,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3932905
+      "espnPlayerId": 3932905,
+      "name": "Diontae Johnson",
+      "position": "WR",
+      "proTeamId": 23
     },
     {
       "round": 3,
@@ -286,7 +384,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 35,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 3128429
+      "espnPlayerId": 3128429,
+      "name": "Courtland Sutton",
+      "position": "WR",
+      "proTeamId": 7
     },
     {
       "round": 3,
@@ -294,7 +395,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 36,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4372016
+      "espnPlayerId": 4372016,
+      "name": "Jaylen Waddle",
+      "position": "WR",
+      "proTeamId": 15
     },
     {
       "round": 4,
@@ -302,7 +406,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 37,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4241372
+      "espnPlayerId": 4241372,
+      "name": "Marquise Brown",
+      "position": "WR",
+      "proTeamId": 22
     },
     {
       "round": 4,
@@ -318,7 +425,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 39,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 4035538
+      "espnPlayerId": 4035538,
+      "name": "David Montgomery",
+      "position": "RB",
+      "proTeamId": 8
     },
     {
       "round": 4,
@@ -334,7 +444,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 41,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3045138
+      "espnPlayerId": 3045138,
+      "name": "Mike Williams",
+      "position": "WR",
+      "proTeamId": 24
     },
     {
       "round": 4,
@@ -342,7 +455,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 42,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 3051392
+      "espnPlayerId": 3051392,
+      "name": "Ezekiel Elliott",
+      "position": "RB",
+      "proTeamId": 0
     },
     {
       "round": 4,
@@ -350,7 +466,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 43,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 4240021
+      "espnPlayerId": 4240021,
+      "name": "Cam Akers",
+      "position": "RB",
+      "proTeamId": 14
     },
     {
       "round": 4,
@@ -358,7 +477,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 44,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 4239996
+      "espnPlayerId": 4239996,
+      "name": "Travis Etienne Jr.",
+      "position": "RB",
+      "proTeamId": 30
     },
     {
       "round": 4,
@@ -366,7 +488,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 45,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 4242214
+      "espnPlayerId": 4242214,
+      "name": "Clyde Edwards-Helaire",
+      "position": "RB",
+      "proTeamId": 12
     },
     {
       "round": 4,
@@ -374,7 +499,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 46,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3121422
+      "espnPlayerId": 3121422,
+      "name": "Terry McLaurin",
+      "position": "WR",
+      "proTeamId": 28
     },
     {
       "round": 4,
@@ -382,7 +510,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 47,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 4047365
+      "espnPlayerId": 4047365,
+      "name": "Josh Jacobs",
+      "position": "RB",
+      "proTeamId": 13
     },
     {
       "round": 4,
@@ -390,7 +521,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 48,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 4047650
+      "espnPlayerId": 4047650,
+      "name": "DK Metcalf",
+      "position": "WR",
+      "proTeamId": 26
     },
     {
       "round": 5,
@@ -398,7 +532,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 49,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 4241463
+      "espnPlayerId": 4241463,
+      "name": "Jerry Jeudy",
+      "position": "WR",
+      "proTeamId": 7
     },
     {
       "round": 5,
@@ -406,7 +543,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 50,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 3040151
+      "espnPlayerId": 3040151,
+      "name": "George Kittle",
+      "position": "TE",
+      "proTeamId": 25
     },
     {
       "round": 5,
@@ -414,7 +554,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 51,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 4243537
+      "espnPlayerId": 4243537,
+      "name": "Gabe Davis",
+      "position": "WR",
+      "proTeamId": 2
     },
     {
       "round": 5,
@@ -430,7 +573,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 53,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 4038941
+      "espnPlayerId": 4038941,
+      "name": "Justin Herbert",
+      "position": "QB",
+      "proTeamId": 24
     },
     {
       "round": 5,
@@ -438,7 +584,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 54,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3139477
+      "espnPlayerId": 3139477,
+      "name": "Patrick Mahomes",
+      "position": "QB",
+      "proTeamId": 12
     },
     {
       "round": 5,
@@ -446,7 +595,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 55,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4374302
+      "espnPlayerId": 4374302,
+      "name": "Amon-Ra St. Brown",
+      "position": "WR",
+      "proTeamId": 8
     },
     {
       "round": 5,
@@ -454,7 +606,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 56,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4040715
+      "espnPlayerId": 4040715,
+      "name": "Jalen Hurts",
+      "position": "QB",
+      "proTeamId": 21
     },
     {
       "round": 5,
@@ -462,7 +617,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 57,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4045163
+      "espnPlayerId": 4045163,
+      "name": "Miles Sanders",
+      "position": "RB",
+      "proTeamId": 29
     },
     {
       "round": 5,
@@ -470,7 +628,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 58,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3116165
+      "espnPlayerId": 3116165,
+      "name": "Chris Godwin",
+      "position": "WR",
+      "proTeamId": 27
     },
     {
       "round": 5,
@@ -478,7 +639,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 59,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 2576925
+      "espnPlayerId": 2576925,
+      "name": "Darren Waller",
+      "position": "TE",
+      "proTeamId": 19
     },
     {
       "round": 5,
@@ -486,7 +650,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 60,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3059915
+      "espnPlayerId": 3059915,
+      "name": "Kareem Hunt",
+      "position": "RB",
+      "proTeamId": 5
     },
     {
       "round": 6,
@@ -510,7 +677,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 63,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3916387
+      "espnPlayerId": 3916387,
+      "name": "Lamar Jackson",
+      "position": "QB",
+      "proTeamId": 33
     },
     {
       "round": 6,
@@ -518,7 +688,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 64,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4360238
+      "espnPlayerId": 4360238,
+      "name": "Dameon Pierce",
+      "position": "RB",
+      "proTeamId": 34
     },
     {
       "round": 6,
@@ -526,7 +699,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 65,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3119195
+      "espnPlayerId": 3119195,
+      "name": "Chase Edmonds",
+      "position": "RB",
+      "proTeamId": 27
     },
     {
       "round": 6,
@@ -534,7 +710,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 66,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4241985
+      "espnPlayerId": 4241985,
+      "name": "J.K. Dobbins",
+      "position": "RB",
+      "proTeamId": 33
     },
     {
       "round": 6,
@@ -542,7 +721,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 67,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3117256
+      "espnPlayerId": 3117256,
+      "name": "Dalton Schultz",
+      "position": "TE",
+      "proTeamId": 34
     },
     {
       "round": 6,
@@ -558,7 +740,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 69,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 4036133
+      "espnPlayerId": 4036133,
+      "name": "T.J. Hockenson",
+      "position": "TE",
+      "proTeamId": 16
     },
     {
       "round": 6,
@@ -566,7 +751,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 70,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 2577417
+      "espnPlayerId": 2577417,
+      "name": "Dak Prescott",
+      "position": "QB",
+      "proTeamId": 6
     },
     {
       "round": 6,
@@ -574,7 +762,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 71,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 2976499
+      "espnPlayerId": 2976499,
+      "name": "Amari Cooper",
+      "position": "WR",
+      "proTeamId": 5
     },
     {
       "round": 6,
@@ -582,7 +773,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 72,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 4040761
+      "espnPlayerId": 4040761,
+      "name": "Devin Singletary",
+      "position": "RB",
+      "proTeamId": 34
     },
     {
       "round": 7,
@@ -590,7 +784,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 73,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 2976316
+      "espnPlayerId": 2976316,
+      "name": "Michael Thomas",
+      "position": "WR",
+      "proTeamId": 18
     },
     {
       "round": 7,
@@ -598,7 +795,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 74,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 16460
+      "espnPlayerId": 16460,
+      "name": "Adam Thielen",
+      "position": "WR",
+      "proTeamId": 0
     },
     {
       "round": 7,
@@ -614,7 +814,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 76,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 15807
+      "espnPlayerId": 15807,
+      "name": "Cordarrelle Patterson",
+      "position": "RB",
+      "proTeamId": 1
     },
     {
       "round": 7,
@@ -630,7 +833,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 78,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3895856
+      "espnPlayerId": 3895856,
+      "name": "Christian Kirk",
+      "position": "WR",
+      "proTeamId": 30
     },
     {
       "round": 7,
@@ -646,7 +852,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 80,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4239934
+      "espnPlayerId": 4239934,
+      "name": "AJ Dillon",
+      "position": "RB",
+      "proTeamId": 9
     },
     {
       "round": 7,
@@ -662,7 +871,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 82,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3120348
+      "espnPlayerId": 3120348,
+      "name": "JuJu Smith-Schuster",
+      "position": "WR",
+      "proTeamId": 17
     },
     {
       "round": 7,
@@ -678,7 +890,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 84,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4372414
+      "espnPlayerId": 4372414,
+      "name": "Elijah Moore",
+      "position": "WR",
+      "proTeamId": 20
     },
     {
       "round": 8,
@@ -686,7 +901,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 85,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3916148
+      "espnPlayerId": 3916148,
+      "name": "Tony Pollard",
+      "position": "RB",
+      "proTeamId": 6
     },
     {
       "round": 8,
@@ -694,7 +912,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 86,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4360438
+      "espnPlayerId": 4360438,
+      "name": "Brandon Aiyuk",
+      "position": "WR",
+      "proTeamId": 25
     },
     {
       "round": 8,
@@ -702,7 +923,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 87,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3121023
+      "espnPlayerId": 3121023,
+      "name": "Dallas Goedert",
+      "position": "TE",
+      "proTeamId": 21
     },
     {
       "round": 8,
@@ -710,7 +934,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 88,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 15880
+      "espnPlayerId": 15880,
+      "name": "Robert Woods",
+      "position": "WR",
+      "proTeamId": 0
     },
     {
       "round": 8,
@@ -718,7 +945,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 89,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4569173
+      "espnPlayerId": 4569173,
+      "name": "Rhamondre Stevenson",
+      "position": "RB",
+      "proTeamId": 17
     },
     {
       "round": 8,
@@ -726,7 +956,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 90,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 3915511
+      "espnPlayerId": 3915511,
+      "name": "Joe Burrow",
+      "position": "QB",
+      "proTeamId": 4
     },
     {
       "round": 8,
@@ -734,7 +967,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 91,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 8439
+      "espnPlayerId": 8439,
+      "name": "Aaron Rodgers",
+      "position": "QB",
+      "proTeamId": 9
     },
     {
       "round": 8,
@@ -742,7 +978,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 92,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 15795
+      "espnPlayerId": 15795,
+      "name": "DeAndre Hopkins",
+      "position": "WR",
+      "proTeamId": 22
     },
     {
       "round": 8,
@@ -750,7 +989,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 93,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 4360294
+      "espnPlayerId": 4360294,
+      "name": "Antonio Gibson",
+      "position": "RB",
+      "proTeamId": 28
     },
     {
       "round": 8,
@@ -758,7 +1000,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 94,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 2577327
+      "espnPlayerId": 2577327,
+      "name": "Tyler Lockett",
+      "position": "WR",
+      "proTeamId": 26
     },
     {
       "round": 8,
@@ -766,7 +1011,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 95,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 4046692
+      "espnPlayerId": 4046692,
+      "name": "Chase Claypool",
+      "position": "WR",
+      "proTeamId": 3
     },
     {
       "round": 8,
@@ -774,7 +1022,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 96,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 2330
+      "espnPlayerId": 2330,
+      "name": "Tom Brady",
+      "position": "QB",
+      "proTeamId": 27
     },
     {
       "round": 9,
@@ -782,7 +1033,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 97,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 4426502
+      "espnPlayerId": 4426502,
+      "name": "Drake London",
+      "position": "WR",
+      "proTeamId": 1
     },
     {
       "round": 9,
@@ -790,7 +1044,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 98,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 15683
+      "espnPlayerId": 15683,
+      "name": "Justin Tucker",
+      "position": "K",
+      "proTeamId": 33
     },
     {
       "round": 9,
@@ -798,7 +1055,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 99,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3128390
+      "espnPlayerId": 3128390,
+      "name": "Allen Lazard",
+      "position": "WR",
+      "proTeamId": 20
     },
     {
       "round": 9,
@@ -822,7 +1082,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 102,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 4360234
+      "espnPlayerId": 4360234,
+      "name": "Evan McPherson",
+      "position": "K",
+      "proTeamId": 4
     },
     {
       "round": 9,
@@ -830,7 +1093,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 103,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4241478
+      "espnPlayerId": 4241478,
+      "name": "DeVonta Smith",
+      "position": "WR",
+      "proTeamId": 21
     },
     {
       "round": 9,
@@ -838,7 +1104,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 104,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4361370
+      "espnPlayerId": 4361370,
+      "name": "Chris Olave",
+      "position": "WR",
+      "proTeamId": 18
     },
     {
       "round": 9,
@@ -846,7 +1115,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 105,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 16757
+      "espnPlayerId": 16757,
+      "name": "Derek Carr",
+      "position": "QB",
+      "proTeamId": 18
     },
     {
       "round": 9,
@@ -862,7 +1134,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 107,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4569618
+      "espnPlayerId": 4569618,
+      "name": "Garrett Wilson",
+      "position": "WR",
+      "proTeamId": 20
     },
     {
       "round": 9,
@@ -870,7 +1145,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 108,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3930086
+      "espnPlayerId": 3930086,
+      "name": "Dawson Knox",
+      "position": "TE",
+      "proTeamId": 2
     },
     {
       "round": 10,
@@ -878,7 +1156,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 109,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3051738
+      "espnPlayerId": 3051738,
+      "name": "Marquez Valdes-Scantling",
+      "position": "WR",
+      "proTeamId": 12
     },
     {
       "round": 10,
@@ -886,7 +1167,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 110,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4052042
+      "espnPlayerId": 4052042,
+      "name": "James Robinson",
+      "position": "RB",
+      "proTeamId": 17
     },
     {
       "round": 10,
@@ -894,7 +1178,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 111,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 4258595
+      "espnPlayerId": 4258595,
+      "name": "Cole Kmet",
+      "position": "TE",
+      "proTeamId": 3
     },
     {
       "round": 10,
@@ -902,7 +1189,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 112,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4048244
+      "espnPlayerId": 4048244,
+      "name": "Alexander Mattison",
+      "position": "RB",
+      "proTeamId": 16
     },
     {
       "round": 10,
@@ -910,7 +1200,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 113,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4240657
+      "espnPlayerId": 4240657,
+      "name": "Michael Carter",
+      "position": "RB",
+      "proTeamId": 20
     },
     {
       "round": 10,
@@ -918,7 +1211,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 114,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": -16002
+      "espnPlayerId": -16002,
+      "name": "Bills D/ST",
+      "position": "DEF",
+      "proTeamId": 2
     },
     {
       "round": 10,
@@ -926,7 +1222,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 115,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3046439
+      "espnPlayerId": 3046439,
+      "name": "Hunter Henry",
+      "position": "TE",
+      "proTeamId": 17
     },
     {
       "round": 10,
@@ -934,7 +1233,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 116,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 4240600
+      "espnPlayerId": 4240600,
+      "name": "Kadarius Toney",
+      "position": "WR",
+      "proTeamId": 12
     },
     {
       "round": 10,
@@ -942,7 +1244,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 117,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 3045144
+      "espnPlayerId": 3045144,
+      "name": "Tyler Boyd",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 10,
@@ -950,7 +1255,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 118,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 4361411
+      "espnPlayerId": 4361411,
+      "name": "Pat Freiermuth",
+      "position": "TE",
+      "proTeamId": 23
     },
     {
       "round": 10,
@@ -958,7 +1266,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 119,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 3916430
+      "espnPlayerId": 3916430,
+      "name": "Nyheim Hines",
+      "position": "RB",
+      "proTeamId": 2
     },
     {
       "round": 10,
@@ -974,7 +1285,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 121,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 3916433
+      "espnPlayerId": 3916433,
+      "name": "Jakobi Meyers",
+      "position": "WR",
+      "proTeamId": 13
     },
     {
       "round": 11,
@@ -998,7 +1312,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 124,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 2576414
+      "espnPlayerId": 2576414,
+      "name": "Raheem Mostert",
+      "position": "RB",
+      "proTeamId": 15
     },
     {
       "round": 11,
@@ -1014,7 +1331,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 126,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 4036348
+      "espnPlayerId": 4036348,
+      "name": "Michael Gallup",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 11,
@@ -1022,7 +1342,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 127,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4567048
+      "espnPlayerId": 4567048,
+      "name": "Kenneth Walker III",
+      "position": "RB",
+      "proTeamId": 26
     },
     {
       "round": 11,
@@ -1030,7 +1353,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 128,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4241479
+      "espnPlayerId": 4241479,
+      "name": "Tua Tagovailoa",
+      "position": "QB",
+      "proTeamId": 15
     },
     {
       "round": 11,
@@ -1046,7 +1372,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 130,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 4379399
+      "espnPlayerId": 4379399,
+      "name": "James Cook",
+      "position": "RB",
+      "proTeamId": 2
     },
     {
       "round": 11,
@@ -1070,7 +1399,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 133,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3116164
+      "espnPlayerId": 3116164,
+      "name": "Mike Gesicki",
+      "position": "TE",
+      "proTeamId": 17
     },
     {
       "round": 12,
@@ -1102,7 +1434,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 137,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3051876
+      "espnPlayerId": 3051876,
+      "name": "Evan Engram",
+      "position": "TE",
+      "proTeamId": 30
     },
     {
       "round": 12,
@@ -1126,7 +1461,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 140,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 4426354
+      "espnPlayerId": 4426354,
+      "name": "George Pickens",
+      "position": "WR",
+      "proTeamId": 23
     },
     {
       "round": 12,
@@ -1134,7 +1472,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 141,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 4361409
+      "espnPlayerId": 4361409,
+      "name": "Jahan Dotson",
+      "position": "WR",
+      "proTeamId": 28
     },
     {
       "round": 12,
@@ -1142,7 +1483,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 142,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 14880
+      "espnPlayerId": 14880,
+      "name": "Kirk Cousins",
+      "position": "QB",
+      "proTeamId": 16
     },
     {
       "round": 12,
@@ -1166,7 +1510,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 145,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 4360310
+      "espnPlayerId": 4360310,
+      "name": "Trevor Lawrence",
+      "position": "QB",
+      "proTeamId": 30
     },
     {
       "round": 13,
@@ -1174,7 +1521,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 146,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 2573401
+      "espnPlayerId": 2573401,
+      "name": "Tyler Higbee",
+      "position": "TE",
+      "proTeamId": 14
     },
     {
       "round": 13,
@@ -1198,7 +1548,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 149,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 4697815
+      "espnPlayerId": 4697815,
+      "name": "Rachaad White",
+      "position": "RB",
+      "proTeamId": 27
     },
     {
       "round": 13,
@@ -1206,7 +1559,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 150,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 15971
+      "espnPlayerId": 15971,
+      "name": "Rex Burkhead",
+      "position": "RB",
+      "proTeamId": 34
     },
     {
       "round": 13,
@@ -1222,7 +1578,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 152,
       "teamId": 10,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3128724
+      "espnPlayerId": 3128724,
+      "name": "Isaiah McKenzie",
+      "position": "WR",
+      "proTeamId": 0
     },
     {
       "round": 13,
@@ -1230,7 +1589,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 153,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": -16033
+      "espnPlayerId": -16033,
+      "name": "Ravens D/ST",
+      "position": "DEF",
+      "proTeamId": 33
     },
     {
       "round": 13,
@@ -1246,7 +1608,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 155,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": -16025
+      "espnPlayerId": -16025,
+      "name": "49ers D/ST",
+      "position": "DEF",
+      "proTeamId": 25
     },
     {
       "round": 13,
@@ -1254,7 +1619,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 156,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": -16006
+      "espnPlayerId": -16006,
+      "name": "Cowboys D/ST",
+      "position": "DEF",
+      "proTeamId": 6
     },
     {
       "round": 14,
@@ -1270,7 +1638,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 158,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4035004
+      "espnPlayerId": 4035004,
+      "name": "Mecole Hardman",
+      "position": "WR",
+      "proTeamId": 12
     },
     {
       "round": 14,
@@ -1278,7 +1649,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 159,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3055899
+      "espnPlayerId": 3055899,
+      "name": "Harrison Butker",
+      "position": "K",
+      "proTeamId": 12
     },
     {
       "round": 14,
@@ -1286,7 +1660,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 160,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4362887
+      "espnPlayerId": 4362887,
+      "name": "Justin Fields",
+      "position": "QB",
+      "proTeamId": 3
     },
     {
       "round": 14,
@@ -1310,7 +1687,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 163,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3975763
+      "espnPlayerId": 3975763,
+      "name": "Greg Joseph",
+      "position": "K",
+      "proTeamId": 16
     },
     {
       "round": 14,
@@ -1318,7 +1698,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 164,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": 3917232
+      "espnPlayerId": 3917232,
+      "name": "Tyler Bass",
+      "position": "K",
+      "proTeamId": 2
     },
     {
       "round": 14,
@@ -1342,7 +1725,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 167,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 14876
+      "espnPlayerId": 14876,
+      "name": "Ryan Tannehill",
+      "position": "QB",
+      "proTeamId": 10
     },
     {
       "round": 14,
@@ -1350,7 +1736,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 168,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 4242433
+      "espnPlayerId": 4242433,
+      "name": "Joshua Palmer",
+      "position": "WR",
+      "proTeamId": 24
     },
     {
       "round": 15,
@@ -1366,7 +1755,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 170,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": 15864
+      "espnPlayerId": 15864,
+      "name": "Geno Smith",
+      "position": "QB",
+      "proTeamId": 26
     },
     {
       "round": 15,
@@ -1382,7 +1774,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 172,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": 10621
+      "espnPlayerId": 10621,
+      "name": "Nick Folk",
+      "position": "K",
+      "proTeamId": 17
     },
     {
       "round": 15,
@@ -1398,7 +1793,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 174,
       "teamId": 3,
       "owner": "Sydney & Olivia",
-      "espnPlayerId": 3043275
+      "espnPlayerId": 3043275,
+      "name": "Austin Hooper",
+      "position": "TE",
+      "proTeamId": 10
     },
     {
       "round": 15,
@@ -1406,7 +1804,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 175,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 3917792
+      "espnPlayerId": 3917792,
+      "name": "Daniel Jones",
+      "position": "QB",
+      "proTeamId": 19
     },
     {
       "round": 15,
@@ -1422,7 +1823,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 177,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4036131
+      "espnPlayerId": 4036131,
+      "name": "Noah Fant",
+      "position": "TE",
+      "proTeamId": 26
     },
     {
       "round": 15,
@@ -1430,7 +1834,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 178,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 2980453
+      "espnPlayerId": 2980453,
+      "name": "Jamaal Williams",
+      "position": "RB",
+      "proTeamId": 18
     },
     {
       "round": 15,
@@ -1438,7 +1845,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 179,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4241474
+      "espnPlayerId": 4241474,
+      "name": "Brian Robinson Jr.",
+      "position": "RB",
+      "proTeamId": 28
     },
     {
       "round": 15,
@@ -1470,7 +1880,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 183,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3121427
+      "espnPlayerId": 3121427,
+      "name": "Curtis Samuel",
+      "position": "WR",
+      "proTeamId": 28
     },
     {
       "round": 16,
@@ -1478,7 +1891,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 184,
       "teamId": 5,
       "owner": "Shivam Patel",
-      "espnPlayerId": 12460
+      "espnPlayerId": 12460,
+      "name": "Graham Gano",
+      "position": "K",
+      "proTeamId": 19
     },
     {
       "round": 16,
@@ -1494,7 +1910,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 186,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": -16007
+      "espnPlayerId": -16007,
+      "name": "Broncos D/ST",
+      "position": "DEF",
+      "proTeamId": 7
     },
     {
       "round": 16,
@@ -1510,7 +1929,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 188,
       "teamId": 12,
       "owner": "Austin Farris",
-      "espnPlayerId": -16005
+      "espnPlayerId": -16005,
+      "name": "Browns D/ST",
+      "position": "DEF",
+      "proTeamId": 5
     },
     {
       "round": 16,
@@ -1518,7 +1940,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 189,
       "teamId": 9,
       "owner": "Rohan Shani",
-      "espnPlayerId": -16024
+      "espnPlayerId": -16024,
+      "name": "Chargers D/ST",
+      "position": "DEF",
+      "proTeamId": 24
     },
     {
       "round": 16,
@@ -1526,7 +1951,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 190,
       "teamId": 6,
       "owner": "Zach Sullivan",
-      "espnPlayerId": -16023
+      "espnPlayerId": -16023,
+      "name": "Steelers D/ST",
+      "position": "DEF",
+      "proTeamId": 23
     },
     {
       "round": 16,
@@ -1534,7 +1962,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 191,
       "teamId": 8,
       "owner": "Colin Lenseigne",
-      "espnPlayerId": -16015
+      "espnPlayerId": -16015,
+      "name": "Dolphins D/ST",
+      "position": "DEF",
+      "proTeamId": 15
     },
     {
       "round": 16,
@@ -1542,7 +1973,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 192,
       "teamId": 11,
       "owner": "Megan Gelber",
-      "espnPlayerId": 3123076
+      "espnPlayerId": 3123076,
+      "name": "David Njoku",
+      "position": "TE",
+      "proTeamId": 5
     }
   ],
   "2021": [
@@ -1560,7 +1994,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 2,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3116593
+      "espnPlayerId": 3116593,
+      "name": "Dalvin Cook",
+      "position": "RB",
+      "proTeamId": 16
     },
     {
       "round": 1,
@@ -1568,7 +2005,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 3,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 3054850
+      "espnPlayerId": 3054850,
+      "name": "Alvin Kamara",
+      "position": "RB",
+      "proTeamId": 18
     },
     {
       "round": 1,
@@ -1576,7 +2016,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 4,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 3043078
+      "espnPlayerId": 3043078,
+      "name": "Derrick Henry",
+      "position": "RB",
+      "proTeamId": 10
     },
     {
       "round": 1,
@@ -1584,7 +2027,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 5,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 15847
+      "espnPlayerId": 15847,
+      "name": "Travis Kelce",
+      "position": "TE",
+      "proTeamId": 12
     },
     {
       "round": 1,
@@ -1592,7 +2038,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 6,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 16800
+      "espnPlayerId": 16800,
+      "name": "Davante Adams",
+      "position": "WR",
+      "proTeamId": 9
     },
     {
       "round": 1,
@@ -1600,7 +2049,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 7,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3929630
+      "espnPlayerId": 3929630,
+      "name": "Saquon Barkley",
+      "position": "RB",
+      "proTeamId": 19
     },
     {
       "round": 1,
@@ -1608,7 +2060,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 8,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 4242335
+      "espnPlayerId": 4242335,
+      "name": "Jonathan Taylor",
+      "position": "RB",
+      "proTeamId": 11
     },
     {
       "round": 1,
@@ -1616,7 +2071,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 9,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3051392
+      "espnPlayerId": 3051392,
+      "name": "Ezekiel Elliott",
+      "position": "RB",
+      "proTeamId": 6
     },
     {
       "round": 1,
@@ -1624,7 +2082,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 10,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3042519
+      "espnPlayerId": 3042519,
+      "name": "Aaron Jones",
+      "position": "RB",
+      "proTeamId": 9
     },
     {
       "round": 2,
@@ -1632,7 +2093,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 11,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3116406
+      "espnPlayerId": 3116406,
+      "name": "Tyreek Hill",
+      "position": "WR",
+      "proTeamId": 12
     },
     {
       "round": 2,
@@ -1640,7 +2104,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 12,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 4047650
+      "espnPlayerId": 4047650,
+      "name": "DK Metcalf",
+      "position": "WR",
+      "proTeamId": 26
     },
     {
       "round": 2,
@@ -1648,7 +2115,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 13,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 3128720
+      "espnPlayerId": 3128720,
+      "name": "Nick Chubb",
+      "position": "RB",
+      "proTeamId": 5
     },
     {
       "round": 2,
@@ -1656,7 +2126,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 14,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 4241457
+      "espnPlayerId": 4241457,
+      "name": "Najee Harris",
+      "position": "RB",
+      "proTeamId": 23
     },
     {
       "round": 2,
@@ -1664,7 +2137,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 15,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 3068267
+      "espnPlayerId": 3068267,
+      "name": "Austin Ekeler",
+      "position": "RB",
+      "proTeamId": 24
     },
     {
       "round": 2,
@@ -1672,7 +2148,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 16,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 2976212
+      "espnPlayerId": 2976212,
+      "name": "Stefon Diggs",
+      "position": "WR",
+      "proTeamId": 2
     },
     {
       "round": 2,
@@ -1680,7 +2159,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 17,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 4360294
+      "espnPlayerId": 4360294,
+      "name": "Antonio Gibson",
+      "position": "RB",
+      "proTeamId": 28
     },
     {
       "round": 2,
@@ -1688,7 +2170,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 18,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 15795
+      "espnPlayerId": 15795,
+      "name": "DeAndre Hopkins",
+      "position": "WR",
+      "proTeamId": 22
     },
     {
       "round": 2,
@@ -1704,7 +2189,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 20,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4262921
+      "espnPlayerId": 4262921,
+      "name": "Justin Jefferson",
+      "position": "WR",
+      "proTeamId": 16
     },
     {
       "round": 3,
@@ -1712,7 +2200,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 21,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4047646
+      "espnPlayerId": 4047646,
+      "name": "A.J. Brown",
+      "position": "WR",
+      "proTeamId": 10
     },
     {
       "round": 3,
@@ -1720,7 +2211,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 22,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4242214
+      "espnPlayerId": 4242214,
+      "name": "Clyde Edwards-Helaire",
+      "position": "RB",
+      "proTeamId": 12
     },
     {
       "round": 3,
@@ -1728,7 +2222,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 23,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 2576925
+      "espnPlayerId": 2576925,
+      "name": "Darren Waller",
+      "position": "TE",
+      "proTeamId": 13
     },
     {
       "round": 3,
@@ -1736,7 +2233,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 24,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 15818
+      "espnPlayerId": 15818,
+      "name": "Keenan Allen",
+      "position": "WR",
+      "proTeamId": 24
     },
     {
       "round": 3,
@@ -1744,7 +2244,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 25,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 3116385
+      "espnPlayerId": 3116385,
+      "name": "Joe Mixon",
+      "position": "RB",
+      "proTeamId": 4
     },
     {
       "round": 3,
@@ -1752,7 +2255,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 26,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4052042
+      "espnPlayerId": 4052042,
+      "name": "James Robinson",
+      "position": "RB",
+      "proTeamId": 30
     },
     {
       "round": 3,
@@ -1760,7 +2266,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 27,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3040151
+      "espnPlayerId": 3040151,
+      "name": "George Kittle",
+      "position": "TE",
+      "proTeamId": 25
     },
     {
       "round": 3,
@@ -1768,7 +2277,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 28,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 3121422
+      "espnPlayerId": 3121422,
+      "name": "Terry McLaurin",
+      "position": "WR",
+      "proTeamId": 28
     },
     {
       "round": 3,
@@ -1784,7 +2296,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 30,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4035538
+      "espnPlayerId": 4035538,
+      "name": "David Montgomery",
+      "position": "RB",
+      "proTeamId": 3
     },
     {
       "round": 4,
@@ -1792,7 +2307,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 31,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3139477
+      "espnPlayerId": 3139477,
+      "name": "Patrick Mahomes",
+      "position": "QB",
+      "proTeamId": 12
     },
     {
       "round": 4,
@@ -1800,7 +2318,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 32,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3918298
+      "espnPlayerId": 3918298,
+      "name": "Josh Allen",
+      "position": "QB",
+      "proTeamId": 2
     },
     {
       "round": 4,
@@ -1808,7 +2329,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 33,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 16737
+      "espnPlayerId": 16737,
+      "name": "Mike Evans",
+      "position": "WR",
+      "proTeamId": 27
     },
     {
       "round": 4,
@@ -1816,7 +2340,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 34,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3916387
+      "espnPlayerId": 3916387,
+      "name": "Lamar Jackson",
+      "position": "QB",
+      "proTeamId": 33
     },
     {
       "round": 4,
@@ -1824,7 +2351,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 35,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4241389
+      "espnPlayerId": 4241389,
+      "name": "CeeDee Lamb",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 4,
@@ -1840,7 +2370,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 37,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 2976499
+      "espnPlayerId": 2976499,
+      "name": "Amari Cooper",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 4,
@@ -1848,7 +2381,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 38,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 4045163
+      "espnPlayerId": 4045163,
+      "name": "Miles Sanders",
+      "position": "RB",
+      "proTeamId": 21
     },
     {
       "round": 4,
@@ -1856,7 +2392,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 39,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3915416
+      "espnPlayerId": 3915416,
+      "name": "DJ Moore",
+      "position": "WR",
+      "proTeamId": 29
     },
     {
       "round": 4,
@@ -1864,7 +2403,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 40,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4259545
+      "espnPlayerId": 4259545,
+      "name": "D'Andre Swift",
+      "position": "RB",
+      "proTeamId": 8
     },
     {
       "round": 5,
@@ -1872,7 +2414,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 41,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 2577327
+      "espnPlayerId": 2577327,
+      "name": "Tyler Lockett",
+      "position": "WR",
+      "proTeamId": 26
     },
     {
       "round": 5,
@@ -1888,7 +2433,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 43,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 16460
+      "espnPlayerId": 16460,
+      "name": "Adam Thielen",
+      "position": "WR",
+      "proTeamId": 16
     },
     {
       "round": 5,
@@ -1896,7 +2444,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 44,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 2977187
+      "espnPlayerId": 2977187,
+      "name": "Cooper Kupp",
+      "position": "WR",
+      "proTeamId": 14
     },
     {
       "round": 5,
@@ -1904,7 +2455,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 45,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4047365
+      "espnPlayerId": 4047365,
+      "name": "Josh Jacobs",
+      "position": "RB",
+      "proTeamId": 13
     },
     {
       "round": 5,
@@ -1912,7 +2466,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 46,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 3886818
+      "espnPlayerId": 3886818,
+      "name": "Myles Gaskin",
+      "position": "RB",
+      "proTeamId": 15
     },
     {
       "round": 5,
@@ -1920,7 +2477,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 47,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3116165
+      "espnPlayerId": 3116165,
+      "name": "Chris Godwin",
+      "position": "WR",
+      "proTeamId": 27
     },
     {
       "round": 5,
@@ -1936,7 +2496,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 49,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3119195
+      "espnPlayerId": 3119195,
+      "name": "Chase Edmonds",
+      "position": "RB",
+      "proTeamId": 22
     },
     {
       "round": 5,
@@ -1944,7 +2507,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 50,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4239993
+      "espnPlayerId": 4239993,
+      "name": "Tee Higgins",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 6,
@@ -1952,7 +2518,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 51,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3116365
+      "espnPlayerId": 3116365,
+      "name": "Mark Andrews",
+      "position": "TE",
+      "proTeamId": 33
     },
     {
       "round": 6,
@@ -1976,7 +2545,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 54,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3128429
+      "espnPlayerId": 3128429,
+      "name": "Courtland Sutton",
+      "position": "WR",
+      "proTeamId": 7
     },
     {
       "round": 6,
@@ -1992,7 +2564,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 56,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 3932905
+      "espnPlayerId": 3932905,
+      "name": "Diontae Johnson",
+      "position": "WR",
+      "proTeamId": 23
     },
     {
       "round": 6,
@@ -2016,7 +2591,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 59,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3059915
+      "espnPlayerId": 3059915,
+      "name": "Kareem Hunt",
+      "position": "RB",
+      "proTeamId": 5
     },
     {
       "round": 6,
@@ -2024,7 +2602,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 60,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 3917315
+      "espnPlayerId": 3917315,
+      "name": "Kyler Murray",
+      "position": "QB",
+      "proTeamId": 22
     },
     {
       "round": 7,
@@ -2032,7 +2613,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 61,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4360248
+      "espnPlayerId": 4360248,
+      "name": "Kyle Pitts",
+      "position": "TE",
+      "proTeamId": 1
     },
     {
       "round": 7,
@@ -2048,7 +2632,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 63,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 2577417
+      "espnPlayerId": 2577417,
+      "name": "Dak Prescott",
+      "position": "QB",
+      "proTeamId": 6
     },
     {
       "round": 7,
@@ -2056,7 +2643,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 64,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 4361579
+      "espnPlayerId": 4361579,
+      "name": "Javonte Williams",
+      "position": "RB",
+      "proTeamId": 7
     },
     {
       "round": 7,
@@ -2064,7 +2654,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 65,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4046692
+      "espnPlayerId": 4046692,
+      "name": "Chase Claypool",
+      "position": "WR",
+      "proTeamId": 23
     },
     {
       "round": 7,
@@ -2072,7 +2665,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 66,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4241463
+      "espnPlayerId": 4241463,
+      "name": "Jerry Jeudy",
+      "position": "WR",
+      "proTeamId": 7
     },
     {
       "round": 7,
@@ -2080,7 +2676,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 67,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 4039359
+      "espnPlayerId": 4039359,
+      "name": "Darrell Henderson Jr.",
+      "position": "RB",
+      "proTeamId": 14
     },
     {
       "round": 7,
@@ -2088,7 +2687,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 68,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 14881
+      "espnPlayerId": 14881,
+      "name": "Russell Wilson",
+      "position": "QB",
+      "proTeamId": 26
     },
     {
       "round": 7,
@@ -2104,7 +2706,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 70,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4036348
+      "espnPlayerId": 4036348,
+      "name": "Michael Gallup",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 8,
@@ -2112,7 +2717,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 71,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 16731
+      "espnPlayerId": 16731,
+      "name": "Brandin Cooks",
+      "position": "WR",
+      "proTeamId": 34
     },
     {
       "round": 8,
@@ -2128,7 +2736,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 73,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 4036131
+      "espnPlayerId": 4036131,
+      "name": "Noah Fant",
+      "position": "TE",
+      "proTeamId": 7
     },
     {
       "round": 8,
@@ -2136,7 +2747,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 74,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 4362628
+      "espnPlayerId": 4362628,
+      "name": "Ja'Marr Chase",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 8,
@@ -2144,7 +2758,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 75,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 8439
+      "espnPlayerId": 8439,
+      "name": "Aaron Rodgers",
+      "position": "QB",
+      "proTeamId": 9
     },
     {
       "round": 8,
@@ -2152,7 +2769,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 76,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 2330
+      "espnPlayerId": 2330,
+      "name": "Tom Brady",
+      "position": "QB",
+      "proTeamId": 27
     },
     {
       "round": 8,
@@ -2168,7 +2788,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 78,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 4243160
+      "espnPlayerId": 4243160,
+      "name": "Laviska Shenault Jr.",
+      "position": "WR",
+      "proTeamId": 30
     },
     {
       "round": 8,
@@ -2176,7 +2799,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 79,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3045144
+      "espnPlayerId": 3045144,
+      "name": "Tyler Boyd",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 8,
@@ -2192,7 +2818,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 81,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 16733
+      "espnPlayerId": 16733,
+      "name": "Odell Beckham Jr.",
+      "position": "WR",
+      "proTeamId": 14
     },
     {
       "round": 9,
@@ -2200,7 +2829,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 82,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4038941
+      "espnPlayerId": 4038941,
+      "name": "Justin Herbert",
+      "position": "QB",
+      "proTeamId": 24
     },
     {
       "round": 9,
@@ -2208,7 +2840,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 83,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 3925347
+      "espnPlayerId": 3925347,
+      "name": "Damien Harris",
+      "position": "RB",
+      "proTeamId": 17
     },
     {
       "round": 9,
@@ -2232,7 +2867,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 86,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 3126486
+      "espnPlayerId": 3126486,
+      "name": "Deebo Samuel",
+      "position": "WR",
+      "proTeamId": 25
     },
     {
       "round": 9,
@@ -2240,7 +2878,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 87,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 16790
+      "espnPlayerId": 16790,
+      "name": "Jarvis Landry",
+      "position": "WR",
+      "proTeamId": 5
     },
     {
       "round": 9,
@@ -2248,7 +2889,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 88,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 3052876
+      "espnPlayerId": 3052876,
+      "name": "William Fuller V",
+      "position": "WR",
+      "proTeamId": 15
     },
     {
       "round": 9,
@@ -2256,7 +2900,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 89,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 4241372
+      "espnPlayerId": 4241372,
+      "name": "Marquise Brown",
+      "position": "WR",
+      "proTeamId": 33
     },
     {
       "round": 9,
@@ -2264,7 +2911,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 90,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 2979843
+      "espnPlayerId": 2979843,
+      "name": "Kenyan Drake",
+      "position": "RB",
+      "proTeamId": 13
     },
     {
       "round": 10,
@@ -2272,7 +2922,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 91,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3045138
+      "espnPlayerId": 3045138,
+      "name": "Mike Williams",
+      "position": "WR",
+      "proTeamId": 24
     },
     {
       "round": 10,
@@ -2280,7 +2933,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 92,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3916430
+      "espnPlayerId": 3916430,
+      "name": "Nyheim Hines",
+      "position": "RB",
+      "proTeamId": 11
     },
     {
       "round": 10,
@@ -2288,7 +2944,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 93,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 3045147
+      "espnPlayerId": 3045147,
+      "name": "James Conner",
+      "position": "RB",
+      "proTeamId": 22
     },
     {
       "round": 10,
@@ -2296,7 +2955,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 94,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3128721
+      "espnPlayerId": 3128721,
+      "name": "Sony Michel",
+      "position": "RB",
+      "proTeamId": 14
     },
     {
       "round": 10,
@@ -2304,7 +2966,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 95,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4372016
+      "espnPlayerId": 4372016,
+      "name": "Jaylen Waddle",
+      "position": "WR",
+      "proTeamId": 15
     },
     {
       "round": 10,
@@ -2312,7 +2977,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 96,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 13934
+      "espnPlayerId": 13934,
+      "name": "Antonio Brown",
+      "position": "WR",
+      "proTeamId": 0
     },
     {
       "round": 10,
@@ -2320,7 +2988,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 97,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 4239934
+      "espnPlayerId": 4239934,
+      "name": "AJ Dillon",
+      "position": "RB",
+      "proTeamId": 9
     },
     {
       "round": 10,
@@ -2328,7 +2999,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 98,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 3115364
+      "espnPlayerId": 3115364,
+      "name": "Leonard Fournette",
+      "position": "RB",
+      "proTeamId": 27
     },
     {
       "round": 10,
@@ -2336,7 +3010,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 99,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3121023
+      "espnPlayerId": 3121023,
+      "name": "Dallas Goedert",
+      "position": "TE",
+      "proTeamId": 21
     },
     {
       "round": 10,
@@ -2344,7 +3021,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 100,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 15072
+      "espnPlayerId": 15072,
+      "name": "Marvin Jones Jr.",
+      "position": "WR",
+      "proTeamId": 30
     },
     {
       "round": 11,
@@ -2360,7 +3040,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 102,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4040715
+      "espnPlayerId": 4040715,
+      "name": "Jalen Hurts",
+      "position": "QB",
+      "proTeamId": 21
     },
     {
       "round": 11,
@@ -2376,7 +3059,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 104,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 12483
+      "espnPlayerId": 12483,
+      "name": "Matthew Stafford",
+      "position": "QB",
+      "proTeamId": 14
     },
     {
       "round": 11,
@@ -2384,7 +3070,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 105,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 2576434
+      "espnPlayerId": 2576434,
+      "name": "Melvin Gordon III",
+      "position": "RB",
+      "proTeamId": 7
     },
     {
       "round": 11,
@@ -2400,7 +3089,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 107,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 2980453
+      "espnPlayerId": 2980453,
+      "name": "Jamaal Williams",
+      "position": "RB",
+      "proTeamId": 8
     },
     {
       "round": 11,
@@ -2408,7 +3100,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 108,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 3054212
+      "espnPlayerId": 3054212,
+      "name": "Jonnu Smith",
+      "position": "TE",
+      "proTeamId": 17
     },
     {
       "round": 11,
@@ -2440,7 +3135,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 112,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 3116164
+      "espnPlayerId": 3116164,
+      "name": "Mike Gesicki",
+      "position": "TE",
+      "proTeamId": 15
     },
     {
       "round": 12,
@@ -2448,7 +3146,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 113,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 3912550
+      "espnPlayerId": 3912550,
+      "name": "Ronald Jones II",
+      "position": "RB",
+      "proTeamId": 27
     },
     {
       "round": 12,
@@ -2464,7 +3165,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 115,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4240657
+      "espnPlayerId": 4240657,
+      "name": "Michael Carter",
+      "position": "RB",
+      "proTeamId": 20
     },
     {
       "round": 12,
@@ -2472,7 +3176,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 116,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 4040761
+      "espnPlayerId": 4040761,
+      "name": "Devin Singletary",
+      "position": "RB",
+      "proTeamId": 2
     },
     {
       "round": 12,
@@ -2480,7 +3187,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 117,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 2573401
+      "espnPlayerId": 2573401,
+      "name": "Tyler Higbee",
+      "position": "TE",
+      "proTeamId": 14
     },
     {
       "round": 12,
@@ -2488,7 +3198,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 118,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 2576623
+      "espnPlayerId": 2576623,
+      "name": "DeVante Parker",
+      "position": "WR",
+      "proTeamId": 15
     },
     {
       "round": 12,
@@ -2504,7 +3217,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 120,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4035687
+      "espnPlayerId": 4035687,
+      "name": "Michael Pittman Jr.",
+      "position": "WR",
+      "proTeamId": 11
     },
     {
       "round": 13,
@@ -2560,7 +3276,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 127,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3916433
+      "espnPlayerId": 3916433,
+      "name": "Jakobi Meyers",
+      "position": "WR",
+      "proTeamId": 17
     },
     {
       "round": 13,
@@ -2584,7 +3303,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 130,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": -16027
+      "espnPlayerId": -16027,
+      "name": "Buccaneers D/ST",
+      "position": "DEF",
+      "proTeamId": 27
     },
     {
       "round": 14,
@@ -2608,7 +3330,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 133,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": 2508176
+      "espnPlayerId": 2508176,
+      "name": "David Johnson",
+      "position": "RB",
+      "proTeamId": 34
     },
     {
       "round": 14,
@@ -2624,7 +3349,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 135,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": -16025
+      "espnPlayerId": -16025,
+      "name": "49ers D/ST",
+      "position": "DEF",
+      "proTeamId": 25
     },
     {
       "round": 14,
@@ -2640,7 +3368,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 137,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": 15683
+      "espnPlayerId": 15683,
+      "name": "Justin Tucker",
+      "position": "K",
+      "proTeamId": 33
     },
     {
       "round": 14,
@@ -2672,7 +3403,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 141,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4040655
+      "espnPlayerId": 4040655,
+      "name": "Darnell Mooney",
+      "position": "WR",
+      "proTeamId": 3
     },
     {
       "round": 15,
@@ -2712,7 +3446,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 146,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4048244
+      "espnPlayerId": 4048244,
+      "name": "Alexander Mattison",
+      "position": "RB",
+      "proTeamId": 16
     },
     {
       "round": 15,
@@ -2720,7 +3457,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 147,
       "teamId": 3,
       "owner": "Zach Sullivan",
-      "espnPlayerId": -16002
+      "espnPlayerId": -16002,
+      "name": "Bills D/ST",
+      "position": "DEF",
+      "proTeamId": 2
     },
     {
       "round": 15,
@@ -2728,7 +3468,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 148,
       "teamId": 11,
       "owner": "Matthew Jensen",
-      "espnPlayerId": -16007
+      "espnPlayerId": -16007,
+      "name": "Broncos D/ST",
+      "position": "DEF",
+      "proTeamId": 7
     },
     {
       "round": 15,
@@ -2736,7 +3479,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 149,
       "teamId": 4,
       "owner": "Seth Hendrickson",
-      "espnPlayerId": 16339
+      "espnPlayerId": 16339,
+      "name": "Brandon McManus",
+      "position": "K",
+      "proTeamId": 7
     },
     {
       "round": 15,
@@ -2744,7 +3490,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 150,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 12460
+      "espnPlayerId": 12460,
+      "name": "Graham Gano",
+      "position": "K",
+      "proTeamId": 19
     },
     {
       "round": 16,
@@ -2752,7 +3501,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 151,
       "teamId": 7,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3115378
+      "espnPlayerId": 3115378,
+      "name": "Russell Gage",
+      "position": "WR",
+      "proTeamId": 1
     },
     {
       "round": 16,
@@ -2784,7 +3536,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 155,
       "teamId": 12,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4249087
+      "espnPlayerId": 4249087,
+      "name": "Matt Gay",
+      "position": "K",
+      "proTeamId": 14
     },
     {
       "round": 16,
@@ -2792,7 +3547,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 156,
       "teamId": 2,
       "owner": "Tyler Armstrong",
-      "espnPlayerId": 3915511
+      "espnPlayerId": 3915511,
+      "name": "Joe Burrow",
+      "position": "QB",
+      "proTeamId": 4
     },
     {
       "round": 16,
@@ -2800,7 +3558,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 157,
       "teamId": 10,
       "owner": "Austin Farris",
-      "espnPlayerId": -16017
+      "espnPlayerId": -16017,
+      "name": "Patriots D/ST",
+      "position": "DEF",
+      "proTeamId": 17
     },
     {
       "round": 16,
@@ -2808,7 +3569,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 158,
       "teamId": 6,
       "owner": "James McNeal",
-      "espnPlayerId": 3917232
+      "espnPlayerId": 3917232,
+      "name": "Tyler Bass",
+      "position": "K",
+      "proTeamId": 2
     },
     {
       "round": 16,
@@ -2816,7 +3580,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 159,
       "teamId": 5,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 14993
+      "espnPlayerId": 14993,
+      "name": "Greg Zuerlein",
+      "position": "K",
+      "proTeamId": 6
     },
     {
       "round": 16,
@@ -2834,7 +3601,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 1,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 3117251
+      "espnPlayerId": 3117251,
+      "name": "Christian McCaffrey",
+      "position": "RB",
+      "proTeamId": 29
     },
     {
       "round": 1,
@@ -2850,7 +3620,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 3,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 3051392
+      "espnPlayerId": 3051392,
+      "name": "Ezekiel Elliott",
+      "position": "RB",
+      "proTeamId": 6
     },
     {
       "round": 1,
@@ -2858,7 +3631,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 4,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 2976316
+      "espnPlayerId": 2976316,
+      "name": "Michael Thomas",
+      "position": "WR",
+      "proTeamId": 18
     },
     {
       "round": 1,
@@ -2866,7 +3642,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 5,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 3116593
+      "espnPlayerId": 3116593,
+      "name": "Dalvin Cook",
+      "position": "RB",
+      "proTeamId": 16
     },
     {
       "round": 1,
@@ -2874,7 +3653,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 6,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3054850
+      "espnPlayerId": 3054850,
+      "name": "Alvin Kamara",
+      "position": "RB",
+      "proTeamId": 18
     },
     {
       "round": 1,
@@ -2882,7 +3664,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 7,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 4242214
+      "espnPlayerId": 4242214,
+      "name": "Clyde Edwards-Helaire",
+      "position": "RB",
+      "proTeamId": 12
     },
     {
       "round": 1,
@@ -2890,7 +3675,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 8,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3043078
+      "espnPlayerId": 3043078,
+      "name": "Derrick Henry",
+      "position": "RB",
+      "proTeamId": 10
     },
     {
       "round": 1,
@@ -2906,7 +3694,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 10,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 2979843
+      "espnPlayerId": 2979843,
+      "name": "Kenyan Drake",
+      "position": "RB",
+      "proTeamId": 22
     },
     {
       "round": 2,
@@ -2914,7 +3705,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 11,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 3917315
+      "espnPlayerId": 3917315,
+      "name": "Kyler Murray",
+      "position": "QB",
+      "proTeamId": 22
     },
     {
       "round": 2,
@@ -2922,7 +3716,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 12,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 3139477
+      "espnPlayerId": 3139477,
+      "name": "Patrick Mahomes",
+      "position": "QB",
+      "proTeamId": 12
     },
     {
       "round": 2,
@@ -2930,7 +3727,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 13,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3128720
+      "espnPlayerId": 3128720,
+      "name": "Nick Chubb",
+      "position": "RB",
+      "proTeamId": 5
     },
     {
       "round": 2,
@@ -2938,7 +3738,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 14,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 4047365
+      "espnPlayerId": 4047365,
+      "name": "Josh Jacobs",
+      "position": "RB",
+      "proTeamId": 13
     },
     {
       "round": 2,
@@ -2946,7 +3749,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 15,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 13982
+      "espnPlayerId": 13982,
+      "name": "Julio Jones",
+      "position": "WR",
+      "proTeamId": 1
     },
     {
       "round": 2,
@@ -2954,7 +3760,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 16,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 3042519
+      "espnPlayerId": 3042519,
+      "name": "Aaron Jones",
+      "position": "RB",
+      "proTeamId": 9
     },
     {
       "round": 2,
@@ -2962,7 +3771,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 17,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 15795
+      "espnPlayerId": 15795,
+      "name": "DeAndre Hopkins",
+      "position": "WR",
+      "proTeamId": 22
     },
     {
       "round": 2,
@@ -2970,7 +3782,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 18,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 15847
+      "espnPlayerId": 15847,
+      "name": "Travis Kelce",
+      "position": "TE",
+      "proTeamId": 12
     },
     {
       "round": 2,
@@ -2978,7 +3793,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 19,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 3916387
+      "espnPlayerId": 3916387,
+      "name": "Lamar Jackson",
+      "position": "QB",
+      "proTeamId": 33
     },
     {
       "round": 2,
@@ -2986,7 +3804,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 20,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 3116165
+      "espnPlayerId": 3116165,
+      "name": "Chris Godwin",
+      "position": "WR",
+      "proTeamId": 27
     },
     {
       "round": 3,
@@ -2994,7 +3815,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 21,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 3068267
+      "espnPlayerId": 3068267,
+      "name": "Austin Ekeler",
+      "position": "RB",
+      "proTeamId": 24
     },
     {
       "round": 3,
@@ -3002,7 +3826,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 22,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 16800
+      "espnPlayerId": 16800,
+      "name": "Davante Adams",
+      "position": "WR",
+      "proTeamId": 9
     },
     {
       "round": 3,
@@ -3010,7 +3837,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 23,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 11237
+      "espnPlayerId": 11237,
+      "name": "Matt Ryan",
+      "position": "QB",
+      "proTeamId": 1
     },
     {
       "round": 3,
@@ -3026,7 +3856,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 25,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 3116385
+      "espnPlayerId": 3116385,
+      "name": "Joe Mixon",
+      "position": "RB",
+      "proTeamId": 4
     },
     {
       "round": 3,
@@ -3034,7 +3867,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 26,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3116406
+      "espnPlayerId": 3116406,
+      "name": "Tyreek Hill",
+      "position": "WR",
+      "proTeamId": 12
     },
     {
       "round": 3,
@@ -3050,7 +3886,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 28,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 14881
+      "espnPlayerId": 14881,
+      "name": "Russell Wilson",
+      "position": "QB",
+      "proTeamId": 26
     },
     {
       "round": 3,
@@ -3058,7 +3897,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 29,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 15880
+      "espnPlayerId": 15880,
+      "name": "Robert Woods",
+      "position": "WR",
+      "proTeamId": 14
     },
     {
       "round": 3,
@@ -3066,7 +3908,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 30,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 16737
+      "espnPlayerId": 16737,
+      "name": "Mike Evans",
+      "position": "WR",
+      "proTeamId": 27
     },
     {
       "round": 4,
@@ -3074,7 +3919,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 31,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 3040151
+      "espnPlayerId": 3040151,
+      "name": "George Kittle",
+      "position": "TE",
+      "proTeamId": 25
     },
     {
       "round": 4,
@@ -3082,7 +3930,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 32,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 2577327
+      "espnPlayerId": 2577327,
+      "name": "Tyler Lockett",
+      "position": "WR",
+      "proTeamId": 26
     },
     {
       "round": 4,
@@ -3090,7 +3941,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 33,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3116365
+      "espnPlayerId": 3116365,
+      "name": "Mark Andrews",
+      "position": "TE",
+      "proTeamId": 33
     },
     {
       "round": 4,
@@ -3098,7 +3952,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 34,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 16799
+      "espnPlayerId": 16799,
+      "name": "Allen Robinson II",
+      "position": "WR",
+      "proTeamId": 3
     },
     {
       "round": 4,
@@ -3106,7 +3963,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 35,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3122840
+      "espnPlayerId": 3122840,
+      "name": "Deshaun Watson",
+      "position": "QB",
+      "proTeamId": 34
     },
     {
       "round": 4,
@@ -3114,7 +3974,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 36,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 3915416
+      "espnPlayerId": 3915416,
+      "name": "DJ Moore",
+      "position": "WR",
+      "proTeamId": 29
     },
     {
       "round": 4,
@@ -3122,7 +3985,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 37,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 13983
+      "espnPlayerId": 13983,
+      "name": "A.J. Green",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 4,
@@ -3130,7 +3996,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 38,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 3919596
+      "espnPlayerId": 3919596,
+      "name": "Chris Carson",
+      "position": "RB",
+      "proTeamId": 26
     },
     {
       "round": 4,
@@ -3138,7 +4007,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 39,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 16460
+      "espnPlayerId": 16460,
+      "name": "Adam Thielen",
+      "position": "WR",
+      "proTeamId": 16
     },
     {
       "round": 4,
@@ -3146,7 +4018,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 40,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 3120348
+      "espnPlayerId": 3120348,
+      "name": "JuJu Smith-Schuster",
+      "position": "WR",
+      "proTeamId": 23
     },
     {
       "round": 5,
@@ -3154,7 +4029,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 41,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 2976499
+      "espnPlayerId": 2976499,
+      "name": "Amari Cooper",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 5,
@@ -3162,7 +4040,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 42,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 15835
+      "espnPlayerId": 15835,
+      "name": "Zach Ertz",
+      "position": "TE",
+      "proTeamId": 21
     },
     {
       "round": 5,
@@ -3170,7 +4051,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 43,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 2977644
+      "espnPlayerId": 2977644,
+      "name": "Todd Gurley II",
+      "position": "RB",
+      "proTeamId": 1
     },
     {
       "round": 5,
@@ -3178,7 +4062,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 44,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4036348
+      "espnPlayerId": 4036348,
+      "name": "Michael Gallup",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 5,
@@ -3194,7 +4081,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 46,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 15825
+      "espnPlayerId": 15825,
+      "name": "Le'Veon Bell",
+      "position": "RB",
+      "proTeamId": 12
     },
     {
       "round": 5,
@@ -3202,7 +4092,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 47,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 4047646
+      "espnPlayerId": 4047646,
+      "name": "A.J. Brown",
+      "position": "WR",
+      "proTeamId": 10
     },
     {
       "round": 5,
@@ -3210,7 +4103,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 48,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3925357
+      "espnPlayerId": 3925357,
+      "name": "Calvin Ridley",
+      "position": "WR",
+      "proTeamId": 1
     },
     {
       "round": 5,
@@ -3226,7 +4122,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 50,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 2508176
+      "espnPlayerId": 2508176,
+      "name": "David Johnson",
+      "position": "RB",
+      "proTeamId": 34
     },
     {
       "round": 6,
@@ -3234,7 +4133,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 51,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 2977187
+      "espnPlayerId": 2977187,
+      "name": "Cooper Kupp",
+      "position": "WR",
+      "proTeamId": 14
     },
     {
       "round": 6,
@@ -3242,7 +4144,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 52,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 4036131
+      "espnPlayerId": 4036131,
+      "name": "Noah Fant",
+      "position": "TE",
+      "proTeamId": 7
     },
     {
       "round": 6,
@@ -3250,7 +4155,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 53,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 14924
+      "espnPlayerId": 14924,
+      "name": "T.Y. Hilton",
+      "position": "WR",
+      "proTeamId": 11
     },
     {
       "round": 6,
@@ -3258,7 +4166,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 54,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 4242335
+      "espnPlayerId": 4242335,
+      "name": "Jonathan Taylor",
+      "position": "RB",
+      "proTeamId": 11
     },
     {
       "round": 6,
@@ -3266,7 +4177,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 55,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 2576434
+      "espnPlayerId": 2576434,
+      "name": "Melvin Gordon III",
+      "position": "RB",
+      "proTeamId": 7
     },
     {
       "round": 6,
@@ -3290,7 +4204,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 58,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 4047650
+      "espnPlayerId": 4047650,
+      "name": "DK Metcalf",
+      "position": "WR",
+      "proTeamId": 26
     },
     {
       "round": 6,
@@ -3298,7 +4215,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 59,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 3045147
+      "espnPlayerId": 3045147,
+      "name": "James Conner",
+      "position": "RB",
+      "proTeamId": 23
     },
     {
       "round": 6,
@@ -3306,7 +4226,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 60,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 4240021
+      "espnPlayerId": 4240021,
+      "name": "Cam Akers",
+      "position": "RB",
+      "proTeamId": 14
     },
     {
       "round": 7,
@@ -3322,7 +4245,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 62,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 15818
+      "espnPlayerId": 15818,
+      "name": "Keenan Allen",
+      "position": "WR",
+      "proTeamId": 24
     },
     {
       "round": 7,
@@ -3330,7 +4256,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 63,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 3121422
+      "espnPlayerId": 3121422,
+      "name": "Terry McLaurin",
+      "position": "WR",
+      "proTeamId": 28
     },
     {
       "round": 7,
@@ -3338,7 +4267,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 64,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 4241389
+      "espnPlayerId": 4241389,
+      "name": "CeeDee Lamb",
+      "position": "WR",
+      "proTeamId": 6
     },
     {
       "round": 7,
@@ -3346,7 +4278,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 65,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 2576925
+      "espnPlayerId": 2576925,
+      "name": "Darren Waller",
+      "position": "TE",
+      "proTeamId": 13
     },
     {
       "round": 7,
@@ -3354,7 +4289,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 66,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 3051876
+      "espnPlayerId": 3051876,
+      "name": "Evan Engram",
+      "position": "TE",
+      "proTeamId": 19
     },
     {
       "round": 7,
@@ -3362,7 +4300,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 67,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 3115394
+      "espnPlayerId": 3115394,
+      "name": "DJ Chark Jr.",
+      "position": "WR",
+      "proTeamId": 30
     },
     {
       "round": 7,
@@ -3370,7 +4311,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 68,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 2576623
+      "espnPlayerId": 2576623,
+      "name": "DeVante Parker",
+      "position": "WR",
+      "proTeamId": 15
     },
     {
       "round": 7,
@@ -3378,7 +4322,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 69,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 13229
+      "espnPlayerId": 13229,
+      "name": "Rob Gronkowski",
+      "position": "TE",
+      "proTeamId": 27
     },
     {
       "round": 7,
@@ -3386,7 +4333,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 70,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 16790
+      "espnPlayerId": 16790,
+      "name": "Jarvis Landry",
+      "position": "WR",
+      "proTeamId": 5
     },
     {
       "round": 8,
@@ -3402,7 +4352,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 72,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 3910544
+      "espnPlayerId": 3910544,
+      "name": "Joshua Kelley",
+      "position": "RB",
+      "proTeamId": 24
     },
     {
       "round": 8,
@@ -3410,7 +4363,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 73,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": -16002
+      "espnPlayerId": -16002,
+      "name": "Bills D/ST",
+      "position": "DEF",
+      "proTeamId": 2
     },
     {
       "round": 8,
@@ -3418,7 +4374,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 74,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 3045144
+      "espnPlayerId": 3045144,
+      "name": "Tyler Boyd",
+      "position": "WR",
+      "proTeamId": 4
     },
     {
       "round": 8,
@@ -3426,7 +4385,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 75,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 2576414
+      "espnPlayerId": 2576414,
+      "name": "Raheem Mostert",
+      "position": "RB",
+      "proTeamId": 25
     },
     {
       "round": 8,
@@ -3434,7 +4396,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 76,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 3059915
+      "espnPlayerId": 3059915,
+      "name": "Kareem Hunt",
+      "position": "RB",
+      "proTeamId": 5
     },
     {
       "round": 8,
@@ -3442,7 +4407,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 77,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 8439
+      "espnPlayerId": 8439,
+      "name": "Aaron Rodgers",
+      "position": "QB",
+      "proTeamId": 9
     },
     {
       "round": 8,
@@ -3450,7 +4418,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 78,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 2330
+      "espnPlayerId": 2330,
+      "name": "Tom Brady",
+      "position": "QB",
+      "proTeamId": 27
     },
     {
       "round": 8,
@@ -3458,7 +4429,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 79,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 3052876
+      "espnPlayerId": 3052876,
+      "name": "Will Fuller V",
+      "position": "WR",
+      "proTeamId": 34
     },
     {
       "round": 8,
@@ -3466,7 +4440,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 80,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 4259545
+      "espnPlayerId": 4259545,
+      "name": "D'Andre Swift",
+      "position": "RB",
+      "proTeamId": 8
     },
     {
       "round": 9,
@@ -3474,7 +4451,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 81,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 4035538
+      "espnPlayerId": 4035538,
+      "name": "David Montgomery",
+      "position": "RB",
+      "proTeamId": 3
     },
     {
       "round": 9,
@@ -3482,7 +4462,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 82,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 15072
+      "espnPlayerId": 15072,
+      "name": "Marvin Jones Jr.",
+      "position": "WR",
+      "proTeamId": 8
     },
     {
       "round": 9,
@@ -3490,7 +4473,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 83,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 2976212
+      "espnPlayerId": 2976212,
+      "name": "Stefon Diggs",
+      "position": "WR",
+      "proTeamId": 2
     },
     {
       "round": 9,
@@ -3506,7 +4492,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 85,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 3115364
+      "espnPlayerId": 3115364,
+      "name": "Leonard Fournette",
+      "position": "RB",
+      "proTeamId": 27
     },
     {
       "round": 9,
@@ -3514,7 +4503,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 86,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4241372
+      "espnPlayerId": 4241372,
+      "name": "Marquise Brown",
+      "position": "WR",
+      "proTeamId": 33
     },
     {
       "round": 9,
@@ -3538,7 +4530,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 89,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 3126486
+      "espnPlayerId": 3126486,
+      "name": "Deebo Samuel",
+      "position": "WR",
+      "proTeamId": 25
     },
     {
       "round": 9,
@@ -3562,7 +4557,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 92,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 3916925
+      "espnPlayerId": 3916925,
+      "name": "Kerryon Johnson",
+      "position": "RB",
+      "proTeamId": 8
     },
     {
       "round": 10,
@@ -3570,7 +4568,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 93,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 16913
+      "espnPlayerId": 16913,
+      "name": "James White",
+      "position": "RB",
+      "proTeamId": 17
     },
     {
       "round": 10,
@@ -3578,7 +4579,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 94,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 3918298
+      "espnPlayerId": 3918298,
+      "name": "Josh Allen",
+      "position": "QB",
+      "proTeamId": 2
     },
     {
       "round": 10,
@@ -3586,7 +4590,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 95,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 16731
+      "espnPlayerId": 16731,
+      "name": "Brandin Cooks",
+      "position": "WR",
+      "proTeamId": 34
     },
     {
       "round": 10,
@@ -3594,7 +4601,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 96,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 3932905
+      "espnPlayerId": 3932905,
+      "name": "Diontae Johnson",
+      "position": "WR",
+      "proTeamId": 23
     },
     {
       "round": 10,
@@ -3618,7 +4628,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 99,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 4360294
+      "espnPlayerId": 4360294,
+      "name": "Antonio Gibson",
+      "position": "RB",
+      "proTeamId": 28
     },
     {
       "round": 10,
@@ -3626,7 +4639,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 100,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 2576716
+      "espnPlayerId": 2576716,
+      "name": "Jamison Crowder",
+      "position": "WR",
+      "proTeamId": 20
     },
     {
       "round": 11,
@@ -3650,7 +4666,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 103,
       "teamId": 1,
       "owner": "Tyler Ahrens",
-      "espnPlayerId": 3046439
+      "espnPlayerId": 3046439,
+      "name": "Hunter Henry",
+      "position": "TE",
+      "proTeamId": 24
     },
     {
       "round": 11,
@@ -3658,7 +4677,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 104,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 2976592
+      "espnPlayerId": 2976592,
+      "name": "Sterling Shepard",
+      "position": "WR",
+      "proTeamId": 19
     },
     {
       "round": 11,
@@ -3674,7 +4696,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 106,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4241985
+      "espnPlayerId": 4241985,
+      "name": "J.K. Dobbins",
+      "position": "RB",
+      "proTeamId": 33
     },
     {
       "round": 11,
@@ -3682,7 +4707,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 107,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 3116164
+      "espnPlayerId": 3116164,
+      "name": "Mike Gesicki",
+      "position": "TE",
+      "proTeamId": 15
     },
     {
       "round": 11,
@@ -3698,7 +4726,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 109,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 3912550
+      "espnPlayerId": 3912550,
+      "name": "Ronald Jones II",
+      "position": "RB",
+      "proTeamId": 27
     },
     {
       "round": 11,
@@ -3706,7 +4737,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 110,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 4039359
+      "espnPlayerId": 4039359,
+      "name": "Darrell Henderson Jr.",
+      "position": "RB",
+      "proTeamId": 14
     },
     {
       "round": 12,
@@ -3722,7 +4756,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 112,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 4048244
+      "espnPlayerId": 4048244,
+      "name": "Alexander Mattison",
+      "position": "RB",
+      "proTeamId": 16
     },
     {
       "round": 12,
@@ -3746,7 +4783,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 115,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": 4036133
+      "espnPlayerId": 4036133,
+      "name": "T.J. Hockenson",
+      "position": "TE",
+      "proTeamId": 8
     },
     {
       "round": 12,
@@ -3762,7 +4802,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 117,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": 3055899
+      "espnPlayerId": 3055899,
+      "name": "Harrison Butker",
+      "position": "K",
+      "proTeamId": 12
     },
     {
       "round": 12,
@@ -3794,7 +4837,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 121,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 3043275
+      "espnPlayerId": 3043275,
+      "name": "Austin Hooper",
+      "position": "TE",
+      "proTeamId": 5
     },
     {
       "round": 13,
@@ -3802,7 +4848,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 122,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": -16023
+      "espnPlayerId": -16023,
+      "name": "Steelers D/ST",
+      "position": "DEF",
+      "proTeamId": 23
     },
     {
       "round": 13,
@@ -3826,7 +4875,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 125,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": 2574808
+      "espnPlayerId": 2574808,
+      "name": "Robby Anderson",
+      "position": "WR",
+      "proTeamId": 29
     },
     {
       "round": 13,
@@ -3842,7 +4894,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 127,
       "teamId": 8,
       "owner": "Austin Farris",
-      "espnPlayerId": 15920
+      "espnPlayerId": 15920,
+      "name": "Latavius Murray",
+      "position": "RB",
+      "proTeamId": 18
     },
     {
       "round": 13,
@@ -3858,7 +4913,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 129,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 13295
+      "espnPlayerId": 13295,
+      "name": "Emmanuel Sanders",
+      "position": "WR",
+      "proTeamId": 18
     },
     {
       "round": 13,
@@ -3866,7 +4924,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 130,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": -16033
+      "espnPlayerId": -16033,
+      "name": "Ravens D/ST",
+      "position": "DEF",
+      "proTeamId": 33
     },
     {
       "round": 14,
@@ -3874,7 +4935,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 131,
       "teamId": 10,
       "owner": "Shivam Patel",
-      "espnPlayerId": 15683
+      "espnPlayerId": 15683,
+      "name": "Justin Tucker",
+      "position": "K",
+      "proTeamId": 33
     },
     {
       "round": 14,
@@ -3882,7 +4946,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 132,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 4241475
+      "espnPlayerId": 4241475,
+      "name": "Henry Ruggs III",
+      "position": "WR",
+      "proTeamId": 13
     },
     {
       "round": 14,
@@ -3890,7 +4957,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 133,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 2985659
+      "espnPlayerId": 2985659,
+      "name": "Wil Lutz",
+      "position": "K",
+      "proTeamId": 18
     },
     {
       "round": 14,
@@ -3938,7 +5008,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 139,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 11122
+      "espnPlayerId": 11122,
+      "name": "Matt Prater",
+      "position": "K",
+      "proTeamId": 8
     },
     {
       "round": 14,
@@ -3946,7 +5019,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 140,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": 14876
+      "espnPlayerId": 14876,
+      "name": "Ryan Tannehill",
+      "position": "QB",
+      "proTeamId": 10
     },
     {
       "round": 15,
@@ -3954,7 +5030,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 141,
       "teamId": 3,
       "owner": "Carson Waite",
-      "espnPlayerId": -16017
+      "espnPlayerId": -16017,
+      "name": "Patriots D/ST",
+      "position": "DEF",
+      "proTeamId": 17
     },
     {
       "round": 15,
@@ -3986,7 +5065,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 145,
       "teamId": 7,
       "owner": "Rayaan Vellani",
-      "espnPlayerId": -16011
+      "espnPlayerId": -16011,
+      "name": "Colts D/ST",
+      "position": "DEF",
+      "proTeamId": 11
     },
     {
       "round": 15,
@@ -3994,7 +5076,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 146,
       "teamId": 9,
       "owner": "Alvin Pokel",
-      "espnPlayerId": -16027
+      "espnPlayerId": -16027,
+      "name": "Buccaneers D/ST",
+      "position": "DEF",
+      "proTeamId": 27
     },
     {
       "round": 15,
@@ -4010,7 +5095,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 148,
       "teamId": 4,
       "owner": "Zach Sullivan",
-      "espnPlayerId": 3916430
+      "espnPlayerId": 3916430,
+      "name": "Nyheim Hines",
+      "position": "RB",
+      "proTeamId": 11
     },
     {
       "round": 15,
@@ -4018,7 +5106,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 149,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": -16007
+      "espnPlayerId": -16007,
+      "name": "Broncos D/ST",
+      "position": "DEF",
+      "proTeamId": 7
     },
     {
       "round": 15,
@@ -4042,7 +5133,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 152,
       "teamId": 5,
       "owner": "Kiran Nevill",
-      "espnPlayerId": 17372
+      "espnPlayerId": 17372,
+      "name": "Chris Boswell",
+      "position": "K",
+      "proTeamId": 23
     },
     {
       "round": 16,
@@ -4082,7 +5176,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 157,
       "teamId": 6,
       "owner": "Braden Galvan",
-      "espnPlayerId": -16006
+      "espnPlayerId": -16006,
+      "name": "Cowboys D/ST",
+      "position": "DEF",
+      "proTeamId": 6
     },
     {
       "round": 16,
@@ -4098,7 +5195,10 @@ const ESPN_DRAFT_PICKS = {
       "overallPick": 159,
       "teamId": 2,
       "owner": "James McNeal",
-      "espnPlayerId": 13934
+      "espnPlayerId": 13934,
+      "name": "Antonio Brown",
+      "position": "WR",
+      "proTeamId": 27
     },
     {
       "round": 16,
@@ -4110,3 +5210,4 @@ const ESPN_DRAFT_PICKS = {
     }
   ]
 };
+const ESPN_TEAM_ID_MAP = {"1": "ATL", "2": "BUF", "3": "CHI", "4": "CIN", "5": "CLE", "6": "DAL", "7": "DEN", "8": "DET", "9": "GB", "10": "TEN", "11": "IND", "12": "KC", "13": "LV", "14": "LAR", "15": "MIA", "16": "MIN", "17": "NE", "18": "NO", "19": "NYG", "20": "NYJ", "21": "PHI", "22": "ARI", "23": "PIT", "24": "LAC", "25": "SF", "26": "SEA", "27": "TB", "28": "WAS", "29": "CAR", "30": "JAX", "33": "BAL", "34": "HOU"};
