@@ -116,25 +116,15 @@ async function getReplacementPoints(position, season, statsDump) {
 }
 
 // ============================================================
-// ESPN SEASONS (2020-2022) - picks come from the static data/espn-draft.js
-// file (frozen history). Player names/positions/HISTORICAL team are resolved
-// LIVE via ESPN's public athlete lookups (no login needed), cached in-memory.
-// Two lookups per player: a season-specific one for the team they were
-// actually on THAT year, falling back to the general "current team" lookup
-// (name/position only need to be correct once, so that part never changes).
+// ESPN SEASONS (2020-2022) - most picks resolve directly from the real
+// historical roster data embedded in data/espn-draft.js (genuinely accurate
+// for that season - not a live guess). A minority of picks (players who got
+// dropped and weren't on any roster by season's end) have no embedded data;
+// those fall back to a live ESPN athlete lookup, which may show their
+// CURRENT team instead of their historical one for just that handful.
 // ============================================================
 let espnAthleteCache = {}; // espnPlayerId -> {name, position} (name/position don't change by season)
 let espnSeasonTeamCache = {}; // "espnPlayerId-season" -> team abbreviation or null
-
-// ESPN's numeric team ID -> abbreviation. Stable/well-known mapping; ids 13,
-// 14, 24 reflect post-2016/2017/2020 relocations (LV/LAR/LAC), which is
-// correct for our 2020-2022 seasons.
-const ESPN_TEAM_ID_MAP = {
-  1: "ATL", 2: "BUF", 3: "CHI", 4: "CIN", 5: "CLE", 6: "DAL", 7: "DEN", 8: "DET",
-  9: "GB", 10: "TEN", 11: "IND", 12: "KC", 13: "LV", 14: "LAR", 15: "MIA", 16: "MIN",
-  17: "NE", 18: "NO", 19: "NYG", 20: "NYJ", 21: "PHI", 22: "ARI", 23: "PIT", 24: "LAC",
-  25: "SF", 26: "SEA", 27: "TB", 28: "WAS", 29: "CAR", 30: "JAX", 33: "BAL", 34: "HOU"
-};
 
 async function fetchEspnAthlete(espnPlayerId) {
   if (espnAthleteCache[espnPlayerId]) return espnAthleteCache[espnPlayerId];
@@ -220,14 +210,26 @@ async function resolveEspnBoard(board) {
   const keys = Object.keys(board.cellMap);
   await Promise.all(keys.map(async function (key) {
     const raw = board.cellMap[key];
+
+    if (raw.name) {
+      // real historical data already embedded in data/espn-draft.js
+      const [firstName, ...rest] = raw.name.split(" ");
+      board.cellMap[key] = {
+        round: raw.round, draft_slot: null, pick_no: raw.overallPick, owner: raw.owner, player_id: null,
+        metadata: {
+          first_name: firstName, last_name: rest.join(" "),
+          position: raw.position || null,
+          team: raw.proTeamId ? (ESPN_TEAM_ID_MAP[raw.proTeamId] || null) : null
+        }
+      };
+      return;
+    }
+
+    // gap player - not on any roster by that season's end, resolve live
     const athlete = await fetchEspnAthleteForSeason(raw.espnPlayerId, board.season);
     const [firstName, ...rest] = athlete.name.split(" ");
     board.cellMap[key] = {
-      round: raw.round,
-      draft_slot: null, // not used for ESPN - key already encodes round-slot
-      pick_no: raw.overallPick,
-      owner: raw.owner,
-      player_id: null, // no Sleeper ID - Performance/VORP mode isn't available for ESPN years
+      round: raw.round, draft_slot: null, pick_no: raw.overallPick, owner: raw.owner, player_id: null,
       metadata: { first_name: firstName, last_name: rest.join(" "), position: athlete.position, team: athlete.team }
     };
   }));
@@ -296,7 +298,7 @@ function cellColorHtml(pick, mode, extraData, cellKey) {
 
   if (mode === "position") {
     const c = POSITION_COLORS[info.position] || "#3a4556";
-    return { bg: c, text: textForBg(c), stat: null };
+    return { bg: c, text: "#000000", stat: null };
   }
   if (mode === "performance" && extraData) {
     const vorp = extraData.vorpByPick[cellKey];
