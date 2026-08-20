@@ -1,18 +1,19 @@
 // ============================================================
 // DRAFT HISTORY - live draft boards for Sleeper seasons (2023-2026).
-// ESPN seasons (2020-2022) will be added once player names are verified -
-// see the placeholder note when those years are selected.
-// Value (vs ADP) mode is a placeholder for now - needs a multi-site ADP
-// data source (FantasyFootballCalculator's free API) wired in next.
+// ESPN seasons (2020-2022) are pending - need one more file per season
+// (ESPN's picks reference their own internal player IDs with no names
+// attached in what we have saved; a kona_player_info view fetch resolves it).
+// Value (vs ADP) mode uses FantasyFootballCalculator's free public ADP API.
 // ============================================================
 
 let activeSeason = null;
 let colorMode = "position";
 let draftCache = {}; // season -> computed draft board data
+let adpCache = {}; // season -> {playerNameLower: adp}
 
 const POSITION_COLORS = {
-  QB: "#e2554a", RB: "#1d9e75", WR: "#38d0ff", TE: "#e8b13a",
-  K: "#9c8ff0", DEF: "#6a95b8"
+  QB: "#ff4d4d", RB: "#0fd98c", WR: "#2fc3ff", TE: "#ffcc33",
+  K: "#b892ff", DEF: "#8fa8c4"
 };
 
 const TEAM_ABBR_OVERRIDES = { WAS: "wsh" };
@@ -20,6 +21,57 @@ function teamLogoUrl(team) {
   if (!team) return null;
   const abbr = (TEAM_ABBR_OVERRIDES[team] || team).toLowerCase();
   return "https://a.espncdn.com/i/teamlogos/nfl/500/" + abbr + ".png";
+}
+
+function hexToRgb(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function textForBg(hex) {
+  const [r, g, b] = hexToRgb(hex);
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance > 150 ? "#08110c" : "#ffffff";
+}
+function lerpColor(hexA, hexB, t) {
+  const a = hexToRgb(hexA), b = hexToRgb(hexB);
+  return "#" + a.map(function (c, i) {
+    return Math.round(Math.max(0, Math.min(255, c + (b[i] - c) * t))).toString(16).padStart(2, "0");
+  }).join("");
+}
+
+// Magnitude-scaled color ramp for Performance (VORP) and Value (ADP diff) -
+// same "the bigger the number, the more it pops" approach as the keeper page.
+const POP_GREEN_STOPS = [{ v: 0, c: "#1c3d2e" }, { v: 15, c: "#0e6b3f" }, { v: 40, c: "#0fd98c" }, { v: 80, c: "#39ff8a" }];
+const POP_RED_STOPS = [{ v: 0, c: "#3d1c1c" }, { v: 15, c: "#8a1f1f" }, { v: 40, c: "#e2554a" }, { v: 80, c: "#ff2020" }];
+function magnitudeColor(value) {
+  const stops = value >= 0 ? POP_GREEN_STOPS : POP_RED_STOPS;
+  const mag = Math.min(Math.abs(value), 80);
+  let lo = stops[0], hi = stops[stops.length - 1];
+  for (let i = 0; i < stops.length - 1; i++) {
+    if (mag >= stops[i].v && mag <= stops[i + 1].v) { lo = stops[i]; hi = stops[i + 1]; break; }
+  }
+  const range = hi.v - lo.v;
+  const t = range === 0 ? 0 : (mag - lo.v) / range;
+  const bg = lerpColor(lo.c, hi.c, t);
+  return { bg: bg, text: textForBg(bg) };
+}
+
+function normalizeName(name) {
+  return (name || "").toLowerCase().replace(/[.'’-]/g, "").replace(/\s+jr$|\s+sr$|\s+ii$|\s+iii$/g, "").trim();
+}
+
+async function fetchAdp(season) {
+  if (adpCache[season]) return adpCache[season];
+  const teams = SEASON_TEAM_COUNTS[season] || 12;
+  const res = await fetch("https://fantasyfootballcalculator.com/api/v1/adp/ppr?teams=" + teams + "&year=" + season);
+  if (!res.ok) throw new Error("ADP fetch failed");
+  const data = await res.json();
+  const map = {};
+  (data.players || []).forEach(function (p) {
+    map[normalizeName(p.name)] = p.adp;
+  });
+  adpCache[season] = map;
+  return map;
 }
 
 async function fetchJson(url) {
@@ -120,18 +172,25 @@ function pickDisplayInfo(pick) {
 
 function cellColorHtml(pick, mode, extraData) {
   const info = pickDisplayInfo(pick);
-  if (!info) return { bg: "var(--panel-2)", text: "var(--text-mute)" };
+  if (!info) return { bg: "var(--panel-2)", text: "var(--text-mute)", stat: null };
 
   if (mode === "position") {
     const c = POSITION_COLORS[info.position] || "#3a4556";
-    return { bg: c + "33", text: c };
+    return { bg: c, text: textForBg(c), stat: null };
   }
   if (mode === "performance" && extraData) {
     const vorp = extraData.vorpByPick[pick.round + "-" + pick.draft_slot];
-    if (vorp == null) return { bg: "var(--panel-2)", text: "var(--text-mute)" };
-    return { bg: vorp >= 0 ? "rgba(57,255,138,0.18)" : "rgba(255,92,92,0.18)", text: vorp >= 0 ? "var(--green)" : "var(--red)" };
+    if (vorp == null) return { bg: "var(--panel-2)", text: "var(--text-mute)", stat: null };
+    const colors = magnitudeColor(vorp);
+    return { bg: colors.bg, text: colors.text, stat: (vorp > 0 ? "+" : "") + vorp.toFixed(1) };
   }
-  return { bg: "var(--panel-2)", text: "var(--text-mute)" };
+  if (mode === "value" && extraData) {
+    const diff = extraData.diffByPick[pick.round + "-" + pick.draft_slot];
+    if (diff == null) return { bg: "var(--panel-2)", text: "var(--text-mute)", stat: null };
+    const colors = magnitudeColor(diff);
+    return { bg: colors.bg, text: colors.text, stat: (diff > 0 ? "+" : "") + diff.toFixed(0) };
+  }
+  return { bg: "var(--panel-2)", text: "var(--text-mute)", stat: null };
 }
 
 async function computePerformanceData(season, board) {
@@ -159,6 +218,27 @@ async function computePerformanceData(season, board) {
   return { vorpByPick: vorpByPick };
 }
 
+async function computeValueData(season, board) {
+  let adpMap;
+  try {
+    adpMap = await fetchAdp(season);
+  } catch (e) {
+    return null;
+  }
+  const diffByPick = {};
+  for (const key in board.cellMap) {
+    const pick = board.cellMap[key];
+    const info = pickDisplayInfo(pick);
+    if (!info) continue;
+    const adp = adpMap[normalizeName(info.name)];
+    if (adp == null) continue;
+    // positive = pick fell later than ADP suggested (good value), same
+    // convention as the keeper page's "pick minus ADP" formula
+    diffByPick[key] = Math.round((pick.pick_no - adp) * 10) / 10;
+  }
+  return { diffByPick: diffByPick };
+}
+
 function renderLegend() {
   const legend = document.getElementById("draft-legend");
   if (colorMode === "position") {
@@ -167,10 +247,13 @@ function renderLegend() {
     }).join("");
   } else if (colorMode === "performance") {
     legend.innerHTML =
-      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:rgba(57,255,138,0.4);"></span>Outperformed replacement level</div>' +
-      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:rgba(255,92,92,0.4);"></span>Underperformed replacement level</div>';
-  } else {
-    legend.innerHTML = '<div class="empty-note">Value-vs-ADP mode is coming soon - needs a multi-site ADP data source wired in.</div>';
+      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#39ff8a;"></span>Big VORP win (brighter = bigger)</div>' +
+      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#ff2020;"></span>Big VORP miss (brighter = worse)</div>';
+  } else if (colorMode === "value") {
+    legend.innerHTML =
+      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#39ff8a;"></span>Great value vs ADP</div>' +
+      '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:#ff2020;"></span>Big reach vs ADP</div>' +
+      '<div class="empty-note" style="margin-left:8px;">Source: FantasyFootballCalculator - unmatched names show gray</div>';
   }
 }
 
@@ -203,12 +286,9 @@ async function renderDraftBoard() {
     if (colorMode === "performance") {
       loading.textContent = "Loading season stats for VORP coloring...";
       extraData = await computePerformanceData(activeSeason, board);
-    }
-
-    if (colorMode === "value") {
-      loading.style.display = "none";
-      boardEl.innerHTML = '<p class="empty-note">Value-vs-ADP mode is coming soon.</p>';
-      return;
+    } else if (colorMode === "value") {
+      loading.textContent = "Loading ADP data...";
+      extraData = await computeValueData(activeSeason, board);
     }
 
     loading.style.display = "none";
@@ -242,10 +322,12 @@ async function renderDraftBoard() {
           const colors = cellColorHtml(pick, colorMode, extraData);
           cell.style.background = colors.bg;
           cell.style.color = colors.text;
+          cell.style.borderColor = colors.bg === "var(--panel-2)" ? "var(--border)" : colors.bg;
           const logo = info.team ? teamLogoUrl(info.team) : null;
           cell.innerHTML =
-            '<div class="pick-num">Pick ' + pick.pick_no + '</div>' +
+            '<div class="pick-num" style="color:' + (colors.bg === "var(--panel-2)" ? "var(--text-mute)" : colors.text) + ';opacity:0.85;">Pick ' + pick.pick_no + '</div>' +
             '<div class="pick-player">' + info.name + '</div>' +
+            (colors.stat != null ? '<div class="pick-stat">' + colors.stat + '</div>' : '') +
             (logo ? '<img class="pick-logo" src="' + logo + '" alt="" onerror="this.remove()">' : '');
         }
         grid.appendChild(cell);
