@@ -33,6 +33,18 @@
 .bracket-team.winner { background: rgba(57,255,138,0.14); font-weight: 800; color: var(--green); }
 .bracket-team.loser { color: var(--text-mute); opacity: 0.75; }
 .bracket-match.championship .bracket-team.winner { background: rgba(255,213,74,0.16); color: #ffd54a; }
+.bracket-page-layout { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.bracket-side-panel { display: flex; flex-direction: column; gap: 20px; min-width: 260px; flex-shrink: 0; }
+.side-panel-title { font-size: 12px; font-weight: 800; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; text-align: center; }
+.toilet-bowl-card {
+  background: var(--panel); border: 2px solid var(--red); border-radius: 12px; padding: 16px;
+  text-align: center; box-shadow: 0 0 16px rgba(255,92,92,0.15);
+}
+.toilet-bowl-card .tb-emoji { font-size: 28px; margin-bottom: 8px; }
+.toilet-bowl-card .team-avatar, .toilet-bowl-card .team-avatar-fallback { width: 48px; height: 48px; margin: 0 auto 8px; }
+.toilet-bowl-card .tb-owner { font-size: 15px; font-weight: 800; color: var(--red); }
+.toilet-bowl-card .tb-teamname { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
+.podium-spot .p-teamname { font-size: 11px; color: var(--text-mute); margin-top: -4px; margin-bottom: 6px; }
 .bracket-multiweek-note { font-size: 9px; color: var(--text-mute); text-align: center; margin-top: -4px; margin-bottom: 6px; }
 </style>
 </head>
