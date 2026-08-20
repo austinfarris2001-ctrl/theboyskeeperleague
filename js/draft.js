@@ -269,7 +269,7 @@ async function fetchDraftBoard(season) {
 
   const board = {
     season: season, maxRound: maxRound, maxSlot: maxSlot,
-    slotOwner: slotOwner, cellMap: cellMap
+    slotOwner: slotOwner, cellMap: cellMap, rosterIdToOwner: rosterIdToOwner
   };
   draftCache[season] = board;
   return board;
@@ -420,6 +420,142 @@ function renderLegend() {
   }
 }
 
+// ============================================================
+// PICK DRILL-DOWN - click any pick to see its details, plus a best-effort
+// search across every other season for the same player. Cross-year search
+// reuses whatever boards are already cached and fetches/resolves the rest
+// on demand, so repeated clicks get faster as more seasons get cached.
+// ============================================================
+
+function pickOwner(pick, board, isEspn) {
+  if (isEspn) return pick.owner || "Unknown";
+  return (board.rosterIdToOwner && board.rosterIdToOwner[pick.roster_id]) || "Unknown";
+}
+
+function getPickAdpDiff(pick, season) {
+  const info = pickDisplayInfo(pick);
+  if (!info) return null;
+  const adpMap = (typeof ADP_DATA !== "undefined" && ADP_DATA[season]) || {};
+  const adp = adpMap[normalizeName(info.name)];
+  if (adp == null) return null;
+  return Math.round((pick.pick_no - adp) * 10) / 10;
+}
+
+async function getPickVORP(pick, season, isEspn, board) {
+  if (isEspn) {
+    const perf = computeEspnPerformanceData(board);
+    let foundKey = null;
+    for (const k in board.cellMap) {
+      if (board.cellMap[k] === pick) { foundKey = k; break; }
+    }
+    return foundKey ? (perf.vorpByPick[foundKey] != null ? perf.vorpByPick[foundKey] : null) : null;
+  }
+  if (!pick.player_id) return null;
+  const info = pickDisplayInfo(pick);
+  if (!info || !info.position) return null;
+  let statsDump;
+  try {
+    statsDump = await fetchSeasonStats(season);
+  } catch (e) {
+    return null;
+  }
+  const pts = statsDump[pick.player_id] && statsDump[pick.player_id].pts_ppr;
+  if (pts == null) return null;
+  const replacement = await getReplacementPoints(info.position, season, statsDump);
+  if (replacement == null) return null;
+  return Math.round((pts - replacement) * 10) / 10;
+}
+
+async function findOtherAppearances(playerName, currentSeason) {
+  const targetNorm = normalizeName(playerName);
+  const allSeasons = ESPN_SEASONS.concat(Object.keys(LEAGUE_IDS).map(Number));
+  const results = await Promise.all(allSeasons.map(async function (season) {
+    if (season === currentSeason) return null;
+    try {
+      const seasonIsEspn = ESPN_SEASONS.indexOf(season) !== -1;
+      const board = seasonIsEspn
+        ? await resolveEspnBoard(await fetchEspnDraftBoard(season))
+        : await fetchDraftBoard(season);
+      for (const key in board.cellMap) {
+        const p = board.cellMap[key];
+        const info = pickDisplayInfo(p);
+        if (info && normalizeName(info.name) === targetNorm) {
+          return { season: season, round: p.round, pickNo: p.pick_no, owner: pickOwner(p, board, seasonIsEspn) };
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }));
+  return results.filter(function (r) { return r; }).sort(function (a, b) { return a.season - b.season; });
+}
+
+async function openPickDrillDown(pick, season, isEspn, board) {
+  const overlay = document.getElementById("drill-overlay");
+  const body = document.getElementById("drill-body");
+  overlay.classList.remove("hidden");
+
+  const info = pickDisplayInfo(pick);
+  const owner = pickOwner(pick, board, isEspn);
+  const keeper = isKeeperPick(season, pick.pick_no);
+  const headshot = pick.player_id ? "https://sleepercdn.com/content/nfl/players/" + pick.player_id + ".jpg" : null;
+  const logo = info.team ? teamLogoUrl(info.team) : null;
+
+  body.innerHTML =
+    '<div class="spotlight-top">' +
+      (headshot ? '<img class="spotlight-avatar" id="drill-headshot" src="' + headshot + '" alt="">' : '<div class="spotlight-avatar-fallback">' + (info.position || "?") + '</div>') +
+      '<div><div class="eyebrow">' + season + (keeper ? ' \uD83D\uDD11 KEPT NEXT YEAR' : '') + '</div>' +
+      '<div class="team-name">' + info.name + '</div>' +
+      '<div class="sub-team-name">' + (info.position || "") + (info.team ? ' \u00b7 ' + info.team : '') + '</div></div>' +
+      (logo ? '<img src="' + logo + '" style="width:28px;height:28px;border-radius:50%;background:#fff;padding:2px;margin-left:auto;" alt="">' : '') +
+    '</div>' +
+    '<div class="spotlight-stats">' +
+      '<div class="stat-box"><div class="label">Drafted by</div><div class="val" style="font-size:14px;">' + owner + '</div></div>' +
+      '<div class="stat-box"><div class="label">Round</div><div class="val">' + pick.round + '</div></div>' +
+      '<div class="stat-box"><div class="label">Pick</div><div class="val">' + pick.pick_no + '</div></div>' +
+    '</div>' +
+    '<div class="spotlight-stats" id="drill-computed-stats">' +
+      '<div class="stat-box"><div class="label">ADP diff</div><div class="val" id="drill-adp-val">-</div></div>' +
+      '<div class="stat-box"><div class="label">VORP</div><div class="val" id="drill-vorp-val">loading...</div></div>' +
+    '</div>' +
+    '<div class="rank-line" id="drill-other-years">Checking other seasons...</div>';
+
+  const headshotEl = document.getElementById("drill-headshot");
+  if (headshotEl) {
+    headshotEl.addEventListener("error", function () {
+      const div = document.createElement("div");
+      div.className = "spotlight-avatar-fallback";
+      div.textContent = info.position || "?";
+      headshotEl.replaceWith(div);
+    });
+  }
+
+  const adpDiff = getPickAdpDiff(pick, season);
+  document.getElementById("drill-adp-val").textContent = adpDiff != null ? (adpDiff > 0 ? "+" : "") + adpDiff : "N/A";
+
+  getPickVORP(pick, season, isEspn, board).then(function (vorp) {
+    const el = document.getElementById("drill-vorp-val");
+    if (el) el.textContent = vorp != null ? (vorp > 0 ? "+" : "") + vorp : "N/A";
+  });
+
+  findOtherAppearances(info.name, season).then(function (others) {
+    const el = document.getElementById("drill-other-years");
+    if (!el) return;
+    if (others.length === 0) {
+      el.textContent = "Not found in any other season's draft in our history.";
+      return;
+    }
+    el.innerHTML = "Also drafted: " + others.map(function (o) {
+      return o.season + " (R" + o.round + ", Pick " + o.pickNo + " by " + o.owner + ")";
+    }).join(" \u00b7 ");
+  });
+}
+
+function closePickDrillDown() {
+  document.getElementById("drill-overlay").classList.add("hidden");
+}
+
 async function renderDraftBoard() {
   const loading = document.getElementById("draft-loading");
   const boardEl = document.getElementById("draft-board");
@@ -504,17 +640,17 @@ async function renderDraftBoard() {
           cell.style.background = colors.bg;
           cell.style.color = colors.text;
           cell.style.borderColor = colors.bg === "var(--panel-2)" ? "var(--border)" : colors.bg;
+          cell.style.cursor = "pointer";
           const logo = info.team ? teamLogoUrl(info.team) : null;
-          const headshot = pick.player_id ? "https://sleepercdn.com/content/nfl/players/" + pick.player_id + ".jpg" : null;
           const keeperBadge = isKeeperPick(activeSeason, pick.pick_no)
             ? '<span class="keeper-marker" title="Kept the following year">\uD83D\uDD11</span>' : '';
           cell.innerHTML =
             keeperBadge +
-            (headshot ? '<img class="pick-headshot" src="' + headshot + '" alt="" onerror="this.remove()">' : '') +
             '<div class="pick-num" style="color:' + (colors.bg === "var(--panel-2)" ? "var(--text-mute)" : colors.text) + ';opacity:0.85;">Pick ' + pick.pick_no + '</div>' +
             '<div class="pick-player">' + info.name + '</div>' +
             (colors.stat != null ? '<div class="pick-stat">' + colors.stat + '</div>' : '') +
             (logo ? '<img class="pick-logo" src="' + logo + '" alt="" onerror="this.remove()">' : '');
+          cell.addEventListener("click", function () { openPickDrillDown(pick, activeSeason, isEspn, board); });
         }
         grid.appendChild(cell);
       }
@@ -556,4 +692,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const defaultBtn = seasonBar.querySelector('[data-season="2025"]');
   if (defaultBtn) defaultBtn.click();
+
+  document.getElementById("close-drill").addEventListener("click", closePickDrillDown);
+  document.getElementById("drill-overlay").addEventListener("click", function (e) {
+    if (e.target.id === "drill-overlay") closePickDrillDown();
+  });
 });
