@@ -160,6 +160,34 @@ async function fetchWeeklyData(season) {
   return result;
 }
 
+// Unified matchup format regardless of source: {week, ownerA, scoreA, ownerB, scoreB}
+function getEspnWeeklyMatchups(season) {
+  const raw = (typeof ESPN_SCHEDULE !== "undefined" && ESPN_SCHEDULE[season]) || [];
+  return raw.map(function (m) {
+    return { week: m.week, ownerA: m.homeOwner, scoreA: m.homeScore, ownerB: m.awayOwner, scoreB: m.awayScore };
+  });
+}
+async function getSleeperWeeklyMatchups(season) {
+  const data = await fetchWeeklyData(season);
+  const matchups = [];
+  data.weeks.forEach(function (wk) {
+    const byMatchup = {};
+    wk.entries.forEach(function (e) { if (e.matchup_id != null) (byMatchup[e.matchup_id] = byMatchup[e.matchup_id] || []).push(e); });
+    Object.values(byMatchup).forEach(function (pair) {
+      if (pair.length !== 2) return;
+      matchups.push({
+        week: wk.week,
+        ownerA: data.rosterIdToOwner[pair[0].roster_id] || "Unknown", scoreA: pair[0].points || 0,
+        ownerB: data.rosterIdToOwner[pair[1].roster_id] || "Unknown", scoreB: pair[1].points || 0
+      });
+    });
+  });
+  return matchups;
+}
+async function getWeeklyMatchupsForSeason(season) {
+  return ESPN_SEASONS.indexOf(season) !== -1 ? getEspnWeeklyMatchups(season) : getSleeperWeeklyMatchups(season);
+}
+
 // ---- shared avatar rendering ----
 function initials(name) { return name.split(" ").map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase(); }
 function avatarHtml(owner) { return '<span class="avatar-slot" data-owner="' + owner + '"></span>'; }
@@ -266,7 +294,7 @@ let luckFactorYear = "all";
 function renderLuckFilterBar() {
   const bar = document.getElementById("luck-year-bar");
   if (!bar) return;
-  const years = SLEEPER_SEASONS.slice().sort(function (a, b) { return b - a; });
+  const years = ALL_SEASONS.slice().sort(function (a, b) { return b - a; });
   bar.innerHTML = '<button class="filter-btn small-btn ' + (luckFactorYear === "all" ? "active" : "") + '" data-luck-year="all">All-time</button>' +
     years.map(function (y) { return '<button class="filter-btn small-btn ' + (luckFactorYear === y ? "active" : "") + '" data-luck-year="' + y + '">' + y + '</button>'; }).join("");
   bar.querySelectorAll("[data-luck-year]").forEach(function (btn) {
@@ -280,7 +308,7 @@ function renderLuckFilterBar() {
 }
 function renderLuckFactorBody() {
   let rows = luckFactorData;
-  let note = "Sleeper seasons only (2023-2026).";
+  let note = "Covers all seasons, 2020-2026.";
   if (luckFactorYear === "all") {
     const byOwner = {};
     rows.forEach(function (r) {
@@ -322,7 +350,7 @@ function h2hShortName(owner) {
 async function renderHeadToHead() {
   const data = await computeHeadToHead();
   const owners = data.owners;
-  let html = '<p class="empty-note" style="margin-bottom:10px;">Sleeper seasons only (2023-2026). Each cell shows the row owner\'s record vs the column owner.</p>';
+  let html = '<p class="empty-note" style="margin-bottom:10px;">All seasons, 2020-2026. Each cell shows the row owner\'s record vs the column owner.</p>';
   html += '<div class="h2h-table"><div class="h2h-grid" style="grid-template-columns:repeat(' + (owners.length + 1) + ',1fr);">';
   html += '<div class="h2h-header"></div>';
   owners.forEach(function (o) { html += '<div class="h2h-header">' + h2hShortName(o) + '</div>'; });
@@ -396,7 +424,7 @@ async function renderConsistency() {
   const ranked = Object.keys(data).map(function (owner) {
     return { owner: owner, stdDev: data[owner].stdDev, avg: data[owner].avg, games: data[owner].games };
   }).sort(function (a, b) { return a.stdDev - b.stdDev; });
-  let html = '<p class="empty-note" style="margin-bottom:10px;">Sleeper seasons only (2023-2026). Lower std dev = steadier week to week.</p>';
+  let html = '<p class="empty-note" style="margin-bottom:10px;">All seasons, 2020-2026. Lower std dev = steadier week to week.</p>';
   html += ranked.map(function (o, i) {
     return row(i + 1, o.owner, o.owner, 'Avg ' + o.avg + ' pts/week across ' + o.games + ' games', o.stdDev + ' std dev', null);
   }).join("");
@@ -573,29 +601,27 @@ async function computeDraftGrades() {
 // ---- Tab 3: Luck Factor (Sleeper years only - needs weekly matchup data) ----
 async function computeLuckFactor() {
   const results = [];
-  for (const season of SLEEPER_SEASONS) {
-    let data;
-    try { data = await fetchWeeklyData(season); } catch (e) { continue; }
+  for (const season of ALL_SEASONS) {
+    let matchups;
+    try { matchups = await getWeeklyMatchupsForSeason(season); } catch (e) { continue; }
+    if (matchups.length === 0) continue;
+    const byWeek = {};
+    matchups.forEach(function (m) { (byWeek[m.week] = byWeek[m.week] || []).push(m); });
+
     const totals = {};
-    data.weeks.forEach(function (wk) {
-      const entries = wk.entries;
-      const scores = entries.map(function (e) { return { rosterId: e.roster_id, points: e.points || 0 }; });
+    Object.keys(byWeek).forEach(function (week) {
+      const weekMatchups = byWeek[week];
+      const scores = [];
+      weekMatchups.forEach(function (m) { scores.push({ owner: m.ownerA, points: m.scoreA }); scores.push({ owner: m.ownerB, points: m.scoreB }); });
       scores.forEach(function (s) {
-        const beat = scores.filter(function (o) { return o.rosterId !== s.rosterId && o.points < s.points; }).length;
+        const beat = scores.filter(function (o) { return o.owner !== s.owner && o.points < s.points; }).length;
         const expected = scores.length > 1 ? beat / (scores.length - 1) : 0;
-        const owner = data.rosterIdToOwner[s.rosterId] || "Unknown";
-        totals[owner] = totals[owner] || { actualWins: 0, expectedWins: 0, games: 0 };
-        totals[owner].expectedWins += expected;
-        totals[owner].games += 1;
+        totals[s.owner] = totals[s.owner] || { actualWins: 0, expectedWins: 0 };
+        totals[s.owner].expectedWins += expected;
       });
-      const byMatchup = {};
-      entries.forEach(function (e) { if (e.matchup_id != null) (byMatchup[e.matchup_id] = byMatchup[e.matchup_id] || []).push(e); });
-      Object.values(byMatchup).forEach(function (pair) {
-        if (pair.length !== 2) return;
-        const ownerA = data.rosterIdToOwner[pair[0].roster_id] || "Unknown";
-        const ownerB = data.rosterIdToOwner[pair[1].roster_id] || "Unknown";
-        if ((pair[0].points || 0) > (pair[1].points || 0)) totals[ownerA].actualWins += 1;
-        else if ((pair[1].points || 0) > (pair[0].points || 0)) totals[ownerB].actualWins += 1;
+      weekMatchups.forEach(function (m) {
+        if (m.scoreA > m.scoreB) totals[m.ownerA].actualWins += 1;
+        else if (m.scoreB > m.scoreA) totals[m.ownerB].actualWins += 1;
       });
     });
     Object.keys(totals).forEach(function (owner) {
@@ -610,31 +636,23 @@ async function computeLuckFactor() {
   return results;
 }
 
-// ---- Tab 4: Head-to-Head (Sleeper years only) ----
+// ---- Tab 4: Head-to-Head (all seasons, including ESPN via schedule data) ----
 async function computeHeadToHead() {
   const owners = new Set();
   const record = {};
-  for (const season of SLEEPER_SEASONS) {
-    let data;
-    try { data = await fetchWeeklyData(season); } catch (e) { continue; }
-    data.weeks.forEach(function (wk) {
-      const byMatchup = {};
-      wk.entries.forEach(function (e) { if (e.matchup_id != null) (byMatchup[e.matchup_id] = byMatchup[e.matchup_id] || []).push(e); });
-      Object.values(byMatchup).forEach(function (pair) {
-        if (pair.length !== 2) return;
-        const ownerA = data.rosterIdToOwner[pair[0].roster_id] || "Unknown";
-        const ownerB = data.rosterIdToOwner[pair[1].roster_id] || "Unknown";
-        owners.add(ownerA); owners.add(ownerB);
-        const key = [ownerA, ownerB].sort().join("|");
-        record[key] = record[key] || {};
-        const scoreA = pair[0].points || 0, scoreB = pair[1].points || 0;
-        if (scoreA === scoreB) {
-          record[key].ties = (record[key].ties || 0) + 1;
-        } else {
-          const winner = scoreA > scoreB ? ownerA : ownerB;
-          record[key][winner] = (record[key][winner] || 0) + 1;
-        }
-      });
+  for (const season of ALL_SEASONS) {
+    let matchups;
+    try { matchups = await getWeeklyMatchupsForSeason(season); } catch (e) { continue; }
+    matchups.forEach(function (m) {
+      owners.add(m.ownerA); owners.add(m.ownerB);
+      const key = [m.ownerA, m.ownerB].sort().join("|");
+      record[key] = record[key] || {};
+      if (m.scoreA === m.scoreB) {
+        record[key].ties = (record[key].ties || 0) + 1;
+      } else {
+        const winner = m.scoreA > m.scoreB ? m.ownerA : m.ownerB;
+        record[key][winner] = (record[key][winner] || 0) + 1;
+      }
     });
   }
   return { owners: Array.from(owners).sort(), record: record };
@@ -722,15 +740,14 @@ async function computeRoundValue() {
 // ---- Tab 8: Consistency (Sleeper years only) ----
 async function computeConsistency() {
   const byOwner = {};
-  for (const season of SLEEPER_SEASONS) {
-    let data;
-    try { data = await fetchWeeklyData(season); } catch (e) { continue; }
-    data.weeks.forEach(function (wk) {
-      wk.entries.forEach(function (e) {
-        const owner = data.rosterIdToOwner[e.roster_id] || "Unknown";
-        byOwner[owner] = byOwner[owner] || [];
-        byOwner[owner].push(e.points || 0);
-      });
+  for (const season of ALL_SEASONS) {
+    let matchups;
+    try { matchups = await getWeeklyMatchupsForSeason(season); } catch (e) { continue; }
+    matchups.forEach(function (m) {
+      byOwner[m.ownerA] = byOwner[m.ownerA] || [];
+      byOwner[m.ownerA].push(m.scoreA);
+      byOwner[m.ownerB] = byOwner[m.ownerB] || [];
+      byOwner[m.ownerB].push(m.scoreB);
     });
   }
   const result = {};
