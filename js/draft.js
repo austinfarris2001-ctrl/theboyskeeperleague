@@ -245,11 +245,17 @@ async function fetchDraftBoard(season) {
   const picks = await fetchJson("https://api.sleeper.app/v1/draft/" + draftId + "/picks");
 
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); });
+  const userIdToTeamName = {};
+  users.forEach(function (u) {
+    userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
+    userIdToTeamName[u.user_id] = (u.metadata && u.metadata.team_name) || null;
+  });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
+  const rosterIdToTeamName = {};
   rosters.forEach(function (r) {
     rosterIdToOwner[r.roster_id] = userIdToOwner[r.owner_id] || overridesForLeague[r.roster_id] || "Unknown";
+    rosterIdToTeamName[r.roster_id] = userIdToTeamName[r.owner_id] || null;
   });
 
   let maxRound = 0, maxSlot = 0;
@@ -260,8 +266,12 @@ async function fetchDraftBoard(season) {
 
   // header owner per slot: whoever's roster made round-1's pick in that slot
   const slotOwner = {};
+  const slotTeamName = {};
   picks.forEach(function (p) {
-    if (p.round === 1) slotOwner[p.draft_slot] = rosterIdToOwner[p.roster_id] || "Unknown";
+    if (p.round === 1) {
+      slotOwner[p.draft_slot] = rosterIdToOwner[p.roster_id] || "Unknown";
+      slotTeamName[p.draft_slot] = rosterIdToTeamName[p.roster_id] || null;
+    }
   });
 
   const cellMap = {}; // "round-slot" -> pick
@@ -269,7 +279,7 @@ async function fetchDraftBoard(season) {
 
   const board = {
     season: season, maxRound: maxRound, maxSlot: maxSlot,
-    slotOwner: slotOwner, cellMap: cellMap, rosterIdToOwner: rosterIdToOwner
+    slotOwner: slotOwner, slotTeamName: slotTeamName, cellMap: cellMap, rosterIdToOwner: rosterIdToOwner
   };
   draftCache[season] = board;
   return board;
@@ -401,7 +411,7 @@ function isKeeperPick(season, pickNo) {
 
 function renderLegend() {
   const legend = document.getElementById("draft-legend");
-  const keeperNote = '<div class="draft-legend-item" style="opacity:0.6;"><span style="font-size:11px;">\uD83D\uDD11</span> = kept the following year</div>';
+  const keeperNote = '<div class="draft-legend-item" style="opacity:0.6;"><span style="font-size:11px;">\uD83D\uDD11</span> = Keeper</div>';
   if (colorMode === "position") {
     legend.innerHTML = Object.keys(POSITION_COLORS).map(function (pos) {
       return '<div class="draft-legend-item"><span class="draft-legend-swatch" style="background:' + POSITION_COLORS[pos] + ';"></span>' + pos + '</div>';
@@ -556,6 +566,35 @@ function closePickDrillDown() {
   document.getElementById("drill-overlay").classList.add("hidden");
 }
 
+function headerAvatarHtml(owner) {
+  return '<span class="header-avatar-slot" data-owner="' + owner + '"></span>';
+}
+
+function attachHeaderAvatarFallbacks(root) {
+  root.querySelectorAll(".header-avatar-slot").forEach(function (slot) {
+    const owner = slot.getAttribute("data-owner");
+    const info = typeof OWNER_AVATARS !== "undefined" ? OWNER_AVATARS[owner] : null;
+    if (!info) {
+      const div = document.createElement("div");
+      div.className = "header-avatar-fallback";
+      div.textContent = owner.split(" ").map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase();
+      slot.replaceWith(div);
+      return;
+    }
+    const img = document.createElement("img");
+    img.className = "header-avatar";
+    img.alt = "";
+    img.addEventListener("error", function () {
+      const div = document.createElement("div");
+      div.className = "header-avatar-fallback";
+      div.textContent = owner.split(" ").map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase();
+      img.replaceWith(div);
+    });
+    img.src = info.type === "url" ? info.value : "https://sleepercdn.com/avatars/thumbs/" + info.value;
+    slot.replaceWith(img);
+  });
+}
+
 async function renderDraftBoard() {
   const loading = document.getElementById("draft-loading");
   const boardEl = document.getElementById("draft-board");
@@ -618,7 +657,16 @@ async function renderDraftBoard() {
     for (let slot = 1; slot <= board.maxSlot; slot++) {
       const h = document.createElement("div");
       h.className = "draft-header-cell";
-      h.textContent = board.slotOwner[slot] || "Slot " + slot;
+      const owner = board.slotOwner[slot] || "Slot " + slot;
+      const teamName = board.slotTeamName && board.slotTeamName[slot];
+      if (isEspn) {
+        h.textContent = owner;
+      } else {
+        h.innerHTML =
+          headerAvatarHtml(owner) +
+          '<div class="header-team-name">' + (teamName || owner) + '</div>' +
+          (teamName ? '<div class="header-owner-name">' + owner + '</div>' : '');
+      }
       grid.appendChild(h);
     }
 
@@ -657,6 +705,7 @@ async function renderDraftBoard() {
     }
 
     boardEl.appendChild(grid);
+    attachHeaderAvatarFallbacks(grid);
   } catch (e) {
     loading.style.display = "block";
     loading.textContent = "Couldn't load the draft board right now.";
