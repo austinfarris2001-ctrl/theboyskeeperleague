@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Playoff Stats - The Boys Keeper League</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.bracket-round { margin-bottom: 16px; }
+.bracket-round-title { font-size: 12px; font-weight: 800; color: var(--blue); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.bracket-match {
+  background: var(--panel); border: 2px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;
+}
+.bracket-team { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+.bracket-team.winner { font-weight: 800; color: var(--green); }
+.bracket-team.loser { color: var(--text-mute); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <h1>Playoff Stats</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="stats.html">Season Stats</a>
+      <a href="playoffs.html" class="active">Playoff Stats</a>
+      <a href="draft.html">Draft History</a>
+      <a href="keepers.html">Keepers</a>
+      <a href="misses.html">Analytics</a>
+    </nav>
+  </div>
+
+  <div class="filter-bar" id="playoff-season-bar"></div>
+  <div class="filter-bar">
+    <button id="playoff-select-all-btn" class="filter-btn small-btn">Select all</button>
+    <button id="playoff-deselect-all-btn" class="filter-btn small-btn">Deselect all</button>
+    <button id="playoff-career-btn" class="filter-btn small-btn">Career summary</button>
+  </div>
+
+  <div id="playoff-loading" class="empty-note">Select at least one season above.</div>
+  <div id="playoff-content"></div>
+
+</div>
+
+<script src="data/owners.js"></script>
+<script src="data/espn-history.js"></script>
+<script src="data/espn-playoffs.js"></script>
+<script src="js/playoffs.js"></script>
+</body>
+</html>
