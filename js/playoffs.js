@@ -391,6 +391,39 @@ function sortTeams(teams) {
   });
 }
 
+function renderPodiumSidePanel(teams) {
+  const top3 = [1, 2, 3].map(function (rank) { return teams.find(function (t) { return t.finalRank === rank; }); }).filter(Boolean);
+  const trophyEmoji = { 1: "\uD83E\uDD47", 2: "\uD83E\uDD48", 3: "\uD83E\uDD49" };
+  const totalTeams = teams.length > 0 ? teams[0].totalTeams : null;
+  const last = teams.find(function (t) { return t.finalRank && totalTeams && t.finalRank === totalTeams; });
+
+  let html = '<div class="bracket-side-panel">';
+  if (top3.length > 0) {
+    html += '<div>' +
+      '<div class="side-panel-title">Podium</div>' +
+      '<div class="podium">' + top3.map(function (t) {
+        return '<div class="podium-spot rank-' + t.finalRank + '">' +
+          '<div class="podium-trophy">' + trophyEmoji[t.finalRank] + '</div>' +
+          '<div class="podium-medal">' + t.finalRank + '</div>' +
+          avatarHtml(t.owner) +
+          '<div class="p-player">' + t.owner + '</div>' +
+          (t.teamName ? '<div class="p-teamname">' + t.teamName + '</div>' : '') +
+        '</div>';
+      }).join("") + '</div>' +
+    '</div>';
+  }
+  if (last) {
+    html += '<div class="toilet-bowl-card">' +
+      '<div class="tb-emoji">\uD83D\uDCA9</div>' +
+      avatarHtml(last.owner) +
+      '<div class="tb-owner">' + last.owner + '</div>' +
+      (last.teamName ? '<div class="tb-teamname">' + last.teamName + '</div>' : '') +
+    '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
 async function renderSeasons() {
   const content = document.getElementById("playoff-content");
   const loading = document.getElementById("playoff-loading");
@@ -422,11 +455,16 @@ async function renderSeasons() {
     let html = "";
 
     // single-season bracket visualization (Sleeper only - ESPN doesn't have exact bracket paths)
-    if (seasons.length === 1 && allData[0].bracketRounds) {
+    if (seasons.length === 1) {
       html += '<div class="podium-title" style="margin-bottom:10px;">' + seasons[0] + ' Championship Bracket</div>';
-      html += renderBracket(allData[0].bracketRounds);
-    } else if (seasons.length === 1 && allData[0].isEspn) {
-      html += '<p class="empty-note" style="margin-bottom:16px;">ESPN doesn\'t give us exact bracket paths for this season - showing playoff-week stats instead.</p>';
+      html += '<div class="bracket-page-layout">';
+      if (allData[0].bracketRounds) {
+        html += renderBracket(allData[0].bracketRounds);
+      } else if (allData[0].isEspn) {
+        html += '<p class="empty-note" style="max-width:320px;">ESPN doesn\'t give us exact bracket paths for this season - showing the podium and playoff-week stats instead.</p>';
+      }
+      html += renderPodiumSidePanel(allData[0].teams);
+      html += '</div>';
     }
 
     if (playoffViewMode === "individual") {
