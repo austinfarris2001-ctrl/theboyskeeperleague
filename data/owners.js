@@ -17,7 +17,8 @@ const USERNAME_TO_OWNER = {
   "zday47": "Zach Sullivan",
   "jsadl1225": "Joe Sadler",
   "austincastro23": "Austin Castro",
-  "ethan35thomas": "Ethan Thomas"
+  "ethan35thomas": "Ethan Thomas",
+  "jessecallahan13": "Jesse Callahan"
 };
 
 // Avatar source per owner - see data/keepers.js header for the type explanation.
