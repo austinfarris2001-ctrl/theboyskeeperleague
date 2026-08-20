@@ -1,12 +1,12 @@
 // ============================================================
 // ESPN DRAFT DATA - static picks for 2020-2022 (frozen history).
-// Most players' name/position/team come directly from that season's
-// real roster snapshots (already embedded in this file - genuinely
-// historically accurate, not a live guess). A minority of picks
-// (players who got dropped and weren't on any roster by season's end)
-// have no 'name' field here - js/draft.js resolves those live via
-// ESPN's athlete API as a fallback, which may show their CURRENT team
-// instead of their historical one for that specific handful of picks.
+// Most players' name/position/team/seasonPoints come directly from
+// that season's real roster snapshots (embedded here - genuinely
+// historically accurate, not a live guess). seasonPoints is that
+// league's own actual full-season scoring total (ESPN's
+// statSplitTypeId=0/scoringPeriodId=0 aggregate), used for VORP.
+// A minority of picks (dropped players) have no embedded data -
+// js/draft.js resolves those live as a fallback where possible.
 // ============================================================
 const ESPN_DRAFT_PICKS = {
   "2022": [
@@ -19,7 +19,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4242335,
       "name": "Jonathan Taylor",
       "position": "RB",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 146.4
     },
     {
       "round": 1,
@@ -30,7 +31,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2977187,
       "name": "Cooper Kupp",
       "position": "WR",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 201.4
     },
     {
       "round": 1,
@@ -41,7 +43,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3117251,
       "name": "Christian McCaffrey",
       "position": "RB",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 356.4
     },
     {
       "round": 1,
@@ -52,7 +55,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4262921,
       "name": "Justin Jefferson",
       "position": "WR",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 368.7
     },
     {
       "round": 1,
@@ -63,7 +67,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3068267,
       "name": "Austin Ekeler",
       "position": "RB",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 372.7
     },
     {
       "round": 1,
@@ -74,7 +79,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3043078,
       "name": "Derrick Henry",
       "position": "RB",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 302.8
     },
     {
       "round": 1,
@@ -85,7 +91,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241457,
       "name": "Najee Harris",
       "position": "RB",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 223.5
     },
     {
       "round": 1,
@@ -96,7 +103,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16800,
       "name": "Davante Adams",
       "position": "WR",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 335.5
     },
     {
       "round": 1,
@@ -107,7 +115,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116593,
       "name": "Dalvin Cook",
       "position": "RB",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 237.8
     },
     {
       "round": 1,
@@ -118,7 +127,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4362628,
       "name": "Ja'Marr Chase",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 242.4
     },
     {
       "round": 1,
@@ -129,7 +139,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4259545,
       "name": "D'Andre Swift",
       "position": "RB",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 191.1
     },
     {
       "round": 1,
@@ -140,7 +151,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3054850,
       "name": "Alvin Kamara",
       "position": "RB",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 211.7
     },
     {
       "round": 2,
@@ -151,7 +163,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3042519,
       "name": "Aaron Jones",
       "position": "RB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 248.6
     },
     {
       "round": 2,
@@ -162,7 +175,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116385,
       "name": "Joe Mixon",
       "position": "RB",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 239.5
     },
     {
       "round": 2,
@@ -173,7 +187,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3115364,
       "name": "Leonard Fournette",
       "position": "RB",
-      "proTeamId": 0
+      "proTeamId": 0,
+      "seasonPoints": 226.1
     },
     {
       "round": 2,
@@ -184,7 +199,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976212,
       "name": "Stefon Diggs",
       "position": "WR",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 316.6
     },
     {
       "round": 2,
@@ -195,7 +211,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3126486,
       "name": "Deebo Samuel",
       "position": "WR",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 168.4
     },
     {
       "round": 2,
@@ -206,7 +223,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15847,
       "name": "Travis Kelce",
       "position": "TE",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 316.3
     },
     {
       "round": 2,
@@ -217,7 +235,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116406,
       "name": "Tyreek Hill",
       "position": "WR",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 347.2
     },
     {
       "round": 2,
@@ -228,7 +247,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241389,
       "name": "CeeDee Lamb",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 301.6
     },
     {
       "round": 2,
@@ -239,7 +259,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128720,
       "name": "Nick Chubb",
       "position": "RB",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 281.4
     },
     {
       "round": 2,
@@ -258,7 +279,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3929630,
       "name": "Saquon Barkley",
       "position": "RB",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 284.0
     },
     {
       "round": 2,
@@ -269,7 +291,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116365,
       "name": "Mark Andrews",
       "position": "TE",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 190.5
     },
     {
       "round": 3,
@@ -280,7 +303,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045147,
       "name": "James Conner",
       "position": "RB",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 200.2
     },
     {
       "round": 3,
@@ -291,7 +315,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3918298,
       "name": "Josh Allen",
       "position": "QB",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 395.5
     },
     {
       "round": 3,
@@ -302,7 +327,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16737,
       "name": "Mike Evans",
       "position": "WR",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 225.4
     },
     {
       "round": 3,
@@ -313,7 +339,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4035687,
       "name": "Michael Pittman Jr.",
       "position": "WR",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 216.5
     },
     {
       "round": 3,
@@ -324,7 +351,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4239993,
       "name": "Tee Higgins",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 220.9
     },
     {
       "round": 3,
@@ -335,7 +363,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15818,
       "name": "Keenan Allen",
       "position": "WR",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 164.0
     },
     {
       "round": 3,
@@ -346,7 +375,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3915416,
       "name": "DJ Moore",
       "position": "WR",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 199.1
     },
     {
       "round": 3,
@@ -365,7 +395,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047646,
       "name": "A.J. Brown",
       "position": "WR",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 299.6
     },
     {
       "round": 3,
@@ -376,7 +407,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3932905,
       "name": "Diontae Johnson",
       "position": "WR",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 180.7
     },
     {
       "round": 3,
@@ -387,7 +419,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128429,
       "name": "Courtland Sutton",
       "position": "WR",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 159.4
     },
     {
       "round": 3,
@@ -398,7 +431,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4372016,
       "name": "Jaylen Waddle",
       "position": "WR",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 259.2
     },
     {
       "round": 4,
@@ -409,7 +443,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241372,
       "name": "Marquise Brown",
       "position": "WR",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 156.0
     },
     {
       "round": 4,
@@ -428,7 +463,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4035538,
       "name": "David Montgomery",
       "position": "RB",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 177.7
     },
     {
       "round": 4,
@@ -447,7 +483,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045138,
       "name": "Mike Williams",
       "position": "WR",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 176.5
     },
     {
       "round": 4,
@@ -458,7 +495,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3051392,
       "name": "Ezekiel Elliott",
       "position": "RB",
-      "proTeamId": 0
+      "proTeamId": 0,
+      "seasonPoints": 185.8
     },
     {
       "round": 4,
@@ -469,7 +507,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4240021,
       "name": "Cam Akers",
       "position": "RB",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 141.3
     },
     {
       "round": 4,
@@ -480,7 +519,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4239996,
       "name": "Travis Etienne Jr.",
       "position": "RB",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 205.1
     },
     {
       "round": 4,
@@ -491,7 +531,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4242214,
       "name": "Clyde Edwards-Helaire",
       "position": "RB",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 98.3
     },
     {
       "round": 4,
@@ -502,7 +543,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3121422,
       "name": "Terry McLaurin",
       "position": "WR",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 229.0
     },
     {
       "round": 4,
@@ -513,7 +555,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047365,
       "name": "Josh Jacobs",
       "position": "RB",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 328.3
     },
     {
       "round": 4,
@@ -524,7 +567,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047650,
       "name": "DK Metcalf",
       "position": "WR",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 226.8
     },
     {
       "round": 5,
@@ -535,7 +579,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241463,
       "name": "Jerry Jeudy",
       "position": "WR",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 204.2
     },
     {
       "round": 5,
@@ -546,7 +591,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3040151,
       "name": "George Kittle",
       "position": "TE",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 200.5
     },
     {
       "round": 5,
@@ -557,7 +603,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4243537,
       "name": "Gabe Davis",
       "position": "WR",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 171.6
     },
     {
       "round": 5,
@@ -576,7 +623,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4038941,
       "name": "Justin Herbert",
       "position": "QB",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 281.3
     },
     {
       "round": 5,
@@ -587,7 +635,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3139477,
       "name": "Patrick Mahomes",
       "position": "QB",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 417.4
     },
     {
       "round": 5,
@@ -598,7 +647,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4374302,
       "name": "Amon-Ra St. Brown",
       "position": "WR",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 267.6
     },
     {
       "round": 5,
@@ -609,7 +659,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4040715,
       "name": "Jalen Hurts",
       "position": "QB",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 378.0
     },
     {
       "round": 5,
@@ -620,7 +671,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4045163,
       "name": "Miles Sanders",
       "position": "RB",
-      "proTeamId": 29
+      "proTeamId": 29,
+      "seasonPoints": 216.7
     },
     {
       "round": 5,
@@ -631,7 +683,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116165,
       "name": "Chris Godwin",
       "position": "WR",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 222.8
     },
     {
       "round": 5,
@@ -642,7 +695,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576925,
       "name": "Darren Waller",
       "position": "TE",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 84.8
     },
     {
       "round": 5,
@@ -653,7 +707,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3059915,
       "name": "Kareem Hunt",
       "position": "RB",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 126.8
     },
     {
       "round": 6,
@@ -680,7 +735,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916387,
       "name": "Lamar Jackson",
       "position": "QB",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 236.1
     },
     {
       "round": 6,
@@ -691,7 +747,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360238,
       "name": "Dameon Pierce",
       "position": "RB",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 166.4
     },
     {
       "round": 6,
@@ -702,7 +759,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3119195,
       "name": "Chase Edmonds",
       "position": "RB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 74.2
     },
     {
       "round": 6,
@@ -713,7 +771,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241985,
       "name": "J.K. Dobbins",
       "position": "RB",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 81.2
     },
     {
       "round": 6,
@@ -724,7 +783,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3117256,
       "name": "Dalton Schultz",
       "position": "TE",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 142.7
     },
     {
       "round": 6,
@@ -743,7 +803,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036133,
       "name": "T.J. Hockenson",
       "position": "TE",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 215.4
     },
     {
       "round": 6,
@@ -754,7 +815,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2577417,
       "name": "Dak Prescott",
       "position": "QB",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 198.6
     },
     {
       "round": 6,
@@ -765,7 +827,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976499,
       "name": "Amari Cooper",
       "position": "WR",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 246.0
     },
     {
       "round": 6,
@@ -776,7 +839,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4040761,
       "name": "Devin Singletary",
       "position": "RB",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 177.9
     },
     {
       "round": 7,
@@ -787,7 +851,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976316,
       "name": "Michael Thomas",
       "position": "WR",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 51.1
     },
     {
       "round": 7,
@@ -798,7 +863,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16460,
       "name": "Adam Thielen",
       "position": "WR",
-      "proTeamId": 0
+      "proTeamId": 0,
+      "seasonPoints": 180.0
     },
     {
       "round": 7,
@@ -817,7 +883,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15807,
       "name": "Cordarrelle Patterson",
       "position": "RB",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 154.7
     },
     {
       "round": 7,
@@ -836,7 +903,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3895856,
       "name": "Christian Kirk",
       "position": "WR",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 241.9
     },
     {
       "round": 7,
@@ -855,7 +923,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4239934,
       "name": "AJ Dillon",
       "position": "RB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 167.6
     },
     {
       "round": 7,
@@ -874,7 +943,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3120348,
       "name": "JuJu Smith-Schuster",
       "position": "WR",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 185.3
     },
     {
       "round": 7,
@@ -893,7 +963,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4372414,
       "name": "Elijah Moore",
       "position": "WR",
-      "proTeamId": 20
+      "proTeamId": 20,
+      "seasonPoints": 88.1
     },
     {
       "round": 8,
@@ -904,7 +975,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916148,
       "name": "Tony Pollard",
       "position": "RB",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 248.8
     },
     {
       "round": 8,
@@ -915,7 +987,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360438,
       "name": "Brandon Aiyuk",
       "position": "WR",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 227.8
     },
     {
       "round": 8,
@@ -926,7 +999,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3121023,
       "name": "Dallas Goedert",
       "position": "TE",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 141.2
     },
     {
       "round": 8,
@@ -937,7 +1011,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15880,
       "name": "Robert Woods",
       "position": "WR",
-      "proTeamId": 0
+      "proTeamId": 0,
+      "seasonPoints": 115.7
     },
     {
       "round": 8,
@@ -948,7 +1023,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4569173,
       "name": "Rhamondre Stevenson",
       "position": "RB",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 249.1
     },
     {
       "round": 8,
@@ -959,7 +1035,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3915511,
       "name": "Joe Burrow",
       "position": "QB",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 350.7
     },
     {
       "round": 8,
@@ -970,7 +1047,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 8439,
       "name": "Aaron Rodgers",
       "position": "QB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 239.2
     },
     {
       "round": 8,
@@ -981,7 +1059,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15795,
       "name": "DeAndre Hopkins",
       "position": "WR",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 151.7
     },
     {
       "round": 8,
@@ -992,7 +1071,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360294,
       "name": "Antonio Gibson",
       "position": "RB",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 165.9
     },
     {
       "round": 8,
@@ -1003,7 +1083,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2577327,
       "name": "Tyler Lockett",
       "position": "WR",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 237.3
     },
     {
       "round": 8,
@@ -1014,7 +1095,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4046692,
       "name": "Chase Claypool",
       "position": "WR",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 105.0
     },
     {
       "round": 8,
@@ -1025,7 +1107,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2330,
       "name": "Tom Brady",
       "position": "QB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 271.7
     },
     {
       "round": 9,
@@ -1036,7 +1119,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4426502,
       "name": "Drake London",
       "position": "WR",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 178.6
     },
     {
       "round": 9,
@@ -1047,7 +1131,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15683,
       "name": "Justin Tucker",
       "position": "K",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 158.0
     },
     {
       "round": 9,
@@ -1058,7 +1143,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128390,
       "name": "Allen Lazard",
       "position": "WR",
-      "proTeamId": 20
+      "proTeamId": 20,
+      "seasonPoints": 174.8
     },
     {
       "round": 9,
@@ -1085,7 +1171,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360234,
       "name": "Evan McPherson",
       "position": "K",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 126.0
     },
     {
       "round": 9,
@@ -1096,7 +1183,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241478,
       "name": "DeVonta Smith",
       "position": "WR",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 254.6
     },
     {
       "round": 9,
@@ -1107,7 +1195,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4361370,
       "name": "Chris Olave",
       "position": "WR",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 198.2
     },
     {
       "round": 9,
@@ -1118,7 +1207,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16757,
       "name": "Derek Carr",
       "position": "QB",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 219.1
     },
     {
       "round": 9,
@@ -1137,7 +1227,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4569618,
       "name": "Garrett Wilson",
       "position": "WR",
-      "proTeamId": 20
+      "proTeamId": 20,
+      "seasonPoints": 215.7
     },
     {
       "round": 9,
@@ -1148,7 +1239,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3930086,
       "name": "Dawson Knox",
       "position": "TE",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 135.7
     },
     {
       "round": 10,
@@ -1159,7 +1251,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3051738,
       "name": "Marquez Valdes-Scantling",
       "position": "WR",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 122.4
     },
     {
       "round": 10,
@@ -1170,7 +1263,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4052042,
       "name": "James Robinson",
       "position": "RB",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 88.6
     },
     {
       "round": 10,
@@ -1181,7 +1275,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4258595,
       "name": "Cole Kmet",
       "position": "TE",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 147.3
     },
     {
       "round": 10,
@@ -1192,7 +1287,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4048244,
       "name": "Alexander Mattison",
       "position": "RB",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 88.4
     },
     {
       "round": 10,
@@ -1203,7 +1299,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4240657,
       "name": "Michael Carter",
       "position": "RB",
-      "proTeamId": 20
+      "proTeamId": 20,
+      "seasonPoints": 126.0
     },
     {
       "round": 10,
@@ -1214,7 +1311,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16002,
       "name": "Bills D/ST",
       "position": "DEF",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 138.0
     },
     {
       "round": 10,
@@ -1225,7 +1323,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3046439,
       "name": "Hunter Henry",
       "position": "TE",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 103.9
     },
     {
       "round": 10,
@@ -1236,7 +1335,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4240600,
       "name": "Kadarius Toney",
       "position": "WR",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 57.3
     },
     {
       "round": 10,
@@ -1247,7 +1347,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045144,
       "name": "Tyler Boyd",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 167.1
     },
     {
       "round": 10,
@@ -1258,7 +1359,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4361411,
       "name": "Pat Freiermuth",
       "position": "TE",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 148.2
     },
     {
       "round": 10,
@@ -1269,7 +1371,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916430,
       "name": "Nyheim Hines",
       "position": "RB",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 81.4
     },
     {
       "round": 10,
@@ -1288,7 +1391,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916433,
       "name": "Jakobi Meyers",
       "position": "WR",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 180.3
     },
     {
       "round": 11,
@@ -1315,7 +1419,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576414,
       "name": "Raheem Mostert",
       "position": "RB",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 168.3
     },
     {
       "round": 11,
@@ -1334,7 +1439,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036348,
       "name": "Michael Gallup",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 105.4
     },
     {
       "round": 11,
@@ -1345,7 +1451,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4567048,
       "name": "Kenneth Walker III",
       "position": "RB",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 202.5
     },
     {
       "round": 11,
@@ -1356,7 +1463,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241479,
       "name": "Tua Tagovailoa",
       "position": "QB",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 230.9
     },
     {
       "round": 11,
@@ -1375,7 +1483,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4379399,
       "name": "James Cook",
       "position": "RB",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 105.7
     },
     {
       "round": 11,
@@ -1402,7 +1511,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116164,
       "name": "Mike Gesicki",
       "position": "TE",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 98.2
     },
     {
       "round": 12,
@@ -1437,7 +1547,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3051876,
       "name": "Evan Engram",
       "position": "TE",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 176.9
     },
     {
       "round": 12,
@@ -1464,7 +1575,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4426354,
       "name": "George Pickens",
       "position": "WR",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 166.5
     },
     {
       "round": 12,
@@ -1475,7 +1587,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4361409,
       "name": "Jahan Dotson",
       "position": "WR",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 130.6
     },
     {
       "round": 12,
@@ -1486,7 +1599,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 14880,
       "name": "Kirk Cousins",
       "position": "QB",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 291.6
     },
     {
       "round": 12,
@@ -1513,7 +1627,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360310,
       "name": "Trevor Lawrence",
       "position": "QB",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 295.6
     },
     {
       "round": 13,
@@ -1524,7 +1639,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2573401,
       "name": "Tyler Higbee",
       "position": "TE",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 152.0
     },
     {
       "round": 13,
@@ -1551,7 +1667,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4697815,
       "name": "Rachaad White",
       "position": "RB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 139.1
     },
     {
       "round": 13,
@@ -1562,7 +1679,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15971,
       "name": "Rex Burkhead",
       "position": "RB",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 77.4
     },
     {
       "round": 13,
@@ -1581,7 +1699,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128724,
       "name": "Isaiah McKenzie",
       "position": "WR",
-      "proTeamId": 0
+      "proTeamId": 0,
+      "seasonPoints": 119.8
     },
     {
       "round": 13,
@@ -1592,7 +1711,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16033,
       "name": "Ravens D/ST",
       "position": "DEF",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 129.0
     },
     {
       "round": 13,
@@ -1611,7 +1731,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16025,
       "name": "49ers D/ST",
       "position": "DEF",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 156.0
     },
     {
       "round": 13,
@@ -1622,7 +1743,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16006,
       "name": "Cowboys D/ST",
       "position": "DEF",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 153.0
     },
     {
       "round": 14,
@@ -1641,7 +1763,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4035004,
       "name": "Mecole Hardman",
       "position": "WR",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 93.8
     },
     {
       "round": 14,
@@ -1652,7 +1775,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3055899,
       "name": "Harrison Butker",
       "position": "K",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 97.0
     },
     {
       "round": 14,
@@ -1663,7 +1787,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4362887,
       "name": "Justin Fields",
       "position": "QB",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 296.0
     },
     {
       "round": 14,
@@ -1690,7 +1815,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3975763,
       "name": "Greg Joseph",
       "position": "K",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 127.0
     },
     {
       "round": 14,
@@ -1701,7 +1827,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3917232,
       "name": "Tyler Bass",
       "position": "K",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 139.0
     },
     {
       "round": 14,
@@ -1728,7 +1855,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 14876,
       "name": "Ryan Tannehill",
       "position": "QB",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 161.2
     },
     {
       "round": 14,
@@ -1739,7 +1867,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4242433,
       "name": "Joshua Palmer",
       "position": "WR",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 169.3
     },
     {
       "round": 15,
@@ -1758,7 +1887,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15864,
       "name": "Geno Smith",
       "position": "QB",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 303.9
     },
     {
       "round": 15,
@@ -1777,7 +1907,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 10621,
       "name": "Nick Folk",
       "position": "K",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 141.0
     },
     {
       "round": 15,
@@ -1796,7 +1927,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3043275,
       "name": "Austin Hooper",
       "position": "TE",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 97.4
     },
     {
       "round": 15,
@@ -1807,7 +1939,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3917792,
       "name": "Daniel Jones",
       "position": "QB",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 289.0
     },
     {
       "round": 15,
@@ -1826,7 +1959,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036131,
       "name": "Noah Fant",
       "position": "TE",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 122.6
     },
     {
       "round": 15,
@@ -1837,7 +1971,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2980453,
       "name": "Jamaal Williams",
       "position": "RB",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 225.9
     },
     {
       "round": 15,
@@ -1848,7 +1983,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241474,
       "name": "Brian Robinson Jr.",
       "position": "RB",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 112.7
     },
     {
       "round": 15,
@@ -1883,7 +2019,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3121427,
       "name": "Curtis Samuel",
       "position": "WR",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 176.3
     },
     {
       "round": 16,
@@ -1894,7 +2031,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 12460,
       "name": "Graham Gano",
       "position": "K",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 142.0
     },
     {
       "round": 16,
@@ -1913,7 +2051,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16007,
       "name": "Broncos D/ST",
       "position": "DEF",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 102.0
     },
     {
       "round": 16,
@@ -1932,7 +2071,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16005,
       "name": "Browns D/ST",
       "position": "DEF",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 102.0
     },
     {
       "round": 16,
@@ -1943,7 +2083,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16024,
       "name": "Chargers D/ST",
       "position": "DEF",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 87.0
     },
     {
       "round": 16,
@@ -1954,7 +2095,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16023,
       "name": "Steelers D/ST",
       "position": "DEF",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 97.0
     },
     {
       "round": 16,
@@ -1965,7 +2107,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16015,
       "name": "Dolphins D/ST",
       "position": "DEF",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 89.0
     },
     {
       "round": 16,
@@ -1976,7 +2119,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3123076,
       "name": "David Njoku",
       "position": "TE",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 142.0
     }
   ],
   "2021": [
@@ -1997,7 +2141,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116593,
       "name": "Dalvin Cook",
       "position": "RB",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 206.3
     },
     {
       "round": 1,
@@ -2008,7 +2153,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3054850,
       "name": "Alvin Kamara",
       "position": "RB",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 234.7
     },
     {
       "round": 1,
@@ -2019,7 +2165,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3043078,
       "name": "Derrick Henry",
       "position": "RB",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 193.3
     },
     {
       "round": 1,
@@ -2030,7 +2177,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15847,
       "name": "Travis Kelce",
       "position": "TE",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 262.8
     },
     {
       "round": 1,
@@ -2041,7 +2189,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16800,
       "name": "Davante Adams",
       "position": "WR",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 344.3
     },
     {
       "round": 1,
@@ -2052,7 +2201,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3929630,
       "name": "Saquon Barkley",
       "position": "RB",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 148.6
     },
     {
       "round": 1,
@@ -2063,7 +2213,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4242335,
       "name": "Jonathan Taylor",
       "position": "RB",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 373.1
     },
     {
       "round": 1,
@@ -2074,7 +2225,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3051392,
       "name": "Ezekiel Elliott",
       "position": "RB",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 252.1
     },
     {
       "round": 1,
@@ -2085,7 +2237,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3042519,
       "name": "Aaron Jones",
       "position": "RB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 229.0
     },
     {
       "round": 2,
@@ -2096,7 +2249,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116406,
       "name": "Tyreek Hill",
       "position": "WR",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 296.5
     },
     {
       "round": 2,
@@ -2107,7 +2261,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047650,
       "name": "DK Metcalf",
       "position": "WR",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 244.3
     },
     {
       "round": 2,
@@ -2118,7 +2273,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128720,
       "name": "Nick Chubb",
       "position": "RB",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 215.3
     },
     {
       "round": 2,
@@ -2129,7 +2285,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241457,
       "name": "Najee Harris",
       "position": "RB",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 300.7
     },
     {
       "round": 2,
@@ -2140,7 +2297,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3068267,
       "name": "Austin Ekeler",
       "position": "RB",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 343.8
     },
     {
       "round": 2,
@@ -2151,7 +2309,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976212,
       "name": "Stefon Diggs",
       "position": "WR",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 285.5
     },
     {
       "round": 2,
@@ -2162,7 +2321,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360294,
       "name": "Antonio Gibson",
       "position": "RB",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 229.1
     },
     {
       "round": 2,
@@ -2173,7 +2333,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15795,
       "name": "DeAndre Hopkins",
       "position": "WR",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 147.2
     },
     {
       "round": 2,
@@ -2192,7 +2353,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4262921,
       "name": "Justin Jefferson",
       "position": "WR",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 330.4
     },
     {
       "round": 3,
@@ -2203,7 +2365,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047646,
       "name": "A.J. Brown",
       "position": "WR",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 180.9
     },
     {
       "round": 3,
@@ -2214,7 +2377,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4242214,
       "name": "Clyde Edwards-Helaire",
       "position": "RB",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 117.6
     },
     {
       "round": 3,
@@ -2225,7 +2389,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576925,
       "name": "Darren Waller",
       "position": "TE",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 133.5
     },
     {
       "round": 3,
@@ -2236,7 +2401,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15818,
       "name": "Keenan Allen",
       "position": "WR",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 257.8
     },
     {
       "round": 3,
@@ -2247,7 +2413,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116385,
       "name": "Joe Mixon",
       "position": "RB",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 287.9
     },
     {
       "round": 3,
@@ -2258,7 +2425,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4052042,
       "name": "James Robinson",
       "position": "RB",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 173.9
     },
     {
       "round": 3,
@@ -2269,7 +2437,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3040151,
       "name": "George Kittle",
       "position": "TE",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 198.0
     },
     {
       "round": 3,
@@ -2280,7 +2449,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3121422,
       "name": "Terry McLaurin",
       "position": "WR",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 213.5
     },
     {
       "round": 3,
@@ -2299,7 +2469,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4035538,
       "name": "David Montgomery",
       "position": "RB",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 195.0
     },
     {
       "round": 4,
@@ -2310,7 +2481,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3139477,
       "name": "Patrick Mahomes",
       "position": "QB",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 361.7
     },
     {
       "round": 4,
@@ -2321,7 +2493,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3918298,
       "name": "Josh Allen",
       "position": "QB",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 402.6
     },
     {
       "round": 4,
@@ -2332,7 +2505,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16737,
       "name": "Mike Evans",
       "position": "WR",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 262.5
     },
     {
       "round": 4,
@@ -2343,7 +2517,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916387,
       "name": "Lamar Jackson",
       "position": "QB",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 240.0
     },
     {
       "round": 4,
@@ -2354,7 +2529,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241389,
       "name": "CeeDee Lamb",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 232.8
     },
     {
       "round": 4,
@@ -2373,7 +2549,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976499,
       "name": "Amari Cooper",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 202.5
     },
     {
       "round": 4,
@@ -2384,7 +2561,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4045163,
       "name": "Miles Sanders",
       "position": "RB",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 117.2
     },
     {
       "round": 4,
@@ -2395,7 +2573,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3915416,
       "name": "DJ Moore",
       "position": "WR",
-      "proTeamId": 29
+      "proTeamId": 29,
+      "seasonPoints": 237.5
     },
     {
       "round": 4,
@@ -2406,7 +2585,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4259545,
       "name": "D'Andre Swift",
       "position": "RB",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 208.9
     },
     {
       "round": 5,
@@ -2417,7 +2597,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2577327,
       "name": "Tyler Lockett",
       "position": "WR",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 241.4
     },
     {
       "round": 5,
@@ -2436,7 +2617,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16460,
       "name": "Adam Thielen",
       "position": "WR",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 199.8
     },
     {
       "round": 5,
@@ -2447,7 +2629,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2977187,
       "name": "Cooper Kupp",
       "position": "WR",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 439.5
     },
     {
       "round": 5,
@@ -2458,7 +2641,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047365,
       "name": "Josh Jacobs",
       "position": "RB",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 226.0
     },
     {
       "round": 5,
@@ -2469,7 +2653,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3886818,
       "name": "Myles Gaskin",
       "position": "RB",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 173.6
     },
     {
       "round": 5,
@@ -2480,7 +2665,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116165,
       "name": "Chris Godwin",
       "position": "WR",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 242.4
     },
     {
       "round": 5,
@@ -2499,7 +2685,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3119195,
       "name": "Chase Edmonds",
       "position": "RB",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 143.3
     },
     {
       "round": 5,
@@ -2510,7 +2697,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4239993,
       "name": "Tee Higgins",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 219.1
     },
     {
       "round": 6,
@@ -2521,7 +2709,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116365,
       "name": "Mark Andrews",
       "position": "TE",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 301.1
     },
     {
       "round": 6,
@@ -2548,7 +2737,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128429,
       "name": "Courtland Sutton",
       "position": "WR",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 150.2
     },
     {
       "round": 6,
@@ -2567,7 +2757,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3932905,
       "name": "Diontae Johnson",
       "position": "WR",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 274.4
     },
     {
       "round": 6,
@@ -2594,7 +2785,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3059915,
       "name": "Kareem Hunt",
       "position": "RB",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 110.0
     },
     {
       "round": 6,
@@ -2605,7 +2797,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3917315,
       "name": "Kyler Murray",
       "position": "QB",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 300.5
     },
     {
       "round": 7,
@@ -2616,7 +2809,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360248,
       "name": "Kyle Pitts",
       "position": "TE",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 176.6
     },
     {
       "round": 7,
@@ -2635,7 +2829,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2577417,
       "name": "Dak Prescott",
       "position": "QB",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 320.6
     },
     {
       "round": 7,
@@ -2646,7 +2841,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4361579,
       "name": "Javonte Williams",
       "position": "RB",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 204.9
     },
     {
       "round": 7,
@@ -2657,7 +2853,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4046692,
       "name": "Chase Claypool",
       "position": "WR",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 166.6
     },
     {
       "round": 7,
@@ -2668,7 +2865,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241463,
       "name": "Jerry Jeudy",
       "position": "WR",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 85.0
     },
     {
       "round": 7,
@@ -2679,7 +2877,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4039359,
       "name": "Darrell Henderson Jr.",
       "position": "RB",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 163.4
     },
     {
       "round": 7,
@@ -2690,7 +2889,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 14881,
       "name": "Russell Wilson",
       "position": "QB",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 242.8
     },
     {
       "round": 7,
@@ -2709,7 +2909,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036348,
       "name": "Michael Gallup",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 91.5
     },
     {
       "round": 8,
@@ -2720,7 +2921,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16731,
       "name": "Brandin Cooks",
       "position": "WR",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 231.8
     },
     {
       "round": 8,
@@ -2739,7 +2941,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036131,
       "name": "Noah Fant",
       "position": "TE",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 159.0
     },
     {
       "round": 8,
@@ -2750,7 +2953,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4362628,
       "name": "Ja'Marr Chase",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 304.6
     },
     {
       "round": 8,
@@ -2761,7 +2965,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 8439,
       "name": "Aaron Rodgers",
       "position": "QB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 333.3
     },
     {
       "round": 8,
@@ -2772,7 +2977,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2330,
       "name": "Tom Brady",
       "position": "QB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 374.7
     },
     {
       "round": 8,
@@ -2791,7 +2997,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4243160,
       "name": "Laviska Shenault Jr.",
       "position": "WR",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 127.0
     },
     {
       "round": 8,
@@ -2802,7 +3009,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045144,
       "name": "Tyler Boyd",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 183.8
     },
     {
       "round": 8,
@@ -2821,7 +3029,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16733,
       "name": "Odell Beckham Jr.",
       "position": "WR",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 129.1
     },
     {
       "round": 9,
@@ -2832,7 +3041,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4038941,
       "name": "Justin Herbert",
       "position": "QB",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 380.8
     },
     {
       "round": 9,
@@ -2843,7 +3053,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3925347,
       "name": "Damien Harris",
       "position": "RB",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 210.1
     },
     {
       "round": 9,
@@ -2870,7 +3081,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3126486,
       "name": "Deebo Samuel",
       "position": "WR",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 339.0
     },
     {
       "round": 9,
@@ -2881,7 +3093,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16790,
       "name": "Jarvis Landry",
       "position": "WR",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 133.0
     },
     {
       "round": 9,
@@ -2892,7 +3105,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3052876,
       "name": "William Fuller V",
       "position": "WR",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 8.6
     },
     {
       "round": 9,
@@ -2903,7 +3117,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241372,
       "name": "Marquise Brown",
       "position": "WR",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 226.3
     },
     {
       "round": 9,
@@ -2914,7 +3129,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2979843,
       "name": "Kenyan Drake",
       "position": "RB",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 102.5
     },
     {
       "round": 10,
@@ -2925,7 +3141,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045138,
       "name": "Mike Williams",
       "position": "WR",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 246.6
     },
     {
       "round": 10,
@@ -2936,7 +3153,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916430,
       "name": "Nyheim Hines",
       "position": "RB",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 112.6
     },
     {
       "round": 10,
@@ -2947,7 +3165,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045147,
       "name": "James Conner",
       "position": "RB",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 257.7
     },
     {
       "round": 10,
@@ -2958,7 +3177,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128721,
       "name": "Sony Michel",
       "position": "RB",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 146.3
     },
     {
       "round": 10,
@@ -2969,7 +3189,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4372016,
       "name": "Jaylen Waddle",
       "position": "WR",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 245.8
     },
     {
       "round": 10,
@@ -2980,7 +3201,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 13934,
       "name": "Antonio Brown",
       "position": "WR",
-      "proTeamId": 0
+      "proTeamId": 0,
+      "seasonPoints": 121.1
     },
     {
       "round": 10,
@@ -2991,7 +3213,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4239934,
       "name": "AJ Dillon",
       "position": "RB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 185.6
     },
     {
       "round": 10,
@@ -3002,7 +3225,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3115364,
       "name": "Leonard Fournette",
       "position": "RB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 255.6
     },
     {
       "round": 10,
@@ -3013,7 +3237,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3121023,
       "name": "Dallas Goedert",
       "position": "TE",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 165.0
     },
     {
       "round": 10,
@@ -3024,7 +3249,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15072,
       "name": "Marvin Jones Jr.",
       "position": "WR",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 180.2
     },
     {
       "round": 11,
@@ -3043,7 +3269,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4040715,
       "name": "Jalen Hurts",
       "position": "QB",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 312.2
     },
     {
       "round": 11,
@@ -3062,7 +3289,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 12483,
       "name": "Matthew Stafford",
       "position": "QB",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 329.7
     },
     {
       "round": 11,
@@ -3073,7 +3301,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576434,
       "name": "Melvin Gordon III",
       "position": "RB",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 195.1
     },
     {
       "round": 11,
@@ -3092,7 +3321,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2980453,
       "name": "Jamaal Williams",
       "position": "RB",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 119.8
     },
     {
       "round": 11,
@@ -3103,7 +3333,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3054212,
       "name": "Jonnu Smith",
       "position": "TE",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 67.4
     },
     {
       "round": 11,
@@ -3138,7 +3369,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116164,
       "name": "Mike Gesicki",
       "position": "TE",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 165.0
     },
     {
       "round": 12,
@@ -3149,7 +3381,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3912550,
       "name": "Ronald Jones II",
       "position": "RB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 79.2
     },
     {
       "round": 12,
@@ -3168,7 +3401,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4240657,
       "name": "Michael Carter",
       "position": "RB",
-      "proTeamId": 20
+      "proTeamId": 20,
+      "seasonPoints": 154.4
     },
     {
       "round": 12,
@@ -3179,7 +3413,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4040761,
       "name": "Devin Singletary",
       "position": "RB",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 197.8
     },
     {
       "round": 12,
@@ -3190,7 +3425,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2573401,
       "name": "Tyler Higbee",
       "position": "TE",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 147.0
     },
     {
       "round": 12,
@@ -3201,7 +3437,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576623,
       "name": "DeVante Parker",
       "position": "WR",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 103.5
     },
     {
       "round": 12,
@@ -3220,7 +3457,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4035687,
       "name": "Michael Pittman Jr.",
       "position": "WR",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 238.6
     },
     {
       "round": 13,
@@ -3279,7 +3517,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916433,
       "name": "Jakobi Meyers",
       "position": "WR",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 186.3
     },
     {
       "round": 13,
@@ -3306,7 +3545,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16027,
       "name": "Buccaneers D/ST",
       "position": "DEF",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 125.0
     },
     {
       "round": 14,
@@ -3333,7 +3573,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2508176,
       "name": "David Johnson",
       "position": "RB",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 81.3
     },
     {
       "round": 14,
@@ -3352,7 +3593,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16025,
       "name": "49ers D/ST",
       "position": "DEF",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 120.0
     },
     {
       "round": 14,
@@ -3371,7 +3613,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15683,
       "name": "Justin Tucker",
       "position": "K",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 161.0
     },
     {
       "round": 14,
@@ -3406,7 +3649,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4040655,
       "name": "Darnell Mooney",
       "position": "WR",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 219.7
     },
     {
       "round": 15,
@@ -3449,7 +3693,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4048244,
       "name": "Alexander Mattison",
       "position": "RB",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 125.9
     },
     {
       "round": 15,
@@ -3460,7 +3705,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16002,
       "name": "Bills D/ST",
       "position": "DEF",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 154.0
     },
     {
       "round": 15,
@@ -3471,7 +3717,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16007,
       "name": "Broncos D/ST",
       "position": "DEF",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 110.0
     },
     {
       "round": 15,
@@ -3482,7 +3729,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16339,
       "name": "Brandon McManus",
       "position": "K",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 125.0
     },
     {
       "round": 15,
@@ -3493,7 +3741,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 12460,
       "name": "Graham Gano",
       "position": "K",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 119.0
     },
     {
       "round": 16,
@@ -3504,7 +3753,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3115378,
       "name": "Russell Gage",
       "position": "WR",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 163.0
     },
     {
       "round": 16,
@@ -3539,7 +3789,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4249087,
       "name": "Matt Gay",
       "position": "K",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 157.0
     },
     {
       "round": 16,
@@ -3550,7 +3801,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3915511,
       "name": "Joe Burrow",
       "position": "QB",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 314.2
     },
     {
       "round": 16,
@@ -3561,7 +3813,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16017,
       "name": "Patriots D/ST",
       "position": "DEF",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 148.0
     },
     {
       "round": 16,
@@ -3572,7 +3825,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3917232,
       "name": "Tyler Bass",
       "position": "K",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 139.0
     },
     {
       "round": 16,
@@ -3583,7 +3837,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 14993,
       "name": "Greg Zuerlein",
       "position": "K",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 134.0
     },
     {
       "round": 16,
@@ -3604,7 +3859,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3117251,
       "name": "Christian McCaffrey",
       "position": "RB",
-      "proTeamId": 29
+      "proTeamId": 29,
+      "seasonPoints": 90.4
     },
     {
       "round": 1,
@@ -3623,7 +3879,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3051392,
       "name": "Ezekiel Elliott",
       "position": "RB",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 223.7
     },
     {
       "round": 1,
@@ -3634,7 +3891,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976316,
       "name": "Michael Thomas",
       "position": "WR",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 83.9
     },
     {
       "round": 1,
@@ -3645,7 +3903,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116593,
       "name": "Dalvin Cook",
       "position": "RB",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 337.8
     },
     {
       "round": 1,
@@ -3656,7 +3915,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3054850,
       "name": "Alvin Kamara",
       "position": "RB",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 377.8
     },
     {
       "round": 1,
@@ -3667,7 +3927,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4242214,
       "name": "Clyde Edwards-Helaire",
       "position": "RB",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 176.0
     },
     {
       "round": 1,
@@ -3678,7 +3939,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3043078,
       "name": "Derrick Henry",
       "position": "RB",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 333.1
     },
     {
       "round": 1,
@@ -3697,7 +3959,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2979843,
       "name": "Kenyan Drake",
       "position": "RB",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 192.2
     },
     {
       "round": 2,
@@ -3708,7 +3971,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3917315,
       "name": "Kyler Murray",
       "position": "QB",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 378.7
     },
     {
       "round": 2,
@@ -3719,7 +3983,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3139477,
       "name": "Patrick Mahomes",
       "position": "QB",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 374.4
     },
     {
       "round": 2,
@@ -3730,7 +3995,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3128720,
       "name": "Nick Chubb",
       "position": "RB",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 207.7
     },
     {
       "round": 2,
@@ -3741,7 +4007,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047365,
       "name": "Josh Jacobs",
       "position": "RB",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 231.3
     },
     {
       "round": 2,
@@ -3752,7 +4019,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 13982,
       "name": "Julio Jones",
       "position": "WR",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 146.1
     },
     {
       "round": 2,
@@ -3763,7 +4031,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3042519,
       "name": "Aaron Jones",
       "position": "RB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 258.9
     },
     {
       "round": 2,
@@ -3774,7 +4043,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15795,
       "name": "DeAndre Hopkins",
       "position": "WR",
-      "proTeamId": 22
+      "proTeamId": 22,
+      "seasonPoints": 287.8
     },
     {
       "round": 2,
@@ -3785,7 +4055,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15847,
       "name": "Travis Kelce",
       "position": "TE",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 312.8
     },
     {
       "round": 2,
@@ -3796,7 +4067,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916387,
       "name": "Lamar Jackson",
       "position": "QB",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 332.8
     },
     {
       "round": 2,
@@ -3807,7 +4079,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116165,
       "name": "Chris Godwin",
       "position": "WR",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 191.0
     },
     {
       "round": 3,
@@ -3818,7 +4091,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3068267,
       "name": "Austin Ekeler",
       "position": "RB",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 165.3
     },
     {
       "round": 3,
@@ -3829,7 +4103,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16800,
       "name": "Davante Adams",
       "position": "WR",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 358.4
     },
     {
       "round": 3,
@@ -3840,7 +4115,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 11237,
       "name": "Matt Ryan",
       "position": "QB",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 282.4
     },
     {
       "round": 3,
@@ -3859,7 +4135,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116385,
       "name": "Joe Mixon",
       "position": "RB",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 99.6
     },
     {
       "round": 3,
@@ -3870,7 +4147,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116406,
       "name": "Tyreek Hill",
       "position": "WR",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 328.9
     },
     {
       "round": 3,
@@ -3889,7 +4167,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 14881,
       "name": "Russell Wilson",
       "position": "QB",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 359.8
     },
     {
       "round": 3,
@@ -3900,7 +4179,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15880,
       "name": "Robert Woods",
       "position": "WR",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 245.1
     },
     {
       "round": 3,
@@ -3911,7 +4191,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16737,
       "name": "Mike Evans",
       "position": "WR",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 248.6
     },
     {
       "round": 4,
@@ -3922,7 +4203,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3040151,
       "name": "George Kittle",
       "position": "TE",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 125.1
     },
     {
       "round": 4,
@@ -3933,7 +4215,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2577327,
       "name": "Tyler Lockett",
       "position": "WR",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 265.4
     },
     {
       "round": 4,
@@ -3944,7 +4227,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116365,
       "name": "Mark Andrews",
       "position": "TE",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 170.1
     },
     {
       "round": 4,
@@ -3955,7 +4239,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16799,
       "name": "Allen Robinson II",
       "position": "WR",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 262.9
     },
     {
       "round": 4,
@@ -3966,7 +4251,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3122840,
       "name": "Deshaun Watson",
       "position": "QB",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 369.3
     },
     {
       "round": 4,
@@ -3977,7 +4263,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3915416,
       "name": "DJ Moore",
       "position": "WR",
-      "proTeamId": 29
+      "proTeamId": 29,
+      "seasonPoints": 211.5
     },
     {
       "round": 4,
@@ -3988,7 +4275,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 13983,
       "name": "A.J. Green",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 111.3
     },
     {
       "round": 4,
@@ -3999,7 +4287,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3919596,
       "name": "Chris Carson",
       "position": "RB",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 187.8
     },
     {
       "round": 4,
@@ -4010,7 +4299,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16460,
       "name": "Adam Thielen",
       "position": "WR",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 254.0
     },
     {
       "round": 4,
@@ -4021,7 +4311,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3120348,
       "name": "JuJu Smith-Schuster",
       "position": "WR",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 234.1
     },
     {
       "round": 5,
@@ -4032,7 +4323,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976499,
       "name": "Amari Cooper",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 236.8
     },
     {
       "round": 5,
@@ -4043,7 +4335,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15835,
       "name": "Zach Ertz",
       "position": "TE",
-      "proTeamId": 21
+      "proTeamId": 21,
+      "seasonPoints": 77.5
     },
     {
       "round": 5,
@@ -4054,7 +4347,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2977644,
       "name": "Todd Gurley II",
       "position": "RB",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 163.2
     },
     {
       "round": 5,
@@ -4065,7 +4359,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036348,
       "name": "Michael Gallup",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 173.3
     },
     {
       "round": 5,
@@ -4084,7 +4379,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15825,
       "name": "Le'Veon Bell",
       "position": "RB",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 74.6
     },
     {
       "round": 5,
@@ -4095,7 +4391,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047646,
       "name": "A.J. Brown",
       "position": "WR",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 247.5
     },
     {
       "round": 5,
@@ -4106,7 +4403,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3925357,
       "name": "Calvin Ridley",
       "position": "WR",
-      "proTeamId": 1
+      "proTeamId": 1,
+      "seasonPoints": 281.5
     },
     {
       "round": 5,
@@ -4125,7 +4423,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2508176,
       "name": "David Johnson",
       "position": "RB",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 179.5
     },
     {
       "round": 6,
@@ -4136,7 +4435,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2977187,
       "name": "Cooper Kupp",
       "position": "WR",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 208.7
     },
     {
       "round": 6,
@@ -4147,7 +4447,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036131,
       "name": "Noah Fant",
       "position": "TE",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 149.3
     },
     {
       "round": 6,
@@ -4158,7 +4459,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 14924,
       "name": "T.Y. Hilton",
       "position": "WR",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 164.2
     },
     {
       "round": 6,
@@ -4169,7 +4471,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4242335,
       "name": "Jonathan Taylor",
       "position": "RB",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 252.8
     },
     {
       "round": 6,
@@ -4180,7 +4483,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576434,
       "name": "Melvin Gordon III",
       "position": "RB",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 198.4
     },
     {
       "round": 6,
@@ -4207,7 +4511,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4047650,
       "name": "DK Metcalf",
       "position": "WR",
-      "proTeamId": 26
+      "proTeamId": 26,
+      "seasonPoints": 271.3
     },
     {
       "round": 6,
@@ -4218,7 +4523,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045147,
       "name": "James Conner",
       "position": "RB",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 164.6
     },
     {
       "round": 6,
@@ -4229,7 +4535,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4240021,
       "name": "Cam Akers",
       "position": "RB",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 101.8
     },
     {
       "round": 7,
@@ -4248,7 +4555,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15818,
       "name": "Keenan Allen",
       "position": "WR",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 245.1
     },
     {
       "round": 7,
@@ -4259,7 +4567,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3121422,
       "name": "Terry McLaurin",
       "position": "WR",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 223.8
     },
     {
       "round": 7,
@@ -4270,7 +4579,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241389,
       "name": "CeeDee Lamb",
       "position": "WR",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 217.7
     },
     {
       "round": 7,
@@ -4281,7 +4591,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576925,
       "name": "Darren Waller",
       "position": "TE",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 278.6
     },
     {
       "round": 7,
@@ -4292,7 +4603,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3051876,
       "name": "Evan Engram",
       "position": "TE",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 141.0
     },
     {
       "round": 7,
@@ -4303,7 +4615,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3115394,
       "name": "DJ Chark Jr.",
       "position": "WR",
-      "proTeamId": 30
+      "proTeamId": 30,
+      "seasonPoints": 153.6
     },
     {
       "round": 7,
@@ -4314,7 +4627,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576623,
       "name": "DeVante Parker",
       "position": "WR",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 166.3
     },
     {
       "round": 7,
@@ -4325,7 +4639,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 13229,
       "name": "Rob Gronkowski",
       "position": "TE",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 149.3
     },
     {
       "round": 7,
@@ -4336,7 +4651,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16790,
       "name": "Jarvis Landry",
       "position": "WR",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 188.0
     },
     {
       "round": 8,
@@ -4355,7 +4671,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3910544,
       "name": "Joshua Kelley",
       "position": "RB",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 81.2
     },
     {
       "round": 8,
@@ -4366,7 +4683,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16002,
       "name": "Bills D/ST",
       "position": "DEF",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 96.0
     },
     {
       "round": 8,
@@ -4377,7 +4695,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3045144,
       "name": "Tyler Boyd",
       "position": "WR",
-      "proTeamId": 4
+      "proTeamId": 4,
+      "seasonPoints": 192.6
     },
     {
       "round": 8,
@@ -4388,7 +4707,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576414,
       "name": "Raheem Mostert",
       "position": "RB",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 99.7
     },
     {
       "round": 8,
@@ -4399,7 +4719,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3059915,
       "name": "Kareem Hunt",
       "position": "RB",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 218.5
     },
     {
       "round": 8,
@@ -4410,7 +4731,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 8439,
       "name": "Aaron Rodgers",
       "position": "QB",
-      "proTeamId": 9
+      "proTeamId": 9,
+      "seasonPoints": 383.3
     },
     {
       "round": 8,
@@ -4421,7 +4743,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2330,
       "name": "Tom Brady",
       "position": "QB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 337.9
     },
     {
       "round": 8,
@@ -4432,7 +4755,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3052876,
       "name": "Will Fuller V",
       "position": "WR",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 188.9
     },
     {
       "round": 8,
@@ -4443,7 +4767,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4259545,
       "name": "D'Andre Swift",
       "position": "RB",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 189.8
     },
     {
       "round": 9,
@@ -4454,7 +4779,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4035538,
       "name": "David Montgomery",
       "position": "RB",
-      "proTeamId": 3
+      "proTeamId": 3,
+      "seasonPoints": 264.8
     },
     {
       "round": 9,
@@ -4465,7 +4791,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15072,
       "name": "Marvin Jones Jr.",
       "position": "WR",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 227.8
     },
     {
       "round": 9,
@@ -4476,7 +4803,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976212,
       "name": "Stefon Diggs",
       "position": "WR",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 328.6
     },
     {
       "round": 9,
@@ -4495,7 +4823,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3115364,
       "name": "Leonard Fournette",
       "position": "RB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 132.0
     },
     {
       "round": 9,
@@ -4506,7 +4835,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241372,
       "name": "Marquise Brown",
       "position": "WR",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 183.0
     },
     {
       "round": 9,
@@ -4533,7 +4863,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3126486,
       "name": "Deebo Samuel",
       "position": "WR",
-      "proTeamId": 25
+      "proTeamId": 25,
+      "seasonPoints": 80.7
     },
     {
       "round": 9,
@@ -4560,7 +4891,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916925,
       "name": "Kerryon Johnson",
       "position": "RB",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 71.8
     },
     {
       "round": 10,
@@ -4571,7 +4903,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16913,
       "name": "James White",
       "position": "RB",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 116.6
     },
     {
       "round": 10,
@@ -4582,7 +4915,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3918298,
       "name": "Josh Allen",
       "position": "QB",
-      "proTeamId": 2
+      "proTeamId": 2,
+      "seasonPoints": 396.1
     },
     {
       "round": 10,
@@ -4593,7 +4927,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 16731,
       "name": "Brandin Cooks",
       "position": "WR",
-      "proTeamId": 34
+      "proTeamId": 34,
+      "seasonPoints": 232.0
     },
     {
       "round": 10,
@@ -4604,7 +4939,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3932905,
       "name": "Diontae Johnson",
       "position": "WR",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 221.8
     },
     {
       "round": 10,
@@ -4631,7 +4967,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4360294,
       "name": "Antonio Gibson",
       "position": "RB",
-      "proTeamId": 28
+      "proTeamId": 28,
+      "seasonPoints": 202.2
     },
     {
       "round": 10,
@@ -4642,7 +4979,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2576716,
       "name": "Jamison Crowder",
       "position": "WR",
-      "proTeamId": 20
+      "proTeamId": 20,
+      "seasonPoints": 172.0
     },
     {
       "round": 11,
@@ -4669,7 +5007,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3046439,
       "name": "Hunter Henry",
       "position": "TE",
-      "proTeamId": 24
+      "proTeamId": 24,
+      "seasonPoints": 145.3
     },
     {
       "round": 11,
@@ -4680,7 +5019,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2976592,
       "name": "Sterling Shepard",
       "position": "WR",
-      "proTeamId": 19
+      "proTeamId": 19,
+      "seasonPoints": 162.5
     },
     {
       "round": 11,
@@ -4699,7 +5039,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241985,
       "name": "J.K. Dobbins",
       "position": "RB",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 168.5
     },
     {
       "round": 11,
@@ -4710,7 +5051,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3116164,
       "name": "Mike Gesicki",
       "position": "TE",
-      "proTeamId": 15
+      "proTeamId": 15,
+      "seasonPoints": 159.3
     },
     {
       "round": 11,
@@ -4729,7 +5071,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3912550,
       "name": "Ronald Jones II",
       "position": "RB",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 186.3
     },
     {
       "round": 11,
@@ -4740,7 +5083,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4039359,
       "name": "Darrell Henderson Jr.",
       "position": "RB",
-      "proTeamId": 14
+      "proTeamId": 14,
+      "seasonPoints": 130.3
     },
     {
       "round": 12,
@@ -4759,7 +5103,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4048244,
       "name": "Alexander Mattison",
       "position": "RB",
-      "proTeamId": 16
+      "proTeamId": 16,
+      "seasonPoints": 86.9
     },
     {
       "round": 12,
@@ -4786,7 +5131,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4036133,
       "name": "T.J. Hockenson",
       "position": "TE",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 175.3
     },
     {
       "round": 12,
@@ -4805,7 +5151,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3055899,
       "name": "Harrison Butker",
       "position": "K",
-      "proTeamId": 12
+      "proTeamId": 12,
+      "seasonPoints": 132.0
     },
     {
       "round": 12,
@@ -4840,7 +5187,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3043275,
       "name": "Austin Hooper",
       "position": "TE",
-      "proTeamId": 5
+      "proTeamId": 5,
+      "seasonPoints": 113.5
     },
     {
       "round": 13,
@@ -4851,7 +5199,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16023,
       "name": "Steelers D/ST",
       "position": "DEF",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 147.0
     },
     {
       "round": 13,
@@ -4878,7 +5227,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2574808,
       "name": "Robby Anderson",
       "position": "WR",
-      "proTeamId": 29
+      "proTeamId": 29,
+      "seasonPoints": 224.1
     },
     {
       "round": 13,
@@ -4897,7 +5247,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15920,
       "name": "Latavius Murray",
       "position": "RB",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 136.2
     },
     {
       "round": 13,
@@ -4916,7 +5267,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 13295,
       "name": "Emmanuel Sanders",
       "position": "WR",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 164.8
     },
     {
       "round": 13,
@@ -4927,7 +5279,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16033,
       "name": "Ravens D/ST",
       "position": "DEF",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 125.0
     },
     {
       "round": 14,
@@ -4938,7 +5291,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 15683,
       "name": "Justin Tucker",
       "position": "K",
-      "proTeamId": 33
+      "proTeamId": 33,
+      "seasonPoints": 142.0
     },
     {
       "round": 14,
@@ -4949,7 +5303,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 4241475,
       "name": "Henry Ruggs III",
       "position": "WR",
-      "proTeamId": 13
+      "proTeamId": 13,
+      "seasonPoints": 84.1
     },
     {
       "round": 14,
@@ -4960,7 +5315,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 2985659,
       "name": "Wil Lutz",
       "position": "K",
-      "proTeamId": 18
+      "proTeamId": 18,
+      "seasonPoints": 130.0
     },
     {
       "round": 14,
@@ -5011,7 +5367,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 11122,
       "name": "Matt Prater",
       "position": "K",
-      "proTeamId": 8
+      "proTeamId": 8,
+      "seasonPoints": 110.0
     },
     {
       "round": 14,
@@ -5022,7 +5379,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 14876,
       "name": "Ryan Tannehill",
       "position": "QB",
-      "proTeamId": 10
+      "proTeamId": 10,
+      "seasonPoints": 344.4
     },
     {
       "round": 15,
@@ -5033,7 +5391,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16017,
       "name": "Patriots D/ST",
       "position": "DEF",
-      "proTeamId": 17
+      "proTeamId": 17,
+      "seasonPoints": 90.0
     },
     {
       "round": 15,
@@ -5068,7 +5427,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16011,
       "name": "Colts D/ST",
       "position": "DEF",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 141.0
     },
     {
       "round": 15,
@@ -5079,7 +5439,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16027,
       "name": "Buccaneers D/ST",
       "position": "DEF",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 111.0
     },
     {
       "round": 15,
@@ -5098,7 +5459,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 3916430,
       "name": "Nyheim Hines",
       "position": "RB",
-      "proTeamId": 11
+      "proTeamId": 11,
+      "seasonPoints": 193.2
     },
     {
       "round": 15,
@@ -5109,7 +5471,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16007,
       "name": "Broncos D/ST",
       "position": "DEF",
-      "proTeamId": 7
+      "proTeamId": 7,
+      "seasonPoints": 59.0
     },
     {
       "round": 15,
@@ -5136,7 +5499,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 17372,
       "name": "Chris Boswell",
       "position": "K",
-      "proTeamId": 23
+      "proTeamId": 23,
+      "seasonPoints": 99.0
     },
     {
       "round": 16,
@@ -5179,7 +5543,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": -16006,
       "name": "Cowboys D/ST",
       "position": "DEF",
-      "proTeamId": 6
+      "proTeamId": 6,
+      "seasonPoints": 47.0
     },
     {
       "round": 16,
@@ -5198,7 +5563,8 @@ const ESPN_DRAFT_PICKS = {
       "espnPlayerId": 13934,
       "name": "Antonio Brown",
       "position": "WR",
-      "proTeamId": 27
+      "proTeamId": 27,
+      "seasonPoints": 117.1
     },
     {
       "round": 16,
