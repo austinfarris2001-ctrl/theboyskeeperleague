@@ -414,8 +414,11 @@ function renderPodiumSidePanel(teams) {
   }
   if (last) {
     html += '<div class="toilet-bowl-card">' +
-      '<div class="tb-emoji">\uD83D\uDCA9</div>' +
-      avatarHtml(last.owner) +
+      '<div class="side-panel-title" style="margin-bottom:6px;">Toilet Bowl</div>' +
+      '<div class="toilet-graphic">' +
+        '<span class="tb-emoji">\uD83D\uDEBD</span>' +
+        avatarHtml(last.owner) +
+      '</div>' +
       '<div class="tb-owner">' + last.owner + '</div>' +
       (last.teamName ? '<div class="tb-teamname">' + last.teamName + '</div>' : '') +
     '</div>';
