@@ -246,14 +246,17 @@ async function fetchEspnDraftBoard(season) {
   return board;
 }
 
+function sleep(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+
 async function resolveEspnBoard(board) {
   if (board.resolved) return board;
   const keys = Object.keys(board.cellMap);
-  await Promise.all(keys.map(async function (key) {
-    const raw = board.cellMap[key];
+  const gapKeys = [];
 
+  // Resolve embedded (already-known) picks immediately - no fetch needed
+  keys.forEach(function (key) {
+    const raw = board.cellMap[key];
     if (raw.name) {
-      // real historical data already embedded in data/espn-draft.js
       const [firstName, ...rest] = raw.name.split(" ");
       board.cellMap[key] = {
         round: raw.round, draft_slot: null, pick_no: raw.overallPick, owner: raw.owner, player_id: null,
@@ -264,21 +267,37 @@ async function resolveEspnBoard(board) {
           team: raw.proTeamId ? (ESPN_TEAM_ID_MAP[raw.proTeamId] || null) : null
         }
       };
-      return;
+    } else {
+      gapKeys.push(key);
     }
+  });
 
-    // gap player - not on any roster by that season's end, resolve live
-    const [athlete, reconstructedPoints] = await Promise.all([
-      fetchEspnAthleteForSeason(raw.espnPlayerId, board.season),
-      fetchEspnReconstructedPoints(raw.espnPlayerId, board.season)
-    ]);
-    const [firstName, ...rest] = athlete.name.split(" ");
-    board.cellMap[key] = {
-      round: raw.round, draft_slot: null, pick_no: raw.overallPick, owner: raw.owner, player_id: null,
-      seasonPoints: reconstructedPoints,
-      metadata: { first_name: firstName, last_name: rest.join(" "), position: athlete.position, team: athlete.team }
-    };
-  }));
+  // Gap players need live fetches (up to 3 requests each) - batch these in
+  // small groups with a short pause between batches instead of firing all
+  // ~48 at once, since a big burst of concurrent requests risks silent
+  // rate-limiting from ESPN (a likely cause of intermittently-missing data).
+  const BATCH_SIZE = 6;
+  for (let i = 0; i < gapKeys.length; i += BATCH_SIZE) {
+    const batch = gapKeys.slice(i, i + BATCH_SIZE);
+    await Promise.all(batch.map(async function (key) {
+      const raw = board.cellMap[key];
+      const [athlete, reconstructedPoints] = await Promise.all([
+        fetchEspnAthleteForSeason(raw.espnPlayerId, board.season),
+        fetchEspnReconstructedPoints(raw.espnPlayerId, board.season)
+      ]);
+      if (reconstructedPoints == null) {
+        console.warn("ESPN gap-player points still missing for espnPlayerId " + raw.espnPlayerId + " (season " + board.season + ", pick " + raw.overallPick + ")");
+      }
+      const [firstName, ...rest] = athlete.name.split(" ");
+      board.cellMap[key] = {
+        round: raw.round, draft_slot: null, pick_no: raw.overallPick, owner: raw.owner, player_id: null,
+        seasonPoints: reconstructedPoints,
+        metadata: { first_name: firstName, last_name: rest.join(" "), position: athlete.position, team: athlete.team }
+      };
+    }));
+    if (i + BATCH_SIZE < gapKeys.length) await sleep(200);
+  }
+
   board.resolved = true;
   return board;
 }
@@ -421,8 +440,15 @@ function computeEspnPerformanceData(board) {
     const rank = replacementRank(pos, board.season);
     if (!rank) continue;
     const pool = byPosition[pos] || [];
-    const replacement = pool[rank - 1];
-    if (replacement == null) continue;
+    if (pool.length === 0) continue;
+    // If this position's draft pool (just this season's ~150-190 picks, not
+    // the full NFL) is smaller than the calculated replacement rank - very
+    // common for TE, which teams draft far fewer of - fall back to the
+    // shallowest player actually in the pool instead of failing outright.
+    // Without this, an entire position for an entire season could go blank
+    // at once (this was a real bug: every 2021 TE showed no VORP because
+    // the pool only had ~12 TEs but the calculated replacement rank was 17).
+    const replacement = pool[rank - 1] != null ? pool[rank - 1] : pool[pool.length - 1];
     vorpByPick[key] = Math.round((pick.seasonPoints - replacement) * 10) / 10;
   }
   return { vorpByPick: vorpByPick };
