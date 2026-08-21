@@ -69,7 +69,7 @@ function renderMap(usTopoJson) {
 
       g.append("circle").attr("r", 15).attr("fill", "#0a0f1c").attr("stroke", "#38d0ff").attr("stroke-width", 2);
 
-      const info = OWNER_AVATARS[owner];
+      const info = getAvatarInfo(owner);
       const clipId = "clip-" + owner.replace(/[^a-zA-Z0-9]/g, "");
       if (info) {
         svg.append("clipPath").attr("id", clipId).append("circle").attr("r", 14);
