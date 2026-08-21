@@ -21,7 +21,7 @@ function avatarHtml(owner) {
 function attachAvatarFallbacks(root) {
   root.querySelectorAll(".avatar-slot").forEach(function (slot) {
     const owner = slot.getAttribute("data-owner");
-    const info = OWNER_AVATARS[owner];
+    const info = getAvatarInfo(owner);
     if (!info) {
       const div = document.createElement("div");
       div.className = "team-avatar-fallback";
@@ -123,6 +123,7 @@ async function computeSeasonStats(season) {
   users.forEach(function (u) {
     userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
     userIdToTeamName[u.user_id] = u.metadata && u.metadata.team_name;
+    registerLiveAvatar(ownerNameFromUsername(u.display_name), u.avatar);
   });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
@@ -229,7 +230,7 @@ async function getLeagueMeta(season) {
     fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/users")
   ]);
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); });
+  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
   rosters.forEach(function (r) {
