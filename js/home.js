@@ -52,7 +52,7 @@ async function fetchStandings(season) {
   ]);
 
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
+  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u); });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
 
   const teams = rosters.map(function (r) {
