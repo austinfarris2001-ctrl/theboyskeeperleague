@@ -87,7 +87,7 @@ async function getSleeperPicksFlat(season) {
   ]);
   const picks = await fetchJson("https://api.sleeper.app/v1/draft/" + leagueInfo.draft_id + "/picks");
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
+  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u); });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
   rosters.forEach(function (r) {
@@ -140,7 +140,7 @@ async function fetchWeeklyData(season) {
     fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/users")
   ]);
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
+  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u); });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
   rosters.forEach(function (r) {
@@ -361,14 +361,48 @@ const H2H_SHORT_NAME_OVERRIDES = {
   "Austin Farris": "Farris", "Austin Castro": "Castro",
   "Michael Hoffa": "Hoffa", "Sydney & Olivia": "MooreCok"
 };
+// Current-owners view drops the Austin/Michael disambiguation since only
+// one Austin (and no other Michael) remains active - but both Tylers are
+// still in the league, so that disambiguation stays either way.
+const H2H_CURRENT_OWNER_OVERRIDES = {
+  "Tyler Ahrens": "Ahrens", "Tyler Armstrong": "Armstrong",
+  "Austin Farris": "Austin"
+};
+const CURRENT_OWNERS = [
+  "Shivam Patel", "Tyler Armstrong", "Austin Farris", "Brayden Armstrong",
+  "Braden Galvan", "Braeden Sully", "Tyler Ahrens", "Rohan Shani",
+  "Zach Sullivan", "Joe Sadler"
+];
+
+let h2hMode = "all";
 function h2hShortName(owner) {
+  if (h2hMode === "current") return H2H_CURRENT_OWNER_OVERRIDES[owner] || owner.split(" ")[0];
   return H2H_SHORT_NAME_OVERRIDES[owner] || owner.split(" ")[0];
 }
 
-async function renderHeadToHead() {
-  const data = await computeHeadToHead();
-  const owners = data.owners;
-  let html = '<p class="empty-note" style="margin-bottom:10px;">All seasons, 2020-2026. Each cell shows the row owner\'s record vs the column owner.</p>';
+function renderH2HFilterBar() {
+  const bar = document.getElementById("h2h-mode-bar");
+  if (!bar) return;
+  bar.innerHTML =
+    '<button class="filter-btn small-btn ' + (h2hMode === "all" ? "active" : "") + '" data-h2h-mode="all">All-time</button>' +
+    '<button class="filter-btn small-btn ' + (h2hMode === "current" ? "active" : "") + '" data-h2h-mode="current">Current owners</button>';
+  bar.querySelectorAll("[data-h2h-mode]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      h2hMode = btn.dataset.h2hMode;
+      document.getElementById("analytics-content").innerHTML = renderHeadToHeadBody(h2hDataCache);
+      attachAvatarFallbacks(document.getElementById("analytics-content"));
+      renderH2HFilterBar();
+    });
+  });
+}
+
+let h2hDataCache = null;
+function renderHeadToHeadBody(data) {
+  const owners = h2hMode === "current" ? data.owners.filter(function (o) { return CURRENT_OWNERS.indexOf(o) !== -1; }) : data.owners;
+  const note = h2hMode === "current"
+    ? "Current 10 owners only - all seasons those owners have played, 2020-2026."
+    : "All seasons, 2020-2026, every owner who's ever been in the league.";
+  let html = '<p class="empty-note" style="margin-bottom:10px;">' + note + ' Each cell shows the row owner\'s record vs the column owner.</p>';
   html += '<div class="h2h-table"><div class="h2h-grid" style="grid-template-columns:repeat(' + (owners.length + 1) + ',1fr);">';
   html += '<div class="h2h-header"></div>';
   owners.forEach(function (o) { html += '<div class="h2h-header">' + h2hShortName(o) + '</div>'; });
@@ -386,6 +420,12 @@ async function renderHeadToHead() {
   });
   html += '</div></div>';
   return html;
+}
+
+async function renderHeadToHead() {
+  if (!h2hDataCache) h2hDataCache = await computeHeadToHead();
+  renderH2HFilterBar();
+  return renderHeadToHeadBody(h2hDataCache);
 }
 
 // Skill positions first, then kickers/defense at the back (not alphabetical,
@@ -462,10 +502,11 @@ async function showTab(tab) {
 
   document.getElementById("draftgrades-year-bar").style.display = tab === "draftgrades" ? "flex" : "none";
   document.getElementById("luck-year-bar").style.display = tab === "luck" ? "flex" : "none";
+  document.getElementById("h2h-mode-bar").style.display = tab === "h2h" ? "flex" : "none";
 
   // draftgrades/luck manage their own re-render on filter change, so always
   // re-derive their view from already-fetched data instead of a stale cache
-  if (tab === "draftgrades" || tab === "luck") {
+  if (tab === "draftgrades" || tab === "luck" || tab === "h2h") {
     loading.style.display = "block";
     loading.textContent = "Crunching numbers across every season... this can take a bit the first time.";
     content.innerHTML = "";
