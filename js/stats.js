@@ -123,7 +123,7 @@ async function computeSeasonStats(season) {
   users.forEach(function (u) {
     userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
     userIdToTeamName[u.user_id] = u.metadata && u.metadata.team_name;
-    registerLiveAvatar(ownerNameFromUsername(u.display_name), u.avatar);
+    registerLiveAvatar(ownerNameFromUsername(u.display_name), u);
   });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
@@ -230,7 +230,7 @@ async function getLeagueMeta(season) {
     fetchJson("https://api.sleeper.app/v1/league/" + leagueId + "/users")
   ]);
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
+  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u); });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
   rosters.forEach(function (r) {
