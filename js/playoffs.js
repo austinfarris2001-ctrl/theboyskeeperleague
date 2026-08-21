@@ -86,7 +86,7 @@ async function getSleeperPlayoffData(season) {
   users.forEach(function (u) {
     userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
     userIdToTeamName[u.user_id] = (u.metadata && u.metadata.team_name) || null;
-    registerLiveAvatar(userIdToOwner[u.user_id], u.avatar);
+    registerLiveAvatar(userIdToOwner[u.user_id], u);
   });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
