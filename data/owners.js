@@ -63,3 +63,23 @@ function ownerNameFromUsername(username) {
   const key = username.toLowerCase();
   return USERNAME_TO_OWNER[key] || username;
 }
+
+// ============================================================
+// LIVE AVATAR REGISTRY - every page fetches Sleeper's /league/{id}/users
+// endpoint anyway (to resolve owner names), and that response already
+// includes each user's CURRENT avatar hash - we just weren't capturing it.
+// Whichever page loads first for a session populates this from real,
+// current Sleeper data, so avatars self-update whenever someone changes
+// their picture on Sleeper - no more manually refreshing OWNER_AVATARS by
+// hand. Falls back to the static OWNER_AVATARS map (data/keepers.js-adjacent)
+// for anyone not present in whatever season's users list was fetched (e.g.
+// departed members, or pages that haven't loaded a live fetch yet).
+// ============================================================
+const LIVE_AVATARS = {};
+function registerLiveAvatar(owner, avatarHash) {
+  if (owner && avatarHash) LIVE_AVATARS[owner] = avatarHash;
+}
+function getAvatarInfo(owner) {
+  if (LIVE_AVATARS[owner]) return { type: "id", value: LIVE_AVATARS[owner] };
+  return (typeof OWNER_AVATARS !== "undefined" ? OWNER_AVATARS[owner] : null) || null;
+}
