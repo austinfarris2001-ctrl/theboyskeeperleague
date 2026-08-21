@@ -22,7 +22,7 @@ function avatarHtml(owner) { return '<span class="avatar-slot" data-owner="' + o
 function attachAvatarFallbacks(root) {
   root.querySelectorAll(".avatar-slot").forEach(function (slot) {
     const owner = slot.getAttribute("data-owner");
-    const info = typeof OWNER_AVATARS !== "undefined" ? OWNER_AVATARS[owner] : null;
+    const info = getAvatarInfo(owner);
     if (!info) {
       const div = document.createElement("div");
       div.className = "team-avatar-fallback";
@@ -86,6 +86,7 @@ async function getSleeperPlayoffData(season) {
   users.forEach(function (u) {
     userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
     userIdToTeamName[u.user_id] = (u.metadata && u.metadata.team_name) || null;
+    registerLiveAvatar(userIdToOwner[u.user_id], u.avatar);
   });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
@@ -308,7 +309,7 @@ function bracketAvatarHtml(owner) {
 function attachBracketAvatarFallbacks(root) {
   root.querySelectorAll(".bracket-avatar-slot").forEach(function (slot) {
     const owner = slot.getAttribute("data-owner");
-    const info = typeof OWNER_AVATARS !== "undefined" ? OWNER_AVATARS[owner] : null;
+    const info = getAvatarInfo(owner);
     if (!info) {
       const div = document.createElement("div");
       div.className = "bt-avatar-fallback";
