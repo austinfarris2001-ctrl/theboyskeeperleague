@@ -16,7 +16,7 @@ function avatarHtml(owner) {
 function attachAvatarFallbacks(root) {
   root.querySelectorAll(".avatar-slot").forEach(function (slot) {
     const owner = slot.getAttribute("data-owner");
-    const info = OWNER_AVATARS[owner];
+    const info = getAvatarInfo(owner);
     if (!info) {
       const div = document.createElement("div");
       div.className = "team-avatar-fallback";
@@ -52,7 +52,7 @@ async function fetchStandings(season) {
   ]);
 
   const userIdToOwner = {};
-  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); });
+  users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
 
   const teams = rosters.map(function (r) {
