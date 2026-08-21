@@ -249,6 +249,7 @@ async function fetchDraftBoard(season) {
   users.forEach(function (u) {
     userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name);
     userIdToTeamName[u.user_id] = (u.metadata && u.metadata.team_name) || null;
+    registerLiveAvatar(userIdToOwner[u.user_id], u.avatar);
   });
   const overridesForLeague = ROSTER_OWNER_OVERRIDES[leagueId] || {};
   const rosterIdToOwner = {};
@@ -573,7 +574,7 @@ function headerAvatarHtml(owner) {
 function attachHeaderAvatarFallbacks(root) {
   root.querySelectorAll(".header-avatar-slot").forEach(function (slot) {
     const owner = slot.getAttribute("data-owner");
-    const info = typeof OWNER_AVATARS !== "undefined" ? OWNER_AVATARS[owner] : null;
+    const info = getAvatarInfo(owner);
     if (!info) {
       const div = document.createElement("div");
       div.className = "header-avatar-fallback";
