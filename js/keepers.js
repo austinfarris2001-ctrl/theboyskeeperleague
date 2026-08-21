@@ -68,7 +68,7 @@ async function getTeamPlacements(season) {
     ]);
 
     const userIdToOwner = {};
-    users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
+    users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u); });
     const overridesForLeague = (typeof ROSTER_OWNER_OVERRIDES !== "undefined" && ROSTER_OWNER_OVERRIDES[leagueId]) || {};
     const rosterIdToOwner = {};
     rosters.forEach(function (r) {
