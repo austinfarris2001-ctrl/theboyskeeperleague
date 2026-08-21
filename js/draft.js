@@ -183,32 +183,33 @@ async function fetchEspnReconstructedPoints(espnPlayerId, season) {
     const res = await fetch("https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/" + season + "/types/2/athletes/" + espnPlayerId + "/statistics");
     if (!res.ok) throw new Error("not ok");
     const data = await res.json();
-    // Try a few reasonable shapes since this endpoint's exact structure
-    // isn't something we could verify ahead of time - splits/categories
-    // with numeric stat objects are the most likely shape based on how
-    // ESPN structures this data elsewhere.
-    let statsDict = null;
-    if (data.splits && data.splits.categories) {
-      statsDict = {};
-      data.splits.categories.forEach(function (cat) {
-        (cat.stats || []).forEach(function (s) {
-          if (s.statId != null) statsDict[s.statId] = s.value;
-        });
+    // Real structure (confirmed live): data.splits.categories[].stats[] where
+    // each stat has a human-readable "name" (e.g. "rushingYards"), not a
+    // numeric statId as originally guessed. Flatten every category into one
+    // name->value lookup, then apply this league's scoring formula.
+    const statsByName = {};
+    ((data.splits && data.splits.categories) || []).forEach(function (cat) {
+      (cat.stats || []).forEach(function (s) {
+        if (s.name) statsByName[s.name] = s.value;
       });
-    } else if (data.stats) {
-      statsDict = data.stats;
-    }
-    if (!statsDict) { espnPlayerStatsCache[cacheKey] = null; return null; }
-
-    let total = 0;
-    let foundAny = false;
-    Object.keys(ESPN_SCORING_RULES).forEach(function (statId) {
-      if (statsDict[statId] != null) {
-        total += statsDict[statId] * ESPN_SCORING_RULES[statId];
-        foundAny = true;
-      }
     });
-    const result = foundAny ? Math.round(total * 10) / 10 : null;
+    if (Object.keys(statsByName).length === 0) { espnPlayerStatsCache[cacheKey] = null; return null; }
+
+    const total =
+      (statsByName.passingYards || 0) * ESPN_SCORING_RULES["3"] +
+      (statsByName.passingTouchdowns || 0) * ESPN_SCORING_RULES["4"] +
+      (statsByName.twoPointPassConvs || 0) * ESPN_SCORING_RULES["19"] +
+      (statsByName.interceptions || 0) * ESPN_SCORING_RULES["20"] +
+      (statsByName.rushingYards || 0) * ESPN_SCORING_RULES["24"] +
+      (statsByName.rushingTouchdowns || 0) * ESPN_SCORING_RULES["25"] +
+      (statsByName.twoPointRushConvs || 0) * ESPN_SCORING_RULES["26"] +
+      (statsByName.receivingYards || 0) * ESPN_SCORING_RULES["42"] +
+      (statsByName.receivingTouchdowns || 0) * ESPN_SCORING_RULES["43"] +
+      (statsByName.twoPointRecConvs || 0) * ESPN_SCORING_RULES["44"] +
+      (statsByName.receptions || 0) * ESPN_SCORING_RULES["53"] +
+      (statsByName.fumblesLost || 0) * ESPN_SCORING_RULES["72"];
+
+    const result = Math.round(total * 10) / 10;
     espnPlayerStatsCache[cacheKey] = result;
     return result;
   } catch (e) {
