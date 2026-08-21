@@ -68,7 +68,7 @@ async function getTeamPlacements(season) {
     ]);
 
     const userIdToOwner = {};
-    users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); });
+    users.forEach(function (u) { userIdToOwner[u.user_id] = ownerNameFromUsername(u.display_name); registerLiveAvatar(userIdToOwner[u.user_id], u.avatar); });
     const overridesForLeague = (typeof ROSTER_OWNER_OVERRIDES !== "undefined" && ROSTER_OWNER_OVERRIDES[leagueId]) || {};
     const rosterIdToOwner = {};
     rosters.forEach(function (r) {
@@ -322,7 +322,7 @@ function attachAvatarFallbacks(root) {
   root.querySelectorAll(".avatar-slot").forEach(function (slot) {
     const owner = slot.getAttribute("data-owner");
     const size = slot.getAttribute("data-size");
-    const info = OWNER_AVATARS[owner];
+    const info = getAvatarInfo(owner);
     const cls = size === "large" ? "spotlight-avatar" : "team-avatar";
     const fallbackCls = size === "large" ? "spotlight-avatar-fallback" : "team-avatar-fallback";
 
