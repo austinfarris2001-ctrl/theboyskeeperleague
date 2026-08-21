@@ -36,15 +36,29 @@
 .bracket-page-layout { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
 .bracket-side-panel { display: flex; flex-direction: column; gap: 20px; min-width: 260px; flex-shrink: 0; }
 .side-panel-title { font-size: 12px; font-weight: 800; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; text-align: center; }
-.toilet-bowl-card {
-  background: var(--panel); border: 2px solid var(--red); border-radius: 12px; padding: 16px;
-  text-align: center; box-shadow: 0 0 16px rgba(255,92,92,0.15);
+.podium-spot .p-teamname { margin-top: -4px; margin-bottom: 6px; }
+.podium-spot .p-player, .podium-spot .p-teamname {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 148px;
+  margin-left: auto; margin-right: auto;
 }
-.toilet-bowl-card .tb-emoji { font-size: 28px; margin-bottom: 8px; }
-.toilet-bowl-card .team-avatar, .toilet-bowl-card .team-avatar-fallback { width: 48px; height: 48px; margin: 0 auto 8px; }
-.toilet-bowl-card .tb-owner { font-size: 15px; font-weight: 800; color: var(--red); }
-.toilet-bowl-card .tb-teamname { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
-.podium-spot .p-teamname { font-size: 11px; color: var(--text-mute); margin-top: -4px; margin-bottom: 6px; }
+.toilet-bowl-card {
+  background: var(--panel); border: 2px solid var(--red); border-radius: 12px; padding: 10px 14px;
+  text-align: center; box-shadow: 0 0 14px rgba(255,92,92,0.15); max-width: 150px;
+}
+.toilet-graphic { position: relative; width: 64px; height: 64px; margin: 0 auto 4px; }
+.toilet-graphic .tb-emoji { font-size: 52px; line-height: 1; position: absolute; bottom: 0; left: 0; }
+.toilet-graphic .team-avatar, .toilet-graphic .team-avatar-fallback {
+  position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
+  width: 26px; height: 26px; border: 2px solid var(--red); z-index: 2;
+}
+.toilet-bowl-card .tb-owner {
+  font-size: 13px; font-weight: 800; color: var(--red); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.toilet-bowl-card .tb-teamname {
+  font-size: 10px; color: var(--text-mute); margin-top: 2px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
 .bracket-multiweek-note { font-size: 9px; color: var(--text-mute); text-align: center; margin-top: -4px; margin-bottom: 6px; }
 </style>
 </head>
