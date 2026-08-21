@@ -76,10 +76,20 @@ function ownerNameFromUsername(username) {
 // departed members, or pages that haven't loaded a live fetch yet).
 // ============================================================
 const LIVE_AVATARS = {};
-function registerLiveAvatar(owner, avatarHash) {
-  if (owner && avatarHash) LIVE_AVATARS[owner] = avatarHash;
+function registerLiveAvatar(owner, user) {
+  if (!owner || !user) return;
+  // Sleeper stores a CUSTOM uploaded photo under metadata.avatar (a full URL) -
+  // separate from the built-in preset avatar ID under the plain "avatar" field.
+  // Missing this was the actual bug behind stale-looking photos: someone who'd
+  // uploaded a personal picture wasn't showing it because we only checked the
+  // preset-ID field.
+  if (user.metadata && user.metadata.avatar) {
+    LIVE_AVATARS[owner] = { type: "url", value: user.metadata.avatar };
+  } else if (user.avatar) {
+    LIVE_AVATARS[owner] = { type: "id", value: user.avatar };
+  }
 }
 function getAvatarInfo(owner) {
-  if (LIVE_AVATARS[owner]) return { type: "id", value: LIVE_AVATARS[owner] };
+  if (LIVE_AVATARS[owner]) return LIVE_AVATARS[owner];
   return (typeof OWNER_AVATARS !== "undefined" ? OWNER_AVATARS[owner] : null) || null;
 }
