@@ -170,6 +170,53 @@ async function fetchEspnAthleteForSeason(espnPlayerId, season) {
   };
 }
 
+// Reconstructs a dropped ESPN player's season fantasy total from their raw
+// per-stat-category totals, using this league's own scoring rules
+// (data/espn-scoring-rules.js) - validated exactly against a known-correct
+// real total before being used here. Needed because dropped players (not on
+// any team's final roster) have no season total saved anywhere else.
+let espnPlayerStatsCache = {}; // "espnPlayerId-season" -> computed fantasy points or null
+async function fetchEspnReconstructedPoints(espnPlayerId, season) {
+  const cacheKey = espnPlayerId + "-" + season;
+  if (espnPlayerStatsCache[cacheKey] !== undefined) return espnPlayerStatsCache[cacheKey];
+  try {
+    const res = await fetch("https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/" + season + "/types/2/athletes/" + espnPlayerId + "/statistics");
+    if (!res.ok) throw new Error("not ok");
+    const data = await res.json();
+    // Try a few reasonable shapes since this endpoint's exact structure
+    // isn't something we could verify ahead of time - splits/categories
+    // with numeric stat objects are the most likely shape based on how
+    // ESPN structures this data elsewhere.
+    let statsDict = null;
+    if (data.splits && data.splits.categories) {
+      statsDict = {};
+      data.splits.categories.forEach(function (cat) {
+        (cat.stats || []).forEach(function (s) {
+          if (s.statId != null) statsDict[s.statId] = s.value;
+        });
+      });
+    } else if (data.stats) {
+      statsDict = data.stats;
+    }
+    if (!statsDict) { espnPlayerStatsCache[cacheKey] = null; return null; }
+
+    let total = 0;
+    let foundAny = false;
+    Object.keys(ESPN_SCORING_RULES).forEach(function (statId) {
+      if (statsDict[statId] != null) {
+        total += statsDict[statId] * ESPN_SCORING_RULES[statId];
+        foundAny = true;
+      }
+    });
+    const result = foundAny ? Math.round(total * 10) / 10 : null;
+    espnPlayerStatsCache[cacheKey] = result;
+    return result;
+  } catch (e) {
+    espnPlayerStatsCache[cacheKey] = null;
+    return null;
+  }
+}
+
 async function fetchEspnDraftBoard(season) {
   if (draftCache["espn-" + season]) return draftCache["espn-" + season];
   const picks = ESPN_DRAFT_PICKS[season] || [];
@@ -220,10 +267,14 @@ async function resolveEspnBoard(board) {
     }
 
     // gap player - not on any roster by that season's end, resolve live
-    const athlete = await fetchEspnAthleteForSeason(raw.espnPlayerId, board.season);
+    const [athlete, reconstructedPoints] = await Promise.all([
+      fetchEspnAthleteForSeason(raw.espnPlayerId, board.season),
+      fetchEspnReconstructedPoints(raw.espnPlayerId, board.season)
+    ]);
     const [firstName, ...rest] = athlete.name.split(" ");
     board.cellMap[key] = {
       round: raw.round, draft_slot: null, pick_no: raw.overallPick, owner: raw.owner, player_id: null,
+      seasonPoints: reconstructedPoints,
       metadata: { first_name: firstName, last_name: rest.join(" "), position: athlete.position, team: athlete.team }
     };
   }));
