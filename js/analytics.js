@@ -489,10 +489,85 @@ async function renderConsistency() {
   return html;
 }
 
+let optimalDraftSeason = null;
+let optimalDraftKeepersMode = "keepers";
+let optimalDraftDataCache = {}; // "season-mode" -> simulated board
+
+function renderOptimalDraftFilterBars() {
+  const seasonBar = document.getElementById("optimaldraft-season-bar");
+  const keepersBar = document.getElementById("optimaldraft-keepers-bar");
+  const seasons = ALL_SEASONS.slice().sort(function (a, b) { return b - a; });
+  if (!optimalDraftSeason) optimalDraftSeason = seasons[0];
+
+  seasonBar.innerHTML = seasons.map(function (s) {
+    return '<button class="filter-btn small-btn ' + (s === optimalDraftSeason ? "active" : "") + '" data-od-season="' + s + '">' + s + '</button>';
+  }).join("");
+  keepersBar.innerHTML =
+    '<button class="filter-btn small-btn ' + (optimalDraftKeepersMode === "keepers" ? "active" : "") + '" data-od-keepers="keepers">Keepers</button>' +
+    '<button class="filter-btn small-btn ' + (optimalDraftKeepersMode === "nokeepers" ? "active" : "") + '" data-od-keepers="nokeepers">No Keepers</button>';
+
+  seasonBar.querySelectorAll("[data-od-season]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      optimalDraftSeason = Number(btn.dataset.odSeason);
+      renderOptimalDraft().then(function (html) {
+        document.getElementById("analytics-content").innerHTML = html;
+        renderOptimalDraftFilterBars();
+      });
+    });
+  });
+  keepersBar.querySelectorAll("[data-od-keepers]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      optimalDraftKeepersMode = btn.dataset.odKeepers;
+      renderOptimalDraft().then(function (html) {
+        document.getElementById("analytics-content").innerHTML = html;
+        renderOptimalDraftFilterBars();
+      });
+    });
+  });
+}
+
+async function renderOptimalDraft() {
+  if (!optimalDraftSeason) optimalDraftSeason = ALL_SEASONS[ALL_SEASONS.length - 1];
+  renderOptimalDraftFilterBars();
+  const cacheKey = optimalDraftSeason + "-" + optimalDraftKeepersMode;
+  let board = optimalDraftDataCache[cacheKey];
+  if (!board) {
+    board = await simulateOptimalDraft(optimalDraftSeason, optimalDraftKeepersMode);
+    optimalDraftDataCache[cacheKey] = board;
+  }
+
+  let html = '<p class="empty-note" style="margin-bottom:10px;">' + optimalDraftSeason + ' - how the draft would have gone if every team picked the best available VORP each turn' +
+    (optimalDraftKeepersMode === "keepers" ? ", keeping everyone's real keeper locked in." : ", with no keepers - everyone (including real keepers) is up for grabs.") + '</p>';
+
+  html += '<div class="draft-board"><div class="draft-grid" style="grid-template-columns:repeat(' + (board.maxSlot + 1) + ',1fr);">';
+  html += '<div></div>';
+  const slotOwners = {};
+  Object.keys(board.ownerToSlot).forEach(function (owner) { slotOwners[board.ownerToSlot[owner]] = owner; });
+  for (let slot = 1; slot <= board.maxSlot; slot++) {
+    html += '<div class="draft-header-cell">' + (slotOwners[slot] || "Slot " + slot) + '</div>';
+  }
+  for (let round = 1; round <= board.maxRound; round++) {
+    html += '<div class="draft-header-cell" style="background:transparent;border:none;color:var(--text-mute);">R' + round + '</div>';
+    for (let slot = 1; slot <= board.maxSlot; slot++) {
+      const pick = board.cellMap[round + "-" + slot];
+      if (!pick) { html += '<div class="draft-cell"></div>'; continue; }
+      const name = (pick.metadata.first_name + " " + pick.metadata.last_name).trim();
+      html += '<div class="draft-cell' + (pick.isKeeper ? " keeper" : "") + '">' +
+        '<div class="pick-num">Pick ' + pick.pick_no + (pick.isKeeper ? " \uD83D\uDD11" : "") + '</div>' +
+        '<div class="pick-player">' + name + '</div>' +
+        '<span class="pick-pos">' + (pick.metadata.position || "") + '</span>' +
+        (pick.value != null ? '<div class="pick-value">+' + pick.value + '</div>' : '') +
+      '</div>';
+    }
+  }
+  html += '</div></div>';
+  return html;
+}
+
 const TAB_RENDERERS = {
   misses: renderMisses, draftgrades: renderDraftGrades, luck: renderLuckFactor,
   h2h: renderHeadToHead, tendencies: renderTendencies, keeperhits: renderKeeperHits,
-  roundvalue: renderRoundValue, consistency: renderConsistency
+  roundvalue: renderRoundValue, consistency: renderConsistency, optimaldraft: renderOptimalDraft
 };
 
 async function showTab(tab) {
@@ -503,10 +578,12 @@ async function showTab(tab) {
   document.getElementById("draftgrades-year-bar").style.display = tab === "draftgrades" ? "flex" : "none";
   document.getElementById("luck-year-bar").style.display = tab === "luck" ? "flex" : "none";
   document.getElementById("h2h-mode-bar").style.display = tab === "h2h" ? "flex" : "none";
+  document.getElementById("optimaldraft-season-bar").style.display = tab === "optimaldraft" ? "flex" : "none";
+  document.getElementById("optimaldraft-keepers-bar").style.display = tab === "optimaldraft" ? "flex" : "none";
 
   // draftgrades/luck manage their own re-render on filter change, so always
   // re-derive their view from already-fetched data instead of a stale cache
-  if (tab === "draftgrades" || tab === "luck" || tab === "h2h") {
+  if (tab === "draftgrades" || tab === "luck" || tab === "h2h" || tab === "optimaldraft") {
     loading.style.display = "block";
     loading.textContent = "Crunching numbers across every season... this can take a bit the first time.";
     content.innerHTML = "";
@@ -564,8 +641,13 @@ async function getPickVorpFlat(pick, seasonPicks, statsDump) {
     if (pick.seasonPoints == null) return null;
     const pool = seasonPicks.filter(function (q) { return q.position === pick.position && q.seasonPoints != null; })
       .map(function (q) { return q.seasonPoints; }).sort(function (a, b) { return b - a; });
+    if (pool.length === 0) return null;
     const rank = replacementRank(pick.position, pick.season);
-    const replacement = rank ? pool[rank - 1] : null;
+    // Fall back to the shallowest player actually in the pool if this
+    // position's draft-only pool (ESPN years) is smaller than the calculated
+    // replacement rank - otherwise thin positions like TE can go entirely
+    // blank for a whole season (real bug found and fixed on Draft History).
+    const replacement = rank ? (pool[rank - 1] != null ? pool[rank - 1] : pool[pool.length - 1]) : null;
     return replacement != null ? Math.round((pick.seasonPoints - replacement) * 10) / 10 : null;
   }
   if (!statsDump || !pick.playerId) return null;
@@ -575,7 +657,158 @@ async function getPickVorpFlat(pick, seasonPicks, statsDump) {
   return replacement != null ? Math.round((pts - replacement) * 10) / 10 : null;
 }
 
-// ---- Tab 1: Biggest Misses ----
+// ============================================================
+// OPTIMAL DRAFT SIMULATOR - re-drafts a real season's draft as if every
+// team picked the best available VORP each turn (with perfect hindsight),
+// using the exact same draft order/teams/rounds as the real draft. Smart-
+// draft constraints keep it from producing absurd lineups (e.g. drafting
+// 4 kickers in round 2).
+// ============================================================
+
+const ROSTER_REQUIREMENTS = { QB: 1, RB: 2, WR: 2, TE: 1, K: 1, DEF: 1 };
+const SIM_FLEX_SLOTS = 2;
+const SIM_FLEX_ELIGIBLE = ["RB", "WR", "TE"];
+const MAX_QB = 2, MAX_TE = 2;
+
+async function simulateOptimalDraft(season, keepersMode) {
+  const realPicks = await getAllPicksForSeason(season);
+  const isEspn = ESPN_SEASONS.indexOf(season) !== -1;
+  let statsDump = null;
+  if (!isEspn) {
+    try { statsDump = await fetchSeasonStats(season); } catch (e) { /* fall through with null */ }
+  }
+
+  // Draft order/teams: reuse the EXACT real sequence (round, pickNo, owner) -
+  // same slots, same teams each round, just different players end up there.
+  const draftOrder = realPicks.slice().sort(function (a, b) { return a.pickNo - b.pickNo; })
+    .map(function (p) { return { round: p.round, pickNo: p.pickNo, owner: p.owner }; });
+  const maxRound = Math.max.apply(null, draftOrder.map(function (p) { return p.round; }));
+
+  // Slot number per owner, derived from round-1 order (for grid rendering later)
+  const ownerToSlot = {};
+  draftOrder.filter(function (p) { return p.round === 1; })
+    .forEach(function (p, i) { ownerToSlot[p.owner] = i + 1; });
+
+  // Build the value pool: VORP for skill positions, raw season points for K/DEF
+  // (VORP isn't computed for K/DEF anywhere on this site - no replacement
+  // level baseline for them - so raw points is the best available proxy).
+  const pool = [];
+  for (const p of realPicks) {
+    if (!p.position) continue;
+    let value;
+    if (p.position === "K" || p.position === "DEF") {
+      value = p.seasonPoints;
+    } else {
+      value = await getPickVorpFlat(p, realPicks, statsDump);
+    }
+    if (value == null) continue;
+    pool.push({ name: p.name, position: p.position, value: value, team: p.team });
+  }
+
+  // Keepers mode: lock each team's real keeper into their real slot, and
+  // remove that player from the general pool. No-Keepers mode: leave the
+  // pool untouched - the kept player is up for grabs by anyone.
+  const lockedPicks = {}; // "round-pickNo" -> {name, position, team, isKeeper:true}
+  if (keepersMode === "keepers" && typeof KEEPER_DATA !== "undefined") {
+    KEEPER_DATA.filter(function (k) { return k.season === season; }).forEach(function (k) {
+      const realPick = realPicks.find(function (p) { return p.owner === k.owner && normalizeName(p.name) === normalizeName(k.player); });
+      if (!realPick) return;
+      lockedPicks[realPick.round + "-" + realPick.pickNo] = { name: k.player, position: realPick.position, team: realPick.team, isKeeper: true };
+      const poolIdx = pool.findIndex(function (p) { return normalizeName(p.name) === normalizeName(k.player); });
+      if (poolIdx !== -1) pool.splice(poolIdx, 1);
+    });
+  }
+
+  // Per-owner roster state as the simulated draft progresses
+  const rosterState = {};
+  function getRoster(owner) {
+    if (!rosterState[owner]) {
+      rosterState[owner] = { QB: 0, RB: 0, WR: 0, TE: 0, K: 0, DEF: 0, flexUsed: 0 };
+    }
+    return rosterState[owner];
+  }
+  function nonKDefStartersFilled(roster) {
+    const mandatoryFilled = roster.QB >= 1 && roster.RB >= ROSTER_REQUIREMENTS.RB &&
+      roster.WR >= ROSTER_REQUIREMENTS.WR && roster.TE >= 1;
+    const flexEligibleExtra = Math.max(0, roster.RB - ROSTER_REQUIREMENTS.RB) +
+      Math.max(0, roster.WR - ROSTER_REQUIREMENTS.WR) + Math.max(0, roster.TE - 1);
+    return mandatoryFilled && flexEligibleExtra >= SIM_FLEX_SLOTS;
+  }
+
+  // If a keeper occupies a slot, its roster impact still needs to be applied
+  // when the simulation reaches that pick - apply it inline during the loop.
+
+  const cellMap = {};
+  for (const pick of draftOrder) {
+    const key = pick.round + "-" + pick.pickNo;
+    const roster = getRoster(pick.owner);
+
+    if (lockedPicks[key]) {
+      const kept = lockedPicks[key];
+      if (kept.position && roster[kept.position] != null) roster[kept.position]++;
+      cellMap[pick.round + "-" + ownerToSlot[pick.owner]] = {
+        round: pick.round, pick_no: pick.pickNo, owner: pick.owner,
+        metadata: { first_name: kept.name.split(" ")[0], last_name: kept.name.split(" ").slice(1).join(" "), position: kept.position, team: kept.team },
+        isKeeper: true
+      };
+      continue;
+    }
+
+    const roundsFromEnd = maxRound - pick.round; // 0 = last round
+    const kdefEligible = roundsFromEnd <= 2; // "last 3 rounds"
+    const kdefForceWindow = roundsFromEnd <= 1; // "last 2 rounds"
+    const needsK = roster.K < ROSTER_REQUIREMENTS.K;
+    const needsDef = roster.DEF < ROSTER_REQUIREMENTS.DEF;
+
+    let chosenIdx = -1;
+
+    if (kdefForceWindow && (needsK || needsDef)) {
+      // force-fill whichever is still missing (K before DEF if both missing)
+      const wantPos = needsK ? "K" : "DEF";
+      let best = -1, bestVal = -Infinity;
+      pool.forEach(function (p, i) { if (p.position === wantPos && p.value > bestVal) { best = i; bestVal = p.value; } });
+      chosenIdx = best;
+      // Safety fallback: if that position is already exhausted in the pool
+      // (e.g. missing data for one team's worth of K/DEF), don't just skip
+      // the pick entirely - fall through to normal best-available logic
+      // below so the team still drafts someone.
+    }
+
+    if (chosenIdx === -1) {
+      const lineupFilled = nonKDefStartersFilled(roster);
+      let best = -1, bestVal = -Infinity;
+      pool.forEach(function (p, i) {
+        if (p.position === "K" || p.position === "DEF") {
+          if (!kdefEligible) return;
+          if ((p.position === "K" && roster.K >= ROSTER_REQUIREMENTS.K) || (p.position === "DEF" && roster.DEF >= ROSTER_REQUIREMENTS.DEF)) return;
+        } else if (p.position === "QB") {
+          if (roster.QB >= MAX_QB) return;
+          if (roster.QB >= 1 && !lineupFilled) return; // no 2nd QB before lineup filled
+        } else if (p.position === "TE") {
+          if (roster.TE >= MAX_TE) return;
+          if (roster.TE >= 1 && !lineupFilled) return; // no 2nd TE before lineup filled
+        } else if (SIM_FLEX_ELIGIBLE.indexOf(p.position) === -1) {
+          return; // unknown position, skip
+        }
+        if (p.value > bestVal) { best = i; bestVal = p.value; }
+      });
+      chosenIdx = best;
+    }
+
+    if (chosenIdx === -1) continue; // nothing eligible left (shouldn't normally happen)
+    const chosen = pool[chosenIdx];
+    pool.splice(chosenIdx, 1);
+    if (chosen.position && roster[chosen.position] != null) roster[chosen.position]++;
+
+    cellMap[pick.round + "-" + ownerToSlot[pick.owner]] = {
+      round: pick.round, pick_no: pick.pickNo, owner: pick.owner,
+      metadata: { first_name: chosen.name.split(" ")[0], last_name: chosen.name.split(" ").slice(1).join(" "), position: chosen.position, team: chosen.team },
+      value: Math.round(chosen.value * 10) / 10
+    };
+  }
+
+  return { season: season, maxRound: maxRound, maxSlot: Object.keys(ownerToSlot).length, ownerToSlot: ownerToSlot, cellMap: cellMap };
+}
 function isKeeperPick(season, pickNo) {
   if (typeof KEEPER_DATA === "undefined") return false;
   return KEEPER_DATA.some(function (k) { return k.season === season && k.pick === pickNo; });
