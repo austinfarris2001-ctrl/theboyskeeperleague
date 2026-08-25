@@ -526,6 +526,32 @@ function renderOptimalDraftFilterBars() {
   });
 }
 
+function hexToRgb(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function lerpColor(hexA, hexB, t) {
+  const a = hexToRgb(hexA), b = hexToRgb(hexB);
+  return "#" + a.map(function (c, i) {
+    return Math.round(Math.max(0, Math.min(255, c + (b[i] - c) * t))).toString(16).padStart(2, "0");
+  }).join("");
+}
+// Same magnitude-scaled color ramp used on Draft History's Performance mode -
+// the bigger the number, the more it pops, red for negative/green for positive.
+const POP_GREEN_STOPS = [{ v: 0, c: "#1c3d2e" }, { v: 15, c: "#0e6b3f" }, { v: 40, c: "#0fd98c" }, { v: 80, c: "#39ff8a" }];
+const POP_RED_STOPS = [{ v: 0, c: "#3d1c1c" }, { v: 15, c: "#8a1f1f" }, { v: 40, c: "#e2554a" }, { v: 80, c: "#ff2020" }];
+function magnitudeColor(value) {
+  const stops = value >= 0 ? POP_GREEN_STOPS : POP_RED_STOPS;
+  const mag = Math.min(Math.abs(value), 80);
+  let lo = stops[0], hi = stops[stops.length - 1];
+  for (let i = 0; i < stops.length - 1; i++) {
+    if (mag >= stops[i].v && mag <= stops[i + 1].v) { lo = stops[i]; hi = stops[i + 1]; break; }
+  }
+  const range = hi.v - lo.v;
+  const t = range === 0 ? 0 : (mag - lo.v) / range;
+  return lerpColor(lo.c, hi.c, t);
+}
+
 async function renderOptimalDraft() {
   if (!optimalDraftSeason) optimalDraftSeason = ALL_SEASONS[ALL_SEASONS.length - 1];
   renderOptimalDraftFilterBars();
@@ -556,7 +582,7 @@ async function renderOptimalDraft() {
         '<div class="pick-num">Pick ' + pick.pick_no + (pick.isKeeper ? " \uD83D\uDD11" : "") + '</div>' +
         '<div class="pick-player">' + name + '</div>' +
         '<span class="pick-pos">' + (pick.metadata.position || "") + '</span>' +
-        (pick.value != null ? '<div class="pick-value">+' + pick.value + '</div>' : '') +
+        (pick.value != null && pick.value > -999 ? '<div class="pick-value" style="color:' + magnitudeColor(pick.value) + ';">' + (pick.value > 0 ? "+" : "") + pick.value + '</div>' : '') +
       '</div>';
     }
   }
@@ -692,6 +718,12 @@ async function simulateOptimalDraft(season, keepersMode) {
   // Build the value pool: VORP for skill positions, raw season points for K/DEF
   // (VORP isn't computed for K/DEF anywhere on this site - no replacement
   // level baseline for them - so raw points is the best available proxy).
+  // Every real drafted player gets AN entry even if their value can't be
+  // computed (missing stats) - falling back to a low placeholder rather than
+  // excluding them entirely. Without this, the pool can run short of the
+  // actual number of real picks, leaving later rounds (where deep/bench
+  // picks concentrate) with nothing left to assign - the cause of widespread
+  // and full-round blank cells that were reported.
   const pool = [];
   for (const p of realPicks) {
     if (!p.position) continue;
@@ -701,8 +733,7 @@ async function simulateOptimalDraft(season, keepersMode) {
     } else {
       value = await getPickVorpFlat(p, realPicks, statsDump);
     }
-    if (value == null) continue;
-    pool.push({ name: p.name, position: p.position, value: value, team: p.team });
+    pool.push({ name: p.name, position: p.position, value: value != null ? value : -999, team: p.team });
   }
 
   // Keepers mode: lock each team's real keeper into their real slot, and
@@ -795,7 +826,19 @@ async function simulateOptimalDraft(season, keepersMode) {
       chosenIdx = best;
     }
 
-    if (chosenIdx === -1) continue; // nothing eligible left (shouldn't normally happen)
+    // Last resort: if every constraint-respecting option is exhausted (e.g.
+    // this season's pool ran short because many deep/bench real picks never
+    // had a resolvable VORP), ignore the smart-draft rules entirely rather
+    // than leaving the pick blank - a real team always drafts someone with
+    // their turn. This is what was causing widespread blank cells, especially
+    // in later rounds where the pool thins out fastest.
+    if (chosenIdx === -1 && pool.length > 0) {
+      let best = 0, bestVal = pool[0].value;
+      pool.forEach(function (p, i) { if (p.value > bestVal) { best = i; bestVal = p.value; } });
+      chosenIdx = best;
+    }
+
+    if (chosenIdx === -1) continue; // truly nothing left in the pool at all
     const chosen = pool[chosenIdx];
     pool.splice(chosenIdx, 1);
     if (chosen.position && roster[chosen.position] != null) roster[chosen.position]++;
